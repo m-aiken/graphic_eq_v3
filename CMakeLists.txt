@@ -86,6 +86,14 @@ target_sources(GraphicEq
         source/dsp/singlesamplefifo.h
 
         source/gui/analyzerbase.h
+        source/gui/analyzercontrols.h
+        source/gui/analyzercontrols.cpp
+        source/gui/customlinearslider.h
+        source/gui/customlinearslider.cpp
+        source/gui/customlookandfeel.h
+        source/gui/customlookandfeel.cpp
+        source/gui/customrotarycontrol.h
+        source/gui/customrotarycontrol.cpp
         source/gui/dbscale.h
         source/gui/dbscale.cpp
         source/gui/paramlistener.h

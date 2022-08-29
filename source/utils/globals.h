@@ -1,5 +1,7 @@
 #pragma once
 
+#include <JuceHeader.h>
+
 //==============================================================================
 namespace Globals
 {
@@ -17,6 +19,8 @@ namespace Globals
 
     constexpr float getBorderCornerRadius() { return 5.f; }
     constexpr float getBorderThickness() { return 2.f; }
+
+    static const juce::Font getFont() { return juce::Font(juce::Font::getDefaultMonospacedFontName(), 14.f, 0); };
 
     enum Channel
     {

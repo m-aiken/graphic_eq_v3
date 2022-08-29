@@ -11,7 +11,7 @@ juce::AudioProcessorValueTreeState& apvts)
 leftPathProducer(_sampleRate, leftScsf),
 rightPathProducer(_sampleRate, rightScsf)
 {
-    /*
+
     const auto& params = AnalyzerProperties::getAnalyzerParams();
 
     auto initListener = [&](auto& listener, const auto& paramName, const auto& lambda)
@@ -21,27 +21,20 @@ rightPathProducer(_sampleRate, rightScsf)
         listener = std::make_unique<ParamListener<float>>(*param, lambda);
     };
 
-    initListener(analyzerEnabledParamListener,
-                 AnalyzerProperties::ParamNames::Enable_Analyzer,
-                 [this](const auto& activeStatus){ setActive(activeStatus); });
+    initListener(analyzerOrderParamListener,
+                 AnalyzerProperties::ParamNames::Analyzer_Points,
+                 [this](const auto& newOrder){ updateOrder(newOrder); });
 
     initListener(analyzerDecayRateParamListener,
                  AnalyzerProperties::ParamNames::Analyzer_Decay_Rate,
                  [this](const auto& decayRate){ updateDecayRate(decayRate); });
 
-    initListener(analyzerOrderParamListener,
-                 AnalyzerProperties::ParamNames::Analyzer_Points,
-                 [this](const auto& newOrder){ updateOrder(newOrder); });
-
-    auto enabledParam = apvts.getParameter(params.at(AnalyzerProperties::ParamNames::Enable_Analyzer));
-    setActive(enabledParam->getValue());
+    auto orderParam = apvts.getParameter(params.at(AnalyzerProperties::ParamNames::Analyzer_Points));
+    updateOrder(orderParam->getValue());
 
     auto decayRateParam = apvts.getParameter(params.at(AnalyzerProperties::ParamNames::Analyzer_Decay_Rate));
     updateDecayRate(decayRateParam->convertFrom0to1(decayRateParam->getValue()));
 
-    auto orderParam = apvts.getParameter(params.at(AnalyzerProperties::ParamNames::Analyzer_Points));
-    updateOrder(orderParam->getValue());
-    */
     leftPathProducer.toggleProcessing(true);
     rightPathProducer.toggleProcessing(true);
 
@@ -49,11 +42,6 @@ rightPathProducer(_sampleRate, rightScsf)
     addAndMakeVisible(eqScale);
 
     animate();
-
-    // TODO - initialising these 2 might not be necessary ultimately.
-    // It is necessary at the time of writing this as the associated parameters don't exist in the value tree yet.
-    leftPathProducer.setDecayRate(30.f);
-    rightPathProducer.setDecayRate(30.f);
 }
 
 void SpectrumAnalyzer::timerCallback()
@@ -109,6 +97,7 @@ void SpectrumAnalyzer::paint(juce::Graphics& g)
     paintBackground(g);
 
     g.reduceClipRegion(fftBoundingBox);
+    g.fillAll(ColourPalette::getColour(ColourPalette::Green).withAlpha(0.1f));
 
     leftAnalyzerPath.applyTransform(juce::AffineTransform().translation(fftBoundingBox.getX(), fftBoundingBox.getY() - getTextHeight()));
     rightAnalyzerPath.applyTransform(juce::AffineTransform().translation(fftBoundingBox.getX(), fftBoundingBox.getY() - getTextHeight()));
@@ -153,7 +142,9 @@ void SpectrumAnalyzer::paintBackground(juce::Graphics& g)
     auto textWidth = AnalyzerBase::getTextWidth();
     auto textHeight = AnalyzerBase::getTextHeight();
 
-    g.setColour(ColourPalette::getColour(ColourPalette::Blue).withLightness(0.2f));
+    g.setFont(Globals::getFont());
+
+    g.setColour(ColourPalette::getColour(ColourPalette::Blue).withAlpha(0.2f));
 
     // dB markers
     for ( auto i = leftScaleMin; i <= leftScaleMax; i += scaleDivision )
@@ -176,10 +167,11 @@ void SpectrumAnalyzer::paintBackground(juce::Graphics& g)
         auto normalizedX = juce::mapFromLog10<float>(freqs[i], minFreq, maxFreq);
         auto freqLineX = fftBoundsX + fftBoundsWidth * normalizedX;
 
-        g.setColour(ColourPalette::getColour(ColourPalette::Blue).withLightness(0.2f));
+        g.setColour(ColourPalette::getColour(ColourPalette::Blue).withAlpha(0.2f));
         g.drawVerticalLine(freqLineX, fftBoundsY, fftBoundsBottom);
 
         juce::String text = freqs[i] >= 1000.f ? juce::String(freqs[i] / 1000.f) + "kHz" : juce::String(freqs[i]) + "Hz";
+
 
         g.setColour(ColourPalette::getColour(ColourPalette::Blue));
         g.drawFittedText(text,                                     // text

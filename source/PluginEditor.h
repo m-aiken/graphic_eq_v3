@@ -4,6 +4,8 @@
 
 #include "PluginProcessor.h"
 #include "gui/spectrumanalyzer.h"
+#include "gui/customlookandfeel.h"
+#include "gui/analyzercontrols.h"
 
 //==============================================================================
 class GraphicEqEditor : public juce::AudioProcessorEditor
@@ -22,6 +24,9 @@ private:
     GraphicEqProcessor& processorRef;
 
     SpectrumAnalyzer spectrumAnalyzer;
+    AnalyzerControls analyzerControls;
+
+    CustomLookAndFeel lnf;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GraphicEqEditor)
 };

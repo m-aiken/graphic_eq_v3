@@ -38,11 +38,10 @@ private:
     void animate();
 
     DbScale analyzerScale, eqScale;
-    /*
-    std::unique_ptr<ParamListener<float>> analyzerEnabledParamListener,
-    analyzerDecayRateParamListener,
-    analyzerOrderParamListener;
-    */
+
+    std::unique_ptr<ParamListener<float>> analyzerOrderParamListener;
+    std::unique_ptr<ParamListener<float>> analyzerDecayRateParamListener;
+
     float leftScaleMin  {Globals::getNegativeInf()},
          leftScaleMax  {Globals::getMaxDecibels()},
          rightScaleMin {Globals::getNegativeInf()},

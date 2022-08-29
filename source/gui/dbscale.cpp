@@ -29,9 +29,10 @@ void DbScale::buildBackgroundImage(int dbDivision, juce::Rectangle<int> meterBou
     auto ticks = getTicks(dbDivision, meterBounds, minDb, maxDb);
     auto boundsX = bounds.getX();
     auto boundsWidth = bounds.getWidth();
-    auto textHeight = 12;
+    auto textHeight = 14;
     auto meterY = meterBounds.getY();
 
+    g.setFont(Globals::getFont());
     g.setColour(ColourPalette::getColour(ColourPalette::Blue));
 
     for ( auto i = 0; i < ticks.size(); ++i )

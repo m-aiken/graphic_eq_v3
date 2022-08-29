@@ -1,5 +1,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "dsp/analyzerproperties.h"
 
 //==============================================================================
 GraphicEqProcessor::GraphicEqProcessor()
@@ -166,22 +167,23 @@ juce::AudioProcessorEditor* GraphicEqProcessor::createEditor()
 //==============================================================================
 void GraphicEqProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
-    juce::ignoreUnused (destData);
+    juce::MemoryOutputStream mos (destData, true);
+    apvts.state.writeToStream(mos);
 }
 
 void GraphicEqProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
-    juce::ignoreUnused (data, sizeInBytes);
+    auto tree = juce::ValueTree::readFromData(data, sizeInBytes);
+    if ( tree.isValid() )
+    {
+        apvts.replaceState(tree);
+    }
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout GraphicEqProcessor::createParameterLayout()
 {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
+    AnalyzerProperties::addAnalyzerParams(layout);
     return layout;
 }
 

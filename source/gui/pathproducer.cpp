@@ -6,9 +6,8 @@ PathProducer::PathProducer(double _sampleRate, SingleChannelSampleFifo<juce::Aud
   singleChannelSampleFifo(&scsf),
   sampleRate(_sampleRate)
 {
-    // TODO - initialising these 3 might not be necessary ultimately.
+    // TODO - initialising these 2 might not be necessary ultimately.
     // It is necessary at the time of writing this as the associated parameters don't exist in the value tree yet.
-    fftDataGenerator.changeOrder(Globals::FFTOrder::order2048);
     bufferForGenerator.setSize(1, getFFTSize());
     renderData.resize(getFFTSize(), Globals::getNegativeInf());
 

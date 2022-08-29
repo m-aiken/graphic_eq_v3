@@ -1,9 +1,13 @@
 #pragma once
 
+#include <JuceHeader.h>
 #include <juce_audio_processors/juce_audio_processors.h>
 
+#include "dsp/singlesamplefifo.h"
+#include "utils/globals.h"
+
 //==============================================================================
-class GraphicEqProcessor  : public juce::AudioProcessor
+class GraphicEqProcessor : public juce::AudioProcessor
 {
 public:
     //==============================================================================
@@ -42,6 +46,11 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+    static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+    juce::AudioProcessorValueTreeState apvts { *this, nullptr, "Parameters", createParameterLayout() };
+
+    SingleChannelSampleFifo<juce::AudioBuffer<float>> lScsf { Globals::Channel::Left };
+    SingleChannelSampleFifo<juce::AudioBuffer<float>> rScsf { Globals::Channel::Right };
 private:
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GraphicEqProcessor)

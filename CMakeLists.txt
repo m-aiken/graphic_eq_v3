@@ -62,7 +62,7 @@ juce_add_plugin(GraphicEq
 # include all your JUCE module headers; if you're happy to include module headers directly, you
 # probably don't need to call this.
 
-# juce_generate_juce_header(AudioPluginExample)
+juce_generate_juce_header(GraphicEq)
 
 # `target_sources` adds source files to a target. We pass the target that needs the sources as the
 # first argument, then a visibility parameter for the sources which should normally be PRIVATE.
@@ -72,7 +72,29 @@ juce_add_plugin(GraphicEq
 target_sources(GraphicEq
     PRIVATE
         source/PluginEditor.cpp
-        source/PluginProcessor.cpp)
+        source/PluginProcessor.cpp
+
+        source/utils/colourpalette.h
+        source/utils/globals.h
+
+        source/dsp/analyzerpathgenerator.h
+        source/dsp/analyzerpathgenerator.cpp
+        source/dsp/analyzerproperties.h
+        source/dsp/fftdatagenerator.h
+        source/dsp/fftdatagenerator.cpp
+        source/dsp/fifo.h
+        source/dsp/singlesamplefifo.h
+
+        source/gui/analyzerbase.h
+        source/gui/dbscale.h
+        source/gui/dbscale.cpp
+        source/gui/paramlistener.h
+        source/gui/pathproducer.h
+        source/gui/pathproducer.cpp
+        source/gui/spectrumanalyzer.h
+        source/gui/spectrumanalyzer.cpp
+        source/gui/tick.h
+        )
 
 # `target_compile_definitions` adds some preprocessor definitions to our target. In a Projucer
 # project, these might be passed in the 'Preprocessor Definitions' field. JUCE modules also make use
@@ -107,6 +129,7 @@ target_link_libraries(GraphicEq
     PRIVATE
         # AudioPluginData           # If we'd created a binary data target, we'd link to it here
         juce::juce_audio_utils
+        juce::juce_dsp
     PUBLIC
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags

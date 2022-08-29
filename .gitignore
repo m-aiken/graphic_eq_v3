@@ -1,2 +1,4 @@
 **/.idea
 **/cmake-build-debug
+**/graphic_eq.filtergraph
+**/source/utils/.DS_Store

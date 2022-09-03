@@ -3,6 +3,69 @@
 #include "dsp/analyzerproperties.h"
 
 //==============================================================================
+void GraphicEqProcessor::updatePeakCoefficients(double sampleRate)
+{
+    auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate,
+                                                                                peakFreqParam->get(),
+                                                                                peakQParam->get(),
+                                                                                juce::Decibels::decibelsToGain(peakGainParam->get()));
+
+    leftChain.get<ChainPositions::Peak>().coefficients = peakCoefficients;
+    rightChain.get<ChainPositions::Peak>().coefficients = peakCoefficients;
+}
+
+void GraphicEqProcessor::updateCutCoefficients(juce::ReferenceCountedArray<juce::dsp::FilterDesign<float>::IIRCoefficients>& coefficients, juce::AudioParameterChoice* slopeParam)
+{
+    auto& leftCutFilters = leftChain.get<ChainPositions::LowCut>();
+    leftCutFilters.setBypassed<Slope_12>(true);
+    leftCutFilters.setBypassed<Slope_24>(true);
+    leftCutFilters.setBypassed<Slope_36>(true);
+    leftCutFilters.setBypassed<Slope_48>(true);
+
+    auto& rightCutFilters = rightChain.get<ChainPositions::LowCut>();
+    rightCutFilters.setBypassed<Slope_12>(true);
+    rightCutFilters.setBypassed<Slope_24>(true);
+    rightCutFilters.setBypassed<Slope_36>(true);
+    rightCutFilters.setBypassed<Slope_48>(true);
+    
+    switch (slopeParam->getIndex()) {
+        case Slope_48:
+        {
+            leftCutFilters.get<Slope_48>().coefficients = coefficients[Slope_48];
+            leftCutFilters.setBypassed<Slope_48>(false);
+            rightCutFilters.get<Slope_48>().coefficients = coefficients[Slope_48];
+            rightCutFilters.setBypassed<Slope_48>(false);
+        }
+        case Slope_36:
+        {
+            leftCutFilters.get<Slope_36>().coefficients = coefficients[Slope_36];
+            leftCutFilters.setBypassed<Slope_36>(false);
+            rightCutFilters.get<Slope_36>().coefficients = coefficients[Slope_36];
+            rightCutFilters.setBypassed<Slope_36>(false);
+        }
+        case Slope_24:
+        {
+            leftCutFilters.get<Slope_24>().coefficients = coefficients[Slope_24];
+            leftCutFilters.setBypassed<Slope_24>(false);
+            rightCutFilters.get<Slope_24>().coefficients = coefficients[Slope_24];
+            rightCutFilters.setBypassed<Slope_24>(false);
+        }
+        case Slope_12:
+        {
+            leftCutFilters.get<Slope_12>().coefficients = coefficients[Slope_12];
+            leftCutFilters.setBypassed<Slope_12>(false);
+            rightCutFilters.get<Slope_12>().coefficients = coefficients[Slope_12];
+            rightCutFilters.setBypassed<Slope_12>(false);
+            break;
+        }
+        default:
+        {
+            break;
+        }
+    }
+}
+
+//==============================================================================
 GraphicEqProcessor::GraphicEqProcessor()
      : AudioProcessor (BusesProperties()
                      #if ! JucePlugin_IsMidiEffect
@@ -13,6 +76,25 @@ GraphicEqProcessor::GraphicEqProcessor()
                      #endif
                        )
 {
+    auto assignFloatParam = [&](auto& target, auto& paramName){
+        auto param = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter(paramName));
+        jassert(param != nullptr);
+        target = param;
+    };
+
+    auto assignChoiceParam = [&](auto& target, auto& paramName){
+        auto param = dynamic_cast<juce::AudioParameterChoice*>(apvts.getParameter(paramName));
+        jassert(param != nullptr);
+        target = param;
+    };
+
+    assignFloatParam(lowCutFreqParam, "LowCutFreq");
+    assignChoiceParam(lowCutSlopeParam, "LowCutSlope");
+    assignFloatParam(highCutFreqParam, "HighCutFreq");
+    assignChoiceParam(highCutSlopeParam, "HighCutSlope");
+    assignFloatParam(peakFreqParam, "PeakFreq");
+    assignFloatParam(peakGainParam, "PeakGain");
+    assignFloatParam(peakQParam, "PeakQ");
 }
 
 GraphicEqProcessor::~GraphicEqProcessor()
@@ -90,12 +172,21 @@ void GraphicEqProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     // Use this method as the place to do any pre-playback
     // initialisation that you need.
     juce::ignoreUnused (sampleRate);
-    /*
+
     juce::dsp::ProcessSpec spec;
     spec.sampleRate = sampleRate;
     spec.maximumBlockSize = samplesPerBlock;
     spec.numChannels = getTotalNumOutputChannels();
-    */
+
+    leftChain.prepare(spec);
+    rightChain.prepare(spec);
+
+    updatePeakCoefficients(sampleRate);
+
+    auto lowCutCoefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(lowCutFreqParam->get(),
+                                                                                                          sampleRate,
+                                                                                                          (lowCutSlopeParam->getIndex() + 1) * 2);
+    updateCutCoefficients(lowCutCoefficients, lowCutSlopeParam);
 
     lScsf.prepare(samplesPerBlock);
     rScsf.prepare(samplesPerBlock);
@@ -149,6 +240,22 @@ void GraphicEqProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
+    updatePeakCoefficients(getSampleRate());
+    auto lowCutCoefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(lowCutFreqParam->get(),
+                                                                                                          getSampleRate(),
+                                                                                                          (lowCutSlopeParam->getIndex() + 1) * 2);
+    updateCutCoefficients(lowCutCoefficients, lowCutSlopeParam);
+
+    juce::dsp::AudioBlock<float> block(buffer);
+    auto leftBlock = block.getSingleChannelBlock(Globals::Channel::Left);
+    auto rightBlock = block.getSingleChannelBlock(Globals::Channel::Right);
+
+    juce::dsp::ProcessContextReplacing<float> leftCtx(leftBlock);
+    juce::dsp::ProcessContextReplacing<float> rightCtx(rightBlock);
+
+    leftChain.process(leftCtx);
+    rightChain.process(rightCtx);
+
     lScsf.update(buffer);
     rScsf.update(buffer);
 }
@@ -194,9 +301,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout GraphicEqProcessor::createPa
         cutChoices.add(str);
     }
 
+    float freqSkewFactor = 0.25f;
+
     layout.add(std::make_unique<juce::AudioParameterFloat>("LowCutFreq",
                                                            "Low Cut Freq",
-                                                           juce::NormalisableRange(20.f, 20000.f, 1.f, 1.f),
+                                                           juce::NormalisableRange(20.f, 20000.f, 1.f, freqSkewFactor),
                                                            20.f));
 
     layout.add(std::make_unique<juce::AudioParameterChoice>("LowCutSlope",
@@ -206,7 +315,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout GraphicEqProcessor::createPa
 
     layout.add(std::make_unique<juce::AudioParameterFloat>("HighCutFreq",
                                                            "High Cut Freq",
-                                                           juce::NormalisableRange(20.f, 20000.f, 1.f, 1.f),
+                                                           juce::NormalisableRange(20.f, 20000.f, 1.f, freqSkewFactor),
                                                            20000.f));
 
     layout.add(std::make_unique<juce::AudioParameterChoice>("HighCutSlope",
@@ -216,7 +325,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout GraphicEqProcessor::createPa
 
     layout.add(std::make_unique<juce::AudioParameterFloat>("PeakFreq",
                                                            "Peak Freq",
-                                                           juce::NormalisableRange(20.f, 20000.f, 1.f, 1.f),
+                                                           juce::NormalisableRange(20.f, 20000.f, 1.f, freqSkewFactor),
                                                            750.f));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>("PeakGain",

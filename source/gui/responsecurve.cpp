@@ -10,6 +10,13 @@ ResponseCurve::ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double 
     lowCutFreqListener = std::make_unique<ParamListener<float>>(*apvts.getParameter("LowCutFreq"), paramChangedCallback);
     lowCutSlopeListener = std::make_unique<ParamListener<float>>(*apvts.getParameter("LowCutSlope"), paramChangedCallback);
 
+    highCutFreqListener = std::make_unique<ParamListener<float>>(*apvts.getParameter("HighCutFreq"), paramChangedCallback);
+    highCutSlopeListener = std::make_unique<ParamListener<float>>(*apvts.getParameter("HighCutSlope"), paramChangedCallback);
+
+    peakFreqListener = std::make_unique<ParamListener<float>>(*apvts.getParameter("PeakFreq"), paramChangedCallback);
+    peakGainListener = std::make_unique<ParamListener<float>>(*apvts.getParameter("PeakGain"), paramChangedCallback);
+    peakQListener = std::make_unique<ParamListener<float>>(*apvts.getParameter("PeakQ"), paramChangedCallback);
+
     auto assignFloatParam = [&](auto& target, auto& paramName){
         auto param = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter(paramName));
         jassert(param != nullptr);
@@ -24,11 +31,15 @@ ResponseCurve::ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double 
 
     assignFloatParam(lowCutFreqParam, "LowCutFreq");
     assignChoiceParam(lowCutSlopeParam, "LowCutSlope");
+
     assignFloatParam(highCutFreqParam, "HighCutFreq");
     assignChoiceParam(highCutSlopeParam, "HighCutSlope");
+
     assignFloatParam(peakFreqParam, "PeakFreq");
     assignFloatParam(peakGainParam, "PeakGain");
     assignFloatParam(peakQParam, "PeakQ");
+
+    updateMonoChain();
 }
 
 void ResponseCurve::paint(juce::Graphics& g)
@@ -49,9 +60,9 @@ void ResponseCurve::paint(juce::Graphics& g)
     for (auto i = 0; i < analyzerWidth; ++i)
     {
         double mag = 1.0;
-        auto freq = static_cast<double>(mapToLog10(static_cast<int>(std::floor(i / analyzerWidth)),
-                                                   static_cast<int>(Globals::getMinFrequency()),
-                                                   static_cast<int>(Globals::getMaxFrequency())));
+        auto freq = mapToLog10<double>(i / analyzerWidth,
+                                       Globals::getMinFrequency(),
+                                       Globals::getMaxFrequency());
 
         // Peak
         if (!monoChain.isBypassed<Globals::ChainPositions::Peak>()) {

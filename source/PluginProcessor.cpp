@@ -14,7 +14,7 @@ void GraphicEqProcessor::updatePeakCoefficients(double sampleRate)
     rightChain.get<ChainPositions::Peak>().coefficients = peakCoefficients;
 }
 
-void GraphicEqProcessor::updateCutCoefficients(juce::ReferenceCountedArray<juce::dsp::FilterDesign<float>::IIRCoefficients>& coefficients, juce::AudioParameterChoice* slopeParam)
+void GraphicEqProcessor::updateCutCoefficients(CoefficientsType& coefficients, juce::AudioParameterChoice* slopeParam)
 {
     auto& leftCutFilters = leftChain.get<ChainPositions::LowCut>();
     leftCutFilters.setBypassed<Slope_12>(true);
@@ -27,7 +27,7 @@ void GraphicEqProcessor::updateCutCoefficients(juce::ReferenceCountedArray<juce:
     rightCutFilters.setBypassed<Slope_24>(true);
     rightCutFilters.setBypassed<Slope_36>(true);
     rightCutFilters.setBypassed<Slope_48>(true);
-    
+
     switch (slopeParam->getIndex()) {
         case Slope_48:
         {
@@ -181,12 +181,12 @@ void GraphicEqProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     leftChain.prepare(spec);
     rightChain.prepare(spec);
 
-    updatePeakCoefficients(sampleRate);
+    auto lowCutCoefficients = makeHighPassFilter(lowCutFreqParam, lowCutSlopeParam, sampleRate);
+    auto highCutCoefficients = makeLowPassFilter(highCutFreqParam, highCutSlopeParam, sampleRate);
 
-    auto lowCutCoefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(lowCutFreqParam->get(),
-                                                                                                          sampleRate,
-                                                                                                          (lowCutSlopeParam->getIndex() + 1) * 2);
     updateCutCoefficients(lowCutCoefficients, lowCutSlopeParam);
+    updateCutCoefficients(highCutCoefficients, highCutSlopeParam);
+    updatePeakCoefficients(sampleRate);
 
     lScsf.prepare(samplesPerBlock);
     rScsf.prepare(samplesPerBlock);
@@ -240,11 +240,12 @@ void GraphicEqProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    updatePeakCoefficients(getSampleRate());
-    auto lowCutCoefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(lowCutFreqParam->get(),
-                                                                                                          getSampleRate(),
-                                                                                                          (lowCutSlopeParam->getIndex() + 1) * 2);
+    auto lowCutCoefficients = makeHighPassFilter(lowCutFreqParam, lowCutSlopeParam, getSampleRate());
+    auto highCutCoefficients = makeLowPassFilter(highCutFreqParam, highCutSlopeParam, getSampleRate());
+
     updateCutCoefficients(lowCutCoefficients, lowCutSlopeParam);
+    updateCutCoefficients(highCutCoefficients, highCutSlopeParam);
+    updatePeakCoefficients(getSampleRate());
 
     juce::dsp::AudioBlock<float> block(buffer);
     auto leftBlock = block.getSingleChannelBlock(Globals::Channel::Left);
@@ -319,7 +320,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout GraphicEqProcessor::createPa
                                                            20000.f));
 
     layout.add(std::make_unique<juce::AudioParameterChoice>("HighCutSlope",
-                                                            "Low Cut Slope",
+                                                            "High Cut Slope",
                                                             cutChoices,
                                                             0));
 

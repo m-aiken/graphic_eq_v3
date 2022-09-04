@@ -95,7 +95,19 @@ private:
     juce::AudioParameterFloat*  peakQParam        { nullptr };
 
     void updatePeakCoefficients(double sampleRate);
-    void updateCutCoefficients(juce::ReferenceCountedArray<juce::dsp::FilterDesign<float>::IIRCoefficients>& coefficients, juce::AudioParameterChoice* slopeParam);
+
+    using CoefficientsType = juce::ReferenceCountedArray<juce::dsp::FilterDesign<float>::IIRCoefficients>;
+    void updateCutCoefficients(CoefficientsType& coefficients, juce::AudioParameterChoice* slopeParam);
+
+    CoefficientsType makeHighPassFilter(juce::AudioParameterFloat* freqParam, juce::AudioParameterChoice* slopeParam, double sampleRate)
+    {
+        return juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(freqParam->get(), sampleRate, (slopeParam->getIndex() + 1) * 2);
+    }
+
+    CoefficientsType makeLowPassFilter(juce::AudioParameterFloat* freqParam, juce::AudioParameterChoice* slopeParam, double sampleRate)
+    {
+        return juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(freqParam->get(), sampleRate, (slopeParam->getIndex() + 1) * 2);
+    }
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GraphicEqProcessor)

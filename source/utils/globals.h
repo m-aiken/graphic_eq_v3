@@ -7,7 +7,7 @@ namespace Globals
 {
 
     constexpr float getMaxDecibels() { return 24.f; }
-    constexpr float getNegativeInf() { return -96.f; }
+    constexpr float getNegativeInf() { return -72.f; }
 
     constexpr int getMinBandNum() { return 0; }
     constexpr int getMaxBandNum() { return 7; }

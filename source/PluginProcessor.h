@@ -51,22 +51,10 @@ public:
 
     SingleChannelSampleFifo<juce::AudioBuffer<float>> lScsf { Globals::Channel::Left };
     SingleChannelSampleFifo<juce::AudioBuffer<float>> rScsf { Globals::Channel::Right };
-private:
 
     using Filter = juce::dsp::IIR::Filter<float>;
-
     // Cut Filter chain: x4 Filters to allow for 12/24/36/48 dB/oct options
     using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
-
-    /*
-     * Mono chain
-     * currently a 3 band EQ - TODO add more bands
-     * For 3 band we need:
-     *     LowCut,    Peak,   HighCut
-     * aka
-     *     CutFilter, Filter, CutFilter
-    */
-
     using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, CutFilter>;
 
     enum ChainPositions
@@ -75,6 +63,16 @@ private:
         Peak,
         HighCut
     };
+
+private:
+    /*
+     * Mono chain
+     * currently a 3 band EQ - TODO add more bands
+     * For 3 band we need:
+     *     LowCut,    Peak,   HighCut
+     * aka
+     *     CutFilter, Filter, CutFilter
+    */
 
     enum Slope
     {

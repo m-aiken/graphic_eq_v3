@@ -4,6 +4,7 @@
 
 #include "PluginProcessor.h"
 #include "gui/spectrumanalyzer.h"
+#include "gui/responsecurve.h"
 #include "gui/customlookandfeel.h"
 #include "gui/analyzercontrols.h"
 
@@ -24,9 +25,11 @@ private:
     GraphicEqProcessor& processorRef;
 
     SpectrumAnalyzer spectrumAnalyzer;
+    ResponseCurve responseCurve;
+
     AnalyzerControls analyzerControls;
 
     CustomLookAndFeel lnf;
-
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GraphicEqEditor)
 };

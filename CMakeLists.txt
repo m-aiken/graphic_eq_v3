@@ -99,6 +99,8 @@ target_sources(GraphicEq
         source/gui/paramlistener.h
         source/gui/pathproducer.h
         source/gui/pathproducer.cpp
+        source/gui/responsecurve.h
+        source/gui/responsecurve.cpp
         source/gui/spectrumanalyzer.h
         source/gui/spectrumanalyzer.cpp
         source/gui/tick.h

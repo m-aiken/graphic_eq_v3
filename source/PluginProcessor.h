@@ -97,7 +97,7 @@ private:
     void updatePeakCoefficients(double sampleRate);
 
     using CoefficientsType = juce::ReferenceCountedArray<juce::dsp::FilterDesign<float>::IIRCoefficients>;
-    void updateCutCoefficients(CoefficientsType& coefficients, juce::AudioParameterChoice* slopeParam, ChainPositions chainPosition);
+    void updateCutCoefficients(CoefficientsType& coefficients, juce::AudioParameterChoice* slopeParam, const ChainPositions& chainPosition);
 
     CoefficientsType makeHighPassFilter(juce::AudioParameterFloat* freqParam, juce::AudioParameterChoice* slopeParam, double sampleRate)
     {

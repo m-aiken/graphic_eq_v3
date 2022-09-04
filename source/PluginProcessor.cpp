@@ -14,7 +14,7 @@ void GraphicEqProcessor::updatePeakCoefficients(double sampleRate)
     rightChain.get<ChainPositions::Peak>().coefficients = peakCoefficients;
 }
 
-void GraphicEqProcessor::updateCutCoefficients(CoefficientsType& coefficients, juce::AudioParameterChoice* slopeParam, ChainPositions chainPosition)
+void GraphicEqProcessor::updateCutCoefficients(CoefficientsType& coefficients, juce::AudioParameterChoice* slopeParam, const ChainPositions& chainPosition)
 {
     auto& leftCutFilters = chainPosition == ChainPositions::LowCut ? leftChain.get<ChainPositions::LowCut>() : leftChain.get<ChainPositions::HighCut>();
     leftCutFilters.setBypassed<Slope_12>(true);

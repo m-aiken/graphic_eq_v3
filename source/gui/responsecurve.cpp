@@ -5,7 +5,9 @@
 ResponseCurve::ResponseCurve(juce::AudioProcessorValueTreeState& apvts, double _sampleRate)
 : sampleRate(_sampleRate)
 {
-
+    auto paramChangedCallback = [&](const auto& newOrder){ updateMonoChain(); };
+    lowCutFreqListener = std::make_unique<ParamListener<float>>(*apvts.getParameter("LowCutFreq"), paramChangedCallback);
+    lowCutSlopeListener = std::make_unique<ParamListener<float>>(*apvts.getParameter("LowCutSlope"), paramChangedCallback);
 }
 
 void ResponseCurve::paint(juce::Graphics& g)
@@ -80,17 +82,24 @@ void ResponseCurve::paint(juce::Graphics& g)
                                  responseCurveMax);
     };
 
-    juce::Path responseCurve;
+    juce::Path line;
 
-    responseCurve.startNewSubPath(analyzerLeft, mapFilterGainRangeToAnalyzerBounds(magnitudes.at(0)));
+    line.startNewSubPath(analyzerLeft, mapFilterGainRangeToAnalyzerBounds(magnitudes.at(0)));
 
     for (auto i = 1; i < magnitudes.size(); ++i) {
-        responseCurve.lineTo(analyzerLeft + i, mapFilterGainRangeToAnalyzerBounds(magnitudes.at(i)));
+        line.lineTo(analyzerLeft + i, mapFilterGainRangeToAnalyzerBounds(magnitudes.at(i)));
     }
 
-    responseCurve.closeSubPath();
+    line.closeSubPath();
 
     g.setColour(juce::Colours::black);
 
-    g.strokePath(responseCurve, juce::PathStrokeType(2.f));
+    g.strokePath(line, juce::PathStrokeType(2.f));
+}
+
+void ResponseCurve::updateMonoChain()
+{
+
+
+    repaint();
 }

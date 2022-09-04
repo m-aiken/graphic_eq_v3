@@ -18,9 +18,9 @@ void ResponseCurve::paint(juce::Graphics& g)
     auto responseCurveMin = analyzerBounds.getBottom();
     auto responseCurveMax = analyzerBounds.getY();
 
-    auto& lowCut = monoChain.get<GraphicEqProcessor::ChainPositions::LowCut>();
-    auto& peak = monoChain.get<GraphicEqProcessor::ChainPositions::Peak>();
-    auto& highCut = monoChain.get<GraphicEqProcessor::ChainPositions::HighCut>();
+    auto& lowCut = monoChain.get<Globals::ChainPositions::LowCut>();
+    auto& peak = monoChain.get<Globals::ChainPositions::Peak>();
+    auto& highCut = monoChain.get<Globals::ChainPositions::HighCut>();
 
     std::vector<double> magnitudes;
     magnitudes.resize(analyzerWidth);
@@ -33,7 +33,7 @@ void ResponseCurve::paint(juce::Graphics& g)
                                                    static_cast<int>(Globals::getMaxFrequency())));
 
         // Peak
-        if (!monoChain.isBypassed<GraphicEqProcessor::ChainPositions::Peak>()) {
+        if (!monoChain.isBypassed<Globals::ChainPositions::Peak>()) {
             mag *= peak.coefficients->getMagnitudeForFrequency(freq, sampleRate);
         }
 

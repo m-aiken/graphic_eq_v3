@@ -4,6 +4,7 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 
 #include "dsp/singlesamplefifo.h"
+#include "dsp/filterUtils.h"
 #include "utils/globals.h"
 
 //==============================================================================
@@ -52,18 +53,6 @@ public:
     SingleChannelSampleFifo<juce::AudioBuffer<float>> lScsf { Globals::Channel::Left };
     SingleChannelSampleFifo<juce::AudioBuffer<float>> rScsf { Globals::Channel::Right };
 
-    using Filter = juce::dsp::IIR::Filter<float>;
-    // Cut Filter chain: x4 Filters to allow for 12/24/36/48 dB/oct options
-    using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
-    using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, CutFilter>;
-
-    enum ChainPositions
-    {
-        LowCut,
-        Peak,
-        HighCut
-    };
-
 private:
     /*
      * Mono chain
@@ -74,15 +63,7 @@ private:
      *     CutFilter, Filter, CutFilter
     */
 
-    enum Slope
-    {
-        Slope_12,
-        Slope_24,
-        Slope_36,
-        Slope_48
-    };
-
-    MonoChain leftChain, rightChain;
+    FilterUtils::MonoChain leftChain, rightChain;
 
     juce::AudioParameterFloat*  lowCutFreqParam   { nullptr };
     juce::AudioParameterChoice* lowCutSlopeParam  { nullptr };
@@ -91,21 +72,6 @@ private:
     juce::AudioParameterFloat*  peakFreqParam     { nullptr };
     juce::AudioParameterFloat*  peakGainParam     { nullptr };
     juce::AudioParameterFloat*  peakQParam        { nullptr };
-
-    void updatePeakCoefficients(double sampleRate);
-
-    using CoefficientsType = juce::ReferenceCountedArray<juce::dsp::FilterDesign<float>::IIRCoefficients>;
-    void updateCutCoefficients(CoefficientsType& coefficients, juce::AudioParameterChoice* slopeParam, const ChainPositions& chainPosition);
-
-    CoefficientsType makeHighPassFilter(juce::AudioParameterFloat* freqParam, juce::AudioParameterChoice* slopeParam, double sampleRate)
-    {
-        return juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(freqParam->get(), sampleRate, (slopeParam->getIndex() + 1) * 2);
-    }
-
-    CoefficientsType makeLowPassFilter(juce::AudioParameterFloat* freqParam, juce::AudioParameterChoice* slopeParam, double sampleRate)
-    {
-        return juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(freqParam->get(), sampleRate, (slopeParam->getIndex() + 1) * 2);
-    }
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GraphicEqProcessor)

@@ -3,69 +3,6 @@
 #include "dsp/analyzerproperties.h"
 
 //==============================================================================
-void GraphicEqProcessor::updatePeakCoefficients(double sampleRate)
-{
-    auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate,
-                                                                                peakFreqParam->get(),
-                                                                                peakQParam->get(),
-                                                                                juce::Decibels::decibelsToGain(peakGainParam->get()));
-
-    leftChain.get<ChainPositions::Peak>().coefficients = peakCoefficients;
-    rightChain.get<ChainPositions::Peak>().coefficients = peakCoefficients;
-}
-
-void GraphicEqProcessor::updateCutCoefficients(CoefficientsType& coefficients, juce::AudioParameterChoice* slopeParam, const ChainPositions& chainPosition)
-{
-    auto& leftCutFilters = chainPosition == ChainPositions::LowCut ? leftChain.get<ChainPositions::LowCut>() : leftChain.get<ChainPositions::HighCut>();
-    leftCutFilters.setBypassed<Slope_12>(true);
-    leftCutFilters.setBypassed<Slope_24>(true);
-    leftCutFilters.setBypassed<Slope_36>(true);
-    leftCutFilters.setBypassed<Slope_48>(true);
-
-    auto& rightCutFilters = chainPosition == ChainPositions::LowCut ? rightChain.get<ChainPositions::LowCut>() : rightChain.get<ChainPositions::HighCut>();
-    rightCutFilters.setBypassed<Slope_12>(true);
-    rightCutFilters.setBypassed<Slope_24>(true);
-    rightCutFilters.setBypassed<Slope_36>(true);
-    rightCutFilters.setBypassed<Slope_48>(true);
-
-    switch (slopeParam->getIndex()) {
-        case Slope_48:
-        {
-            leftCutFilters.get<Slope_48>().coefficients = coefficients[Slope_48];
-            leftCutFilters.setBypassed<Slope_48>(false);
-            rightCutFilters.get<Slope_48>().coefficients = coefficients[Slope_48];
-            rightCutFilters.setBypassed<Slope_48>(false);
-        }
-        case Slope_36:
-        {
-            leftCutFilters.get<Slope_36>().coefficients = coefficients[Slope_36];
-            leftCutFilters.setBypassed<Slope_36>(false);
-            rightCutFilters.get<Slope_36>().coefficients = coefficients[Slope_36];
-            rightCutFilters.setBypassed<Slope_36>(false);
-        }
-        case Slope_24:
-        {
-            leftCutFilters.get<Slope_24>().coefficients = coefficients[Slope_24];
-            leftCutFilters.setBypassed<Slope_24>(false);
-            rightCutFilters.get<Slope_24>().coefficients = coefficients[Slope_24];
-            rightCutFilters.setBypassed<Slope_24>(false);
-        }
-        case Slope_12:
-        {
-            leftCutFilters.get<Slope_12>().coefficients = coefficients[Slope_12];
-            leftCutFilters.setBypassed<Slope_12>(false);
-            rightCutFilters.get<Slope_12>().coefficients = coefficients[Slope_12];
-            rightCutFilters.setBypassed<Slope_12>(false);
-            break;
-        }
-        default:
-        {
-            break;
-        }
-    }
-}
-
-//==============================================================================
 GraphicEqProcessor::GraphicEqProcessor()
      : AudioProcessor (BusesProperties()
                      #if ! JucePlugin_IsMidiEffect
@@ -181,12 +118,17 @@ void GraphicEqProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     leftChain.prepare(spec);
     rightChain.prepare(spec);
 
-    auto lowCutCoefficients = makeHighPassFilter(lowCutFreqParam, lowCutSlopeParam, sampleRate);
-    auto highCutCoefficients = makeLowPassFilter(highCutFreqParam, highCutSlopeParam, sampleRate);
+    auto lowCutCoefficients = FilterUtils::makeHighPassFilter(lowCutFreqParam, lowCutSlopeParam, sampleRate);
+    auto highCutCoefficients = FilterUtils::makeLowPassFilter(highCutFreqParam, highCutSlopeParam, sampleRate);
 
-    updateCutCoefficients(lowCutCoefficients, lowCutSlopeParam, ChainPositions::LowCut);
-    updateCutCoefficients(highCutCoefficients, highCutSlopeParam, ChainPositions::HighCut);
-    updatePeakCoefficients(sampleRate);
+    FilterUtils::updateCutCoefficients(lowCutCoefficients, lowCutSlopeParam, leftChain, Globals::ChainPositions::LowCut);
+    FilterUtils::updateCutCoefficients(highCutCoefficients, highCutSlopeParam, leftChain, Globals::ChainPositions::HighCut);
+
+    FilterUtils::updateCutCoefficients(lowCutCoefficients, lowCutSlopeParam, rightChain, Globals::ChainPositions::LowCut);
+    FilterUtils::updateCutCoefficients(highCutCoefficients, highCutSlopeParam, rightChain, Globals::ChainPositions::HighCut);
+
+    FilterUtils::updatePeakCoefficients(peakFreqParam, peakQParam, peakGainParam, leftChain, sampleRate);
+    FilterUtils::updatePeakCoefficients(peakFreqParam, peakQParam, peakGainParam, rightChain, sampleRate);
 
     lScsf.prepare(samplesPerBlock);
     rScsf.prepare(samplesPerBlock);
@@ -240,12 +182,17 @@ void GraphicEqProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    auto lowCutCoefficients = makeHighPassFilter(lowCutFreqParam, lowCutSlopeParam, getSampleRate());
-    auto highCutCoefficients = makeLowPassFilter(highCutFreqParam, highCutSlopeParam, getSampleRate());
+    auto lowCutCoefficients = FilterUtils::makeHighPassFilter(lowCutFreqParam, lowCutSlopeParam, getSampleRate());
+    auto highCutCoefficients = FilterUtils::makeLowPassFilter(highCutFreqParam, highCutSlopeParam, getSampleRate());
 
-    updateCutCoefficients(lowCutCoefficients, lowCutSlopeParam, ChainPositions::LowCut);
-    updateCutCoefficients(highCutCoefficients, highCutSlopeParam, ChainPositions::HighCut);
-    updatePeakCoefficients(getSampleRate());
+    FilterUtils::updateCutCoefficients(lowCutCoefficients, lowCutSlopeParam, leftChain, Globals::ChainPositions::LowCut);
+    FilterUtils::updateCutCoefficients(highCutCoefficients, highCutSlopeParam, leftChain, Globals::ChainPositions::HighCut);
+
+    FilterUtils::updateCutCoefficients(lowCutCoefficients, lowCutSlopeParam, rightChain, Globals::ChainPositions::LowCut);
+    FilterUtils::updateCutCoefficients(highCutCoefficients, highCutSlopeParam, rightChain, Globals::ChainPositions::HighCut);
+
+    FilterUtils::updatePeakCoefficients(peakFreqParam, peakQParam, peakGainParam, leftChain, getSampleRate());
+    FilterUtils::updatePeakCoefficients(peakFreqParam, peakQParam, peakGainParam, rightChain, getSampleRate());
 
     juce::dsp::AudioBlock<float> block(buffer);
     auto leftBlock = block.getSingleChannelBlock(Globals::Channel::Left);

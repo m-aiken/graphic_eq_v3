@@ -83,6 +83,8 @@ target_sources(GraphicEq
         source/dsp/fftdatagenerator.h
         source/dsp/fftdatagenerator.cpp
         source/dsp/fifo.h
+        source/dsp/filterUtils.h
+        source/dsp/filterUtils.cpp
         source/dsp/singlesamplefifo.h
 
         source/gui/analyzerbase.h

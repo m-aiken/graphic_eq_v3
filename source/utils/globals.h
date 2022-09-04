@@ -35,4 +35,19 @@ namespace Globals
         order8192 = 13
     };
 
+    enum ChainPositions
+    {
+        LowCut,
+        Peak,
+        HighCut
+    };
+
+    enum Slope
+    {
+        Slope_12,
+        Slope_24,
+        Slope_36,
+        Slope_48
+    };
+
 }

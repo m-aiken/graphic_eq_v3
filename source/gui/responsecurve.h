@@ -2,8 +2,7 @@
 
 #include <JuceHeader.h>
 #include "paramlistener.h"
-
-#include "../PluginProcessor.h"
+#include "../dsp/filterUtils.h"
 
 //==============================================================================
 struct ResponseCurve : juce::Component
@@ -17,7 +16,7 @@ private:
     std::unique_ptr<ParamListener<float>> lowCutFreqListener;
     std::unique_ptr<ParamListener<float>> lowCutSlopeListener;
 
-    GraphicEqProcessor::MonoChain monoChain;
+    FilterUtils::MonoChain monoChain;
 
     double sampleRate;
 };

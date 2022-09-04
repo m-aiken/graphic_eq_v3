@@ -2,12 +2,33 @@
 #include "../utils/globals.h"
 
 //==============================================================================
-ResponseCurve::ResponseCurve(juce::AudioProcessorValueTreeState& apvts, double _sampleRate)
-: sampleRate(_sampleRate)
+ResponseCurve::ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double _sampleRate)
+: apvts(_apvts),
+  sampleRate(_sampleRate)
 {
-    auto paramChangedCallback = [&](const auto& newOrder){ updateMonoChain(); };
+    auto paramChangedCallback = [&](const auto& newVal){ updateMonoChain(); };
     lowCutFreqListener = std::make_unique<ParamListener<float>>(*apvts.getParameter("LowCutFreq"), paramChangedCallback);
     lowCutSlopeListener = std::make_unique<ParamListener<float>>(*apvts.getParameter("LowCutSlope"), paramChangedCallback);
+
+    auto assignFloatParam = [&](auto& target, auto& paramName){
+        auto param = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter(paramName));
+        jassert(param != nullptr);
+        target = param;
+    };
+
+    auto assignChoiceParam = [&](auto& target, auto& paramName){
+        auto param = dynamic_cast<juce::AudioParameterChoice*>(apvts.getParameter(paramName));
+        jassert(param != nullptr);
+        target = param;
+    };
+
+    assignFloatParam(lowCutFreqParam, "LowCutFreq");
+    assignChoiceParam(lowCutSlopeParam, "LowCutSlope");
+    assignFloatParam(highCutFreqParam, "HighCutFreq");
+    assignChoiceParam(highCutSlopeParam, "HighCutSlope");
+    assignFloatParam(peakFreqParam, "PeakFreq");
+    assignFloatParam(peakGainParam, "PeakGain");
+    assignFloatParam(peakQParam, "PeakQ");
 }
 
 void ResponseCurve::paint(juce::Graphics& g)
@@ -99,7 +120,12 @@ void ResponseCurve::paint(juce::Graphics& g)
 
 void ResponseCurve::updateMonoChain()
 {
+    auto lowCutCoefficients = FilterUtils::makeHighPassFilter(lowCutFreqParam, lowCutSlopeParam, sampleRate);
+    auto highCutCoefficients = FilterUtils::makeLowPassFilter(highCutFreqParam, highCutSlopeParam, sampleRate);
 
+    FilterUtils::updateCutCoefficients(lowCutCoefficients, lowCutSlopeParam, monoChain, Globals::ChainPositions::LowCut);
+    FilterUtils::updateCutCoefficients(highCutCoefficients, highCutSlopeParam, monoChain, Globals::ChainPositions::HighCut);
+    FilterUtils::updatePeakCoefficients(peakFreqParam, peakQParam, peakGainParam, monoChain, sampleRate);
 
     repaint();
 }

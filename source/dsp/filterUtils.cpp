@@ -1,11 +1,7 @@
 #include "filterUtils.h"
 
 //==============================================================================
-void FilterUtils::updatePeakCoefficients(juce::AudioParameterFloat* freqParam,
-                                         juce::AudioParameterFloat* qParam,
-                                         juce::AudioParameterFloat* gainParam,
-                                         MonoChain& monoChain,
-                                         double sampleRate)
+void FilterUtils::updatePeakCoefficients(MonoChain& monoChain, juce::AudioParameterFloat* freqParam, juce::AudioParameterFloat* qParam, juce::AudioParameterFloat* gainParam, double sampleRate)
 {
     auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate,
                                                                                 freqParam->get(),
@@ -15,10 +11,7 @@ void FilterUtils::updatePeakCoefficients(juce::AudioParameterFloat* freqParam,
     monoChain.get<Globals::ChainPositions::Peak>().coefficients = peakCoefficients;
 }
 
-void FilterUtils::updateCutCoefficients(CoefficientsType& coefficients,
-                                        juce::AudioParameterChoice* slopeParam,
-                                        MonoChain& monoChain,
-                                        const Globals::ChainPositions& chainPosition)
+void FilterUtils::updateCutCoefficients(MonoChain& monoChain, const Globals::ChainPositions& chainPosition, CoefficientsType& coefficients, juce::AudioParameterChoice* slopeParam)
 {
     auto& cutFilterChain = chainPosition == Globals::ChainPositions::LowCut ? monoChain.get<Globals::ChainPositions::LowCut>() : monoChain.get<Globals::ChainPositions::HighCut>();
     cutFilterChain.setBypassed<Globals::Slope_12>(true);

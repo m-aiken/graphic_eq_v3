@@ -12,17 +12,9 @@ struct FilterUtils
     using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, CutFilter>;
     using CoefficientsType = juce::ReferenceCountedArray<juce::dsp::FilterDesign<float>::IIRCoefficients>;
 
-    static void updatePeakCoefficients(juce::AudioParameterFloat* freqParam,
-                                       juce::AudioParameterFloat* qParam,
-                                       juce::AudioParameterFloat* gainParam,
-                                       MonoChain& monoChain,
-                                       double sampleRate);
+    static void updatePeakCoefficients(MonoChain& monoChain, juce::AudioParameterFloat* freqParam, juce::AudioParameterFloat* qParam, juce::AudioParameterFloat* gainParam, double sampleRate);
 
-
-    static void updateCutCoefficients(CoefficientsType& coefficients,
-                                      juce::AudioParameterChoice* slopeParam,
-                                      MonoChain& monoChain,
-                                      const Globals::ChainPositions& chainPosition);
+    static void updateCutCoefficients(MonoChain& monoChain, const Globals::ChainPositions& chainPosition, CoefficientsType& coefficients, juce::AudioParameterChoice* slopeParam);
 
     static CoefficientsType makeHighPassFilter(juce::AudioParameterFloat* freqParam,
                                                juce::AudioParameterChoice* slopeParam,

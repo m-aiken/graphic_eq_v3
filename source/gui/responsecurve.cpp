@@ -134,9 +134,9 @@ void ResponseCurve::updateMonoChain()
     auto lowCutCoefficients = FilterUtils::makeHighPassFilter(lowCutFreqParam, lowCutSlopeParam, sampleRate);
     auto highCutCoefficients = FilterUtils::makeLowPassFilter(highCutFreqParam, highCutSlopeParam, sampleRate);
 
-    FilterUtils::updateCutCoefficients(lowCutCoefficients, lowCutSlopeParam, monoChain, Globals::ChainPositions::LowCut);
-    FilterUtils::updateCutCoefficients(highCutCoefficients, highCutSlopeParam, monoChain, Globals::ChainPositions::HighCut);
-    FilterUtils::updatePeakCoefficients(peakFreqParam, peakQParam, peakGainParam, monoChain, sampleRate);
+    FilterUtils::updateCutCoefficients(monoChain, Globals::ChainPositions::LowCut, lowCutCoefficients, lowCutSlopeParam);
+    FilterUtils::updateCutCoefficients(monoChain, Globals::ChainPositions::HighCut, highCutCoefficients, highCutSlopeParam);
+    FilterUtils::updatePeakCoefficients(monoChain, peakFreqParam, peakQParam, peakGainParam, sampleRate);
 
     repaint();
 }

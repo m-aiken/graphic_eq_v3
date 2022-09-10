@@ -80,6 +80,7 @@ target_sources(GraphicEq
         source/dsp/analyzerpathgenerator.h
         source/dsp/analyzerpathgenerator.cpp
         source/dsp/analyzerproperties.h
+        source/dsp/eqproperties.h
         source/dsp/fftdatagenerator.h
         source/dsp/fftdatagenerator.cpp
         source/dsp/fifo.h

@@ -1,5 +1,6 @@
 #include "responsecurve.h"
 #include "../utils/globals.h"
+#include "../dsp/eqproperties.h"
 
 //==============================================================================
 ResponseCurve::ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double _sampleRate)
@@ -100,15 +101,14 @@ void ResponseCurve::updateMonoChain()
         target = param;
     };
 
-    assignFloatParam(lowCutFreqParam, "LowCutFreq");
-    assignChoiceParam(lowCutSlopeParam, "LowCutSlope");
-
-    assignFloatParam(highCutFreqParam, "HighCutFreq");
-    assignChoiceParam(highCutSlopeParam, "HighCutSlope");
-
-    assignFloatParam(peakFreqParam, "PeakFreq");
-    assignFloatParam(peakGainParam, "PeakGain");
-    assignFloatParam(peakQParam, "PeakQ");
+    const auto& eqParams = EqProperties::getEqParams();
+    assignFloatParam(lowCutFreqParam, eqParams.at(EqProperties::ParamNames::LOW_CUT_FREQ));
+    assignChoiceParam(lowCutSlopeParam, eqParams.at(EqProperties::ParamNames::LOW_CUT_SLOPE));
+    assignFloatParam(highCutFreqParam, eqParams.at(EqProperties::ParamNames::HIGH_CUT_FREQ));
+    assignChoiceParam(highCutSlopeParam, eqParams.at(EqProperties::ParamNames::HIGH_CUT_SLOPE));
+    assignFloatParam(peakFreqParam, eqParams.at(EqProperties::ParamNames::PEAK_FREQ));
+    assignFloatParam(peakGainParam, eqParams.at(EqProperties::ParamNames::PEAK_GAIN));
+    assignFloatParam(peakQParam, eqParams.at(EqProperties::ParamNames::PEAK_Q));
 
     auto lowCutCoefficients = FilterUtils::makeHighPassFilter(lowCutFreqParam, lowCutSlopeParam, sampleRate);
     auto highCutCoefficients = FilterUtils::makeLowPassFilter(highCutFreqParam, highCutSlopeParam, sampleRate);
@@ -134,22 +134,26 @@ void ResponseCurve::timerCallback()
 
 void ResponseCurve::addListeners()
 {
-    apvts.getParameter("LowCutFreq")->addListener(this);
-    apvts.getParameter("LowCutSlope")->addListener(this);
-    apvts.getParameter("HighCutFreq")->addListener(this);
-    apvts.getParameter("HighCutSlope")->addListener(this);
-    apvts.getParameter("PeakFreq")->addListener(this);
-    apvts.getParameter("PeakGain")->addListener(this);
-    apvts.getParameter("PeakQ")->addListener(this);
+    const auto& eqParams = EqProperties::getEqParams();
+
+    apvts.getParameter(eqParams.at(EqProperties::ParamNames::LOW_CUT_FREQ))->addListener(this);
+    apvts.getParameter(eqParams.at(EqProperties::ParamNames::LOW_CUT_SLOPE))->addListener(this);
+    apvts.getParameter(eqParams.at(EqProperties::ParamNames::HIGH_CUT_FREQ))->addListener(this);
+    apvts.getParameter(eqParams.at(EqProperties::ParamNames::HIGH_CUT_SLOPE))->addListener(this);
+    apvts.getParameter(eqParams.at(EqProperties::ParamNames::PEAK_FREQ))->addListener(this);
+    apvts.getParameter(eqParams.at(EqProperties::ParamNames::PEAK_GAIN))->addListener(this);
+    apvts.getParameter(eqParams.at(EqProperties::ParamNames::PEAK_Q))->addListener(this);
 }
 
 void ResponseCurve::removeListeners()
 {
-    apvts.getParameter("LowCutFreq")->removeListener(this);
-    apvts.getParameter("LowCutSlope")->removeListener(this);
-    apvts.getParameter("HighCutFreq")->removeListener(this);
-    apvts.getParameter("HighCutSlope")->removeListener(this);
-    apvts.getParameter("PeakFreq")->removeListener(this);
-    apvts.getParameter("PeakGain")->removeListener(this);
-    apvts.getParameter("PeakQ")->removeListener(this);
+    const auto& eqParams = EqProperties::getEqParams();
+
+    apvts.getParameter(eqParams.at(EqProperties::ParamNames::LOW_CUT_FREQ))->removeListener(this);
+    apvts.getParameter(eqParams.at(EqProperties::ParamNames::LOW_CUT_SLOPE))->removeListener(this);
+    apvts.getParameter(eqParams.at(EqProperties::ParamNames::HIGH_CUT_FREQ))->removeListener(this);
+    apvts.getParameter(eqParams.at(EqProperties::ParamNames::HIGH_CUT_SLOPE))->removeListener(this);
+    apvts.getParameter(eqParams.at(EqProperties::ParamNames::PEAK_FREQ))->removeListener(this);
+    apvts.getParameter(eqParams.at(EqProperties::ParamNames::PEAK_GAIN))->removeListener(this);
+    apvts.getParameter(eqParams.at(EqProperties::ParamNames::PEAK_Q))->removeListener(this);
 }

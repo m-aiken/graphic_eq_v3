@@ -1,5 +1,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "dsp/eqproperties.h"
 #include "dsp/analyzerproperties.h"
 
 //==============================================================================
@@ -25,13 +26,14 @@ GraphicEqProcessor::GraphicEqProcessor()
         target = param;
     };
 
-    assignFloatParam(lowCutFreqParam, "LowCutFreq");
-    assignChoiceParam(lowCutSlopeParam, "LowCutSlope");
-    assignFloatParam(highCutFreqParam, "HighCutFreq");
-    assignChoiceParam(highCutSlopeParam, "HighCutSlope");
-    assignFloatParam(peakFreqParam, "PeakFreq");
-    assignFloatParam(peakGainParam, "PeakGain");
-    assignFloatParam(peakQParam, "PeakQ");
+    const auto& eqParams = EqProperties::getEqParams();
+    assignFloatParam(lowCutFreqParam, eqParams.at(EqProperties::ParamNames::LOW_CUT_FREQ));
+    assignChoiceParam(lowCutSlopeParam, eqParams.at(EqProperties::ParamNames::LOW_CUT_SLOPE));
+    assignFloatParam(highCutFreqParam, eqParams.at(EqProperties::ParamNames::HIGH_CUT_FREQ));
+    assignChoiceParam(highCutSlopeParam, eqParams.at(EqProperties::ParamNames::HIGH_CUT_SLOPE));
+    assignFloatParam(peakFreqParam, eqParams.at(EqProperties::ParamNames::PEAK_FREQ));
+    assignFloatParam(peakGainParam, eqParams.at(EqProperties::ParamNames::PEAK_GAIN));
+    assignFloatParam(peakQParam, eqParams.at(EqProperties::ParamNames::PEAK_Q));
 }
 
 GraphicEqProcessor::~GraphicEqProcessor()
@@ -239,55 +241,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout GraphicEqProcessor::createPa
 {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
-    juce::StringArray cutChoices;
-
-    for (auto i = 0; i < 4; ++i)
-    {
-        juce::String str;
-        str << (12 + i*12);
-        str << " dB/Oct";
-        cutChoices.add(str);
-    }
-
-    auto freqNormalisableRange = juce::NormalisableRange(Globals::getMinFrequency(), Globals::getMaxFrequency(), 1.f, 0.25f);
-    auto gainNormalisableRange = juce::NormalisableRange(Globals::getNegativeInf(), Globals::getMaxDecibels(), 0.5f, 1.f);
-
-    layout.add(std::make_unique<juce::AudioParameterFloat>("LowCutFreq",
-                                                           "Low Cut Freq",
-                                                           freqNormalisableRange,
-                                                           20.f));
-
-    layout.add(std::make_unique<juce::AudioParameterChoice>("LowCutSlope",
-                                                            "Low Cut Slope",
-                                                            cutChoices,
-                                                            0));
-
-    layout.add(std::make_unique<juce::AudioParameterFloat>("HighCutFreq",
-                                                           "High Cut Freq",
-                                                           freqNormalisableRange,
-                                                           20000.f));
-
-    layout.add(std::make_unique<juce::AudioParameterChoice>("HighCutSlope",
-                                                            "High Cut Slope",
-                                                            cutChoices,
-                                                            0));
-
-    layout.add(std::make_unique<juce::AudioParameterFloat>("PeakFreq",
-                                                           "Peak Freq",
-                                                           freqNormalisableRange,
-                                                           750.f));
-
-    layout.add(std::make_unique<juce::AudioParameterFloat>("PeakGain",
-                                                           "Peak Gain",
-                                                           gainNormalisableRange,
-                                                           0.f));
-
-    layout.add(std::make_unique<juce::AudioParameterFloat>("PeakQ",
-                                                           "Peak Q",
-                                                           juce::NormalisableRange(0.1f, 10.f, 0.05f, 1.f),
-                                                           1.f));
-
+    EqProperties::addEqParams(layout);
     AnalyzerProperties::addAnalyzerParams(layout);
+
     return layout;
 }
 

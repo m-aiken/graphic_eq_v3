@@ -6,40 +6,26 @@ ResponseCurve::ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double 
 : apvts(_apvts),
   sampleRate(_sampleRate)
 {
-    auto paramChangedCallback = [&](const auto& newVal){ updateMonoChain(); };
-    lowCutFreqListener = std::make_unique<ParamListener<float>>(*apvts.getParameter("LowCutFreq"), paramChangedCallback);
-    lowCutSlopeListener = std::make_unique<ParamListener<float>>(*apvts.getParameter("LowCutSlope"), paramChangedCallback);
-
-    highCutFreqListener = std::make_unique<ParamListener<float>>(*apvts.getParameter("HighCutFreq"), paramChangedCallback);
-    highCutSlopeListener = std::make_unique<ParamListener<float>>(*apvts.getParameter("HighCutSlope"), paramChangedCallback);
-
-    peakFreqListener = std::make_unique<ParamListener<float>>(*apvts.getParameter("PeakFreq"), paramChangedCallback);
-    peakGainListener = std::make_unique<ParamListener<float>>(*apvts.getParameter("PeakGain"), paramChangedCallback);
-    peakQListener = std::make_unique<ParamListener<float>>(*apvts.getParameter("PeakQ"), paramChangedCallback);
-
-    auto assignFloatParam = [&](auto& target, auto& paramName){
-        auto param = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter(paramName));
-        jassert(param != nullptr);
-        target = param;
-    };
-
-    auto assignChoiceParam = [&](auto& target, auto& paramName){
-        auto param = dynamic_cast<juce::AudioParameterChoice*>(apvts.getParameter(paramName));
-        jassert(param != nullptr);
-        target = param;
-    };
-
-    assignFloatParam(lowCutFreqParam, "LowCutFreq");
-    assignChoiceParam(lowCutSlopeParam, "LowCutSlope");
-
-    assignFloatParam(highCutFreqParam, "HighCutFreq");
-    assignChoiceParam(highCutSlopeParam, "HighCutSlope");
-
-    assignFloatParam(peakFreqParam, "PeakFreq");
-    assignFloatParam(peakGainParam, "PeakGain");
-    assignFloatParam(peakQParam, "PeakQ");
+    apvts.getParameter("LowCutFreq")->addListener(this);
+    apvts.getParameter("LowCutSlope")->addListener(this);
+    apvts.getParameter("HighCutFreq")->addListener(this);
+    apvts.getParameter("HighCutSlope")->addListener(this);
+    apvts.getParameter("PeakFreq")->addListener(this);
+    apvts.getParameter("PeakGain")->addListener(this);
+    apvts.getParameter("PeakQ")->addListener(this);
 
     updateMonoChain();
+}
+
+ResponseCurve::~ResponseCurve()
+{
+    apvts.getParameter("LowCutFreq")->removeListener(this);
+    apvts.getParameter("LowCutSlope")->removeListener(this);
+    apvts.getParameter("HighCutFreq")->removeListener(this);
+    apvts.getParameter("HighCutSlope")->removeListener(this);
+    apvts.getParameter("PeakFreq")->removeListener(this);
+    apvts.getParameter("PeakGain")->removeListener(this);
+    apvts.getParameter("PeakQ")->removeListener(this);
 }
 
 void ResponseCurve::paint(juce::Graphics& g)
@@ -106,6 +92,38 @@ void ResponseCurve::paint(juce::Graphics& g)
 
 void ResponseCurve::updateMonoChain()
 {
+    juce::AudioParameterFloat*  lowCutFreqParam   { nullptr };
+    juce::AudioParameterChoice* lowCutSlopeParam  { nullptr };
+
+    juce::AudioParameterFloat*  highCutFreqParam  { nullptr };
+    juce::AudioParameterChoice* highCutSlopeParam { nullptr };
+
+    juce::AudioParameterFloat*  peakFreqParam     { nullptr };
+    juce::AudioParameterFloat*  peakGainParam     { nullptr };
+    juce::AudioParameterFloat*  peakQParam        { nullptr };
+
+    auto assignFloatParam = [&](auto& target, auto& paramName){
+        auto param = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter(paramName));
+        jassert(param != nullptr);
+        target = param;
+    };
+
+    auto assignChoiceParam = [&](auto& target, auto& paramName){
+        auto param = dynamic_cast<juce::AudioParameterChoice*>(apvts.getParameter(paramName));
+        jassert(param != nullptr);
+        target = param;
+    };
+
+    assignFloatParam(lowCutFreqParam, "LowCutFreq");
+    assignChoiceParam(lowCutSlopeParam, "LowCutSlope");
+
+    assignFloatParam(highCutFreqParam, "HighCutFreq");
+    assignChoiceParam(highCutSlopeParam, "HighCutSlope");
+
+    assignFloatParam(peakFreqParam, "PeakFreq");
+    assignFloatParam(peakGainParam, "PeakGain");
+    assignFloatParam(peakQParam, "PeakQ");
+
     auto lowCutCoefficients = FilterUtils::makeHighPassFilter(lowCutFreqParam, lowCutSlopeParam, sampleRate);
     auto highCutCoefficients = FilterUtils::makeLowPassFilter(highCutFreqParam, highCutSlopeParam, sampleRate);
 
@@ -114,4 +132,10 @@ void ResponseCurve::updateMonoChain()
     FilterUtils::updatePeakCoefficients(monoChain, peakFreqParam, peakQParam, peakGainParam, sampleRate);
 
     repaint();
+}
+
+void ResponseCurve::parameterValueChanged(int parameterIndex, float newValue)
+{
+    DBG("Parameter: " << parameterIndex << " changed to: " << newValue);
+    updateMonoChain();
 }

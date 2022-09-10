@@ -8,7 +8,7 @@ void FilterUtils::updatePeakCoefficients(MonoChain& monoChain, juce::AudioParame
                                                                                 qParam->get(),
                                                                                 juce::Decibels::decibelsToGain(gainParam->get()));
 
-    monoChain.get<Globals::ChainPositions::Peak>().coefficients = peakCoefficients;
+    *monoChain.get<Globals::ChainPositions::Peak>().coefficients = *peakCoefficients;
 }
 
 void FilterUtils::updateCutCoefficients(MonoChain& monoChain, const Globals::ChainPositions& chainPosition, CoefficientsType& coefficients, juce::AudioParameterChoice* slopeParam)
@@ -21,19 +21,19 @@ void FilterUtils::updateCutCoefficients(MonoChain& monoChain, const Globals::Cha
 
     switch (slopeParam->getIndex()) {
         case Globals::Slope_48: {
-            cutFilterChain.template get<Globals::Slope_48>().coefficients = coefficients[Globals::Slope_48];
+            *cutFilterChain.template get<Globals::Slope_48>().coefficients = *coefficients[Globals::Slope_48];
             cutFilterChain.setBypassed<Globals::Slope_48>(false);
         }
         case Globals::Slope_36: {
-            cutFilterChain.template get<Globals::Slope_36>().coefficients = coefficients[Globals::Slope_36];
+            *cutFilterChain.template get<Globals::Slope_36>().coefficients = *coefficients[Globals::Slope_36];
             cutFilterChain.setBypassed<Globals::Slope_36>(false);
         }
         case Globals::Slope_24: {
-            cutFilterChain.template get<Globals::Slope_24>().coefficients = coefficients[Globals::Slope_24];
+            *cutFilterChain.template get<Globals::Slope_24>().coefficients = *coefficients[Globals::Slope_24];
             cutFilterChain.setBypassed<Globals::Slope_24>(false);
         }
         case Globals::Slope_12: {
-            cutFilterChain.template get<Globals::Slope_12>().coefficients = coefficients[Globals::Slope_12];
+            *cutFilterChain.template get<Globals::Slope_12>().coefficients = *coefficients[Globals::Slope_12];
             cutFilterChain.setBypassed<Globals::Slope_12>(false);
             break;
         }

@@ -1,41 +1,25 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "paramlistener.h"
 #include "../dsp/filterUtils.h"
 
 //==============================================================================
-struct ResponseCurve : juce::Component
+struct ResponseCurve : juce::Component, juce::AudioProcessorParameter::Listener
 {
     ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double _sampleRate);
+    ~ResponseCurve();
 
     void paint(juce::Graphics& g) override;
     void updateMonoChain();
 
+    // Parameter Listener pure virtuals
+    void parameterValueChanged(int parameterIndex, float newValue);
+    void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) {}
+
 private:
     juce::AudioProcessorValueTreeState& apvts;
-
-    std::unique_ptr<ParamListener<float>> lowCutFreqListener;
-    std::unique_ptr<ParamListener<float>> lowCutSlopeListener;
-
-    std::unique_ptr<ParamListener<float>> highCutFreqListener;
-    std::unique_ptr<ParamListener<float>> highCutSlopeListener;
-
-    std::unique_ptr<ParamListener<float>> peakFreqListener;
-    std::unique_ptr<ParamListener<float>> peakGainListener;
-    std::unique_ptr<ParamListener<float>> peakQListener;
 
     FilterUtils::MonoChain monoChain;
 
     double sampleRate;
-
-    juce::AudioParameterFloat*  lowCutFreqParam   { nullptr };
-    juce::AudioParameterChoice* lowCutSlopeParam  { nullptr };
-
-    juce::AudioParameterFloat*  highCutFreqParam  { nullptr };
-    juce::AudioParameterChoice* highCutSlopeParam { nullptr };
-
-    juce::AudioParameterFloat*  peakFreqParam     { nullptr };
-    juce::AudioParameterFloat*  peakGainParam     { nullptr };
-    juce::AudioParameterFloat*  peakQParam        { nullptr };
 };

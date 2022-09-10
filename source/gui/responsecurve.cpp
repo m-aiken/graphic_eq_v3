@@ -15,10 +15,14 @@ ResponseCurve::ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double 
     apvts.getParameter("PeakQ")->addListener(this);
 
     updateMonoChain();
+
+    startTimerHz(60);
 }
 
 ResponseCurve::~ResponseCurve()
 {
+    stopTimer();
+
     apvts.getParameter("LowCutFreq")->removeListener(this);
     apvts.getParameter("LowCutSlope")->removeListener(this);
     apvts.getParameter("HighCutFreq")->removeListener(this);
@@ -83,10 +87,7 @@ void ResponseCurve::paint(juce::Graphics& g)
         line.lineTo(analyzerLeft + i, mapFilterGainRangeToAnalyzerBounds(magnitudes.at(i)));
     }
 
-    line.closeSubPath();
-
     g.setColour(juce::Colours::black);
-
     g.strokePath(line, juce::PathStrokeType(2.f));
 }
 
@@ -136,6 +137,12 @@ void ResponseCurve::updateMonoChain()
 
 void ResponseCurve::parameterValueChanged(int parameterIndex, float newValue)
 {
-    DBG("Parameter: " << parameterIndex << " changed to: " << newValue);
-    updateMonoChain();
+    parametersChanged.set(true);
+}
+
+void ResponseCurve::timerCallback()
+{
+    if(parametersChanged.compareAndSetBool(false, true)) {
+        updateMonoChain();
+    }
 }

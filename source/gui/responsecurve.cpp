@@ -46,7 +46,7 @@ void ResponseCurve::paint(juce::Graphics& g)
     for (auto i = 0; i < analyzerWidth; ++i)
     {
         double mag = 1.0;
-        auto freq = mapToLog10<double>(i / analyzerWidth,
+        auto freq = mapToLog10<double>(static_cast<double>(i) / analyzerWidth,
                                        Globals::getMinFrequency(),
                                        Globals::getMaxFrequency());
 
@@ -64,7 +64,7 @@ void ResponseCurve::paint(juce::Graphics& g)
         if (!highCut.isBypassed<2>()) mag *= highCut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
         if (!highCut.isBypassed<3>()) mag *= highCut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
 
-        magnitudes[i] = juce::Decibels::gainToDecibels(mag);
+        magnitudes.at(i) = juce::Decibels::gainToDecibels(mag);
     }
 
     auto mapFilterGainRangeToAnalyzerBounds = [&](double magnitude){
@@ -79,7 +79,7 @@ void ResponseCurve::paint(juce::Graphics& g)
 
     line.startNewSubPath(analyzerLeft, mapFilterGainRangeToAnalyzerBounds(magnitudes.at(0)));
 
-    for (auto i = 1; i < magnitudes.size(); ++i) {
+    for (size_t i = 1; i < magnitudes.size(); ++i) {
         line.lineTo(analyzerLeft + i, mapFilterGainRangeToAnalyzerBounds(magnitudes.at(i)));
     }
 

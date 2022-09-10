@@ -6,51 +6,36 @@ ResponseCurve::ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double 
 : apvts(_apvts),
   sampleRate(_sampleRate)
 {
-    apvts.getParameter("LowCutFreq")->addListener(this);
-    apvts.getParameter("LowCutSlope")->addListener(this);
-    apvts.getParameter("HighCutFreq")->addListener(this);
-    apvts.getParameter("HighCutSlope")->addListener(this);
-    apvts.getParameter("PeakFreq")->addListener(this);
-    apvts.getParameter("PeakGain")->addListener(this);
-    apvts.getParameter("PeakQ")->addListener(this);
-
+    addListeners();
     updateMonoChain();
-
     startTimerHz(60);
 }
 
 ResponseCurve::~ResponseCurve()
 {
     stopTimer();
-
-    apvts.getParameter("LowCutFreq")->removeListener(this);
-    apvts.getParameter("LowCutSlope")->removeListener(this);
-    apvts.getParameter("HighCutFreq")->removeListener(this);
-    apvts.getParameter("HighCutSlope")->removeListener(this);
-    apvts.getParameter("PeakFreq")->removeListener(this);
-    apvts.getParameter("PeakGain")->removeListener(this);
-    apvts.getParameter("PeakQ")->removeListener(this);
+    removeListeners();
 }
 
 void ResponseCurve::paint(juce::Graphics& g)
 {
-    auto analyzerBounds = getLocalBounds();
-    auto analyzerWidth = analyzerBounds.getWidth();
-    auto analyzerLeft = analyzerBounds.getX();
-    auto responseCurveMin = analyzerBounds.getBottom();
-    auto responseCurveMax = analyzerBounds.getY();
+    g.reduceClipRegion(fftBoundingBox);
+    auto boundsWidth = fftBoundingBox.getWidth();
+    auto boundsX = fftBoundingBox.getX();
+    auto responseCurveMin = fftBoundingBox.getBottom();
+    auto responseCurveMax = fftBoundingBox.getY();
 
     auto& lowCut = monoChain.get<Globals::ChainPositions::LowCut>();
     auto& peak = monoChain.get<Globals::ChainPositions::Peak>();
     auto& highCut = monoChain.get<Globals::ChainPositions::HighCut>();
 
     std::vector<double> magnitudes;
-    magnitudes.resize(analyzerWidth);
+    magnitudes.resize(boundsWidth);
 
-    for (auto i = 0; i < analyzerWidth; ++i)
+    for (auto i = 0; i < boundsWidth; ++i)
     {
         double mag = 1.0;
-        auto freq = mapToLog10<double>(static_cast<double>(i) / analyzerWidth,
+        auto freq = mapToLog10<double>(static_cast<double>(i) / boundsWidth,
                                        Globals::getMinFrequency(),
                                        Globals::getMaxFrequency());
 
@@ -79,16 +64,16 @@ void ResponseCurve::paint(juce::Graphics& g)
                                  responseCurveMax);
     };
 
-    juce::Path line;
+    juce::Path responseCurveLine;
 
-    line.startNewSubPath(analyzerLeft, mapFilterGainRangeToAnalyzerBounds(magnitudes.at(0)));
+    responseCurveLine.startNewSubPath(boundsX, mapFilterGainRangeToAnalyzerBounds(magnitudes.at(0)));
 
     for (size_t i = 1; i < magnitudes.size(); ++i) {
-        line.lineTo(analyzerLeft + i, mapFilterGainRangeToAnalyzerBounds(magnitudes.at(i)));
+        responseCurveLine.lineTo(boundsX + i, mapFilterGainRangeToAnalyzerBounds(magnitudes.at(i)));
     }
 
     g.setColour(juce::Colours::black);
-    g.strokePath(line, juce::PathStrokeType(2.f));
+    g.strokePath(responseCurveLine, juce::PathStrokeType(2.f));
 }
 
 void ResponseCurve::updateMonoChain()
@@ -145,4 +130,26 @@ void ResponseCurve::timerCallback()
     if(parametersChanged.compareAndSetBool(false, true)) {
         updateMonoChain();
     }
+}
+
+void ResponseCurve::addListeners()
+{
+    apvts.getParameter("LowCutFreq")->addListener(this);
+    apvts.getParameter("LowCutSlope")->addListener(this);
+    apvts.getParameter("HighCutFreq")->addListener(this);
+    apvts.getParameter("HighCutSlope")->addListener(this);
+    apvts.getParameter("PeakFreq")->addListener(this);
+    apvts.getParameter("PeakGain")->addListener(this);
+    apvts.getParameter("PeakQ")->addListener(this);
+}
+
+void ResponseCurve::removeListeners()
+{
+    apvts.getParameter("LowCutFreq")->removeListener(this);
+    apvts.getParameter("LowCutSlope")->removeListener(this);
+    apvts.getParameter("HighCutFreq")->removeListener(this);
+    apvts.getParameter("HighCutSlope")->removeListener(this);
+    apvts.getParameter("PeakFreq")->removeListener(this);
+    apvts.getParameter("PeakGain")->removeListener(this);
+    apvts.getParameter("PeakQ")->removeListener(this);
 }

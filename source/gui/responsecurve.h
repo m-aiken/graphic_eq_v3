@@ -1,10 +1,11 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "analyzerbase.h"
 #include "../dsp/filterUtils.h"
 
 //==============================================================================
-struct ResponseCurve : juce::Component, juce::AudioProcessorParameter::Listener, juce::Timer
+struct ResponseCurve : AnalyzerBase, juce::AudioProcessorParameter::Listener, juce::Timer
 {
     ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double _sampleRate);
     ~ResponseCurve();
@@ -12,12 +13,13 @@ struct ResponseCurve : juce::Component, juce::AudioProcessorParameter::Listener,
     void paint(juce::Graphics& g) override;
     void updateMonoChain();
 
-    // Parameter Listener pure virtuals
     void parameterValueChanged(int parameterIndex, float newValue) override;
     void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) override {}
 
-    // Timer pure virtual
     void timerCallback() override;
+
+    void addListeners();
+    void removeListeners();
 
 private:
     juce::AudioProcessorValueTreeState& apvts;

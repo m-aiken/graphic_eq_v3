@@ -104,6 +104,8 @@ target_sources(GraphicEq
         source/gui/pathproducer.cpp
         source/gui/responsecurve.h
         source/gui/responsecurve.cpp
+        source/gui/responsecurvenode.h
+        source/gui/responsecurvenode.cpp
         source/gui/spectrumanalyzer.h
         source/gui/spectrumanalyzer.cpp
         source/gui/tick.h

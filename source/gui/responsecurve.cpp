@@ -7,8 +7,32 @@ ResponseCurve::ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double 
 : apvts(_apvts),
   sampleRate(_sampleRate)
 {
+    auto assignFloatParam = [&](auto& target, auto& paramName){
+        auto param = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter(paramName));
+        jassert(param != nullptr);
+        target = param;
+    };
+
+    auto assignChoiceParam = [&](auto& target, auto& paramName){
+        auto param = dynamic_cast<juce::AudioParameterChoice*>(apvts.getParameter(paramName));
+        jassert(param != nullptr);
+        target = param;
+    };
+
+    const auto& eqParams = EqProperties::getEqParams();
+    assignFloatParam(lowCutFreqParam, eqParams.at(EqProperties::ParamNames::LOW_CUT_FREQ));
+    assignChoiceParam(lowCutSlopeParam, eqParams.at(EqProperties::ParamNames::LOW_CUT_SLOPE));
+    assignFloatParam(highCutFreqParam, eqParams.at(EqProperties::ParamNames::HIGH_CUT_FREQ));
+    assignChoiceParam(highCutSlopeParam, eqParams.at(EqProperties::ParamNames::HIGH_CUT_SLOPE));
+    assignFloatParam(peakFreqParam, eqParams.at(EqProperties::ParamNames::PEAK_FREQ));
+    assignFloatParam(peakGainParam, eqParams.at(EqProperties::ParamNames::PEAK_GAIN));
+    assignFloatParam(peakQParam, eqParams.at(EqProperties::ParamNames::PEAK_Q));
+
+    addAndMakeVisible(peakNode);
+
     addListeners();
     updateMonoChain();
+    updateNodeCoordinates(peakNode, peakFreqParam, peakGainParam);
     startTimerHz(60);
 }
 
@@ -77,47 +101,39 @@ void ResponseCurve::paint(juce::Graphics& g)
     g.strokePath(responseCurveLine, juce::PathStrokeType(2.f));
 }
 
+void ResponseCurve::resized()
+{
+    AnalyzerBase::resized();
+
+    peakNode.setBounds(peakNode.getCoordinates().getX(), peakNode.getCoordinates().getY(), nodeDiameter, nodeDiameter);
+}
+
 void ResponseCurve::updateMonoChain()
 {
-    juce::AudioParameterFloat*  lowCutFreqParam   { nullptr };
-    juce::AudioParameterChoice* lowCutSlopeParam  { nullptr };
-
-    juce::AudioParameterFloat*  highCutFreqParam  { nullptr };
-    juce::AudioParameterChoice* highCutSlopeParam { nullptr };
-
-    juce::AudioParameterFloat*  peakFreqParam     { nullptr };
-    juce::AudioParameterFloat*  peakGainParam     { nullptr };
-    juce::AudioParameterFloat*  peakQParam        { nullptr };
-
-    auto assignFloatParam = [&](auto& target, auto& paramName){
-        auto param = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter(paramName));
-        jassert(param != nullptr);
-        target = param;
-    };
-
-    auto assignChoiceParam = [&](auto& target, auto& paramName){
-        auto param = dynamic_cast<juce::AudioParameterChoice*>(apvts.getParameter(paramName));
-        jassert(param != nullptr);
-        target = param;
-    };
-
-    const auto& eqParams = EqProperties::getEqParams();
-    assignFloatParam(lowCutFreqParam, eqParams.at(EqProperties::ParamNames::LOW_CUT_FREQ));
-    assignChoiceParam(lowCutSlopeParam, eqParams.at(EqProperties::ParamNames::LOW_CUT_SLOPE));
-    assignFloatParam(highCutFreqParam, eqParams.at(EqProperties::ParamNames::HIGH_CUT_FREQ));
-    assignChoiceParam(highCutSlopeParam, eqParams.at(EqProperties::ParamNames::HIGH_CUT_SLOPE));
-    assignFloatParam(peakFreqParam, eqParams.at(EqProperties::ParamNames::PEAK_FREQ));
-    assignFloatParam(peakGainParam, eqParams.at(EqProperties::ParamNames::PEAK_GAIN));
-    assignFloatParam(peakQParam, eqParams.at(EqProperties::ParamNames::PEAK_Q));
-
     auto lowCutCoefficients = FilterUtils::makeHighPassFilter(lowCutFreqParam, lowCutSlopeParam, sampleRate);
     auto highCutCoefficients = FilterUtils::makeLowPassFilter(highCutFreqParam, highCutSlopeParam, sampleRate);
 
     FilterUtils::updateCutCoefficients(monoChain, Globals::ChainPositions::LowCut, lowCutCoefficients, lowCutSlopeParam);
     FilterUtils::updateCutCoefficients(monoChain, Globals::ChainPositions::HighCut, highCutCoefficients, highCutSlopeParam);
     FilterUtils::updatePeakCoefficients(monoChain, peakFreqParam, peakQParam, peakGainParam, sampleRate);
+}
 
-    repaint();
+void ResponseCurve::updateNodeCoordinates(ResponseCurveNode& node, juce::AudioParameterFloat* freqParam, juce::AudioParameterFloat* gainParam)
+{
+    auto normalizedFrequency = juce::mapFromLog10<float>(freqParam->get(),
+                                                         Globals::getMinFrequency(),
+                                                         Globals::getMaxFrequency());
+
+    auto frequencyX = static_cast<int>(std::floor(fftBoundingBox.getX() + fftBoundingBox.getWidth() * normalizedFrequency));
+
+    auto gainY = static_cast<int>(std::floor(juce::jmap<float>(gainParam->get(),
+                                                               Globals::getNegativeInf(),
+                                                               Globals::getMaxDecibels(),
+                                                               fftBoundingBox.getBottom(),
+                                                               fftBoundingBox.getY())));
+
+    auto nodeRadius = static_cast<int>(std::floor(nodeDiameter * 0.5));
+    node.setCoordinates(frequencyX - nodeRadius, gainY - nodeRadius);
 }
 
 void ResponseCurve::parameterValueChanged(int parameterIndex, float newValue)
@@ -129,6 +145,9 @@ void ResponseCurve::timerCallback()
 {
     if(parametersChanged.compareAndSetBool(false, true)) {
         updateMonoChain();
+        updateNodeCoordinates(peakNode, peakFreqParam, peakGainParam);
+        resized();
+        repaint();
     }
 }
 

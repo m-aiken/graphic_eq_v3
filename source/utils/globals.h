@@ -13,6 +13,7 @@ namespace Globals
     constexpr int getMaxBandNum() { return 7; }
 
     constexpr int getNumMaxBands() { return 8; }
+    constexpr int getNumPeakBands() { return 3; }
 
     constexpr float getMinFrequency() { return 20.f; }
     constexpr float getMaxFrequency() { return 20000.f; }
@@ -33,21 +34,6 @@ namespace Globals
         order2048 = 11,
         order4096 = 12,
         order8192 = 13
-    };
-
-    enum ChainPositions
-    {
-        LowCut,
-        Peak,
-        HighCut
-    };
-
-    enum Slope
-    {
-        Slope_12,
-        Slope_24,
-        Slope_36,
-        Slope_48
     };
 
 }

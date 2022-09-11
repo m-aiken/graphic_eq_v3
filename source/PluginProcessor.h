@@ -4,7 +4,8 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 
 #include "dsp/singlesamplefifo.h"
-#include "dsp/filterUtils.h"
+#include "dsp/filterutils.h"
+#include "dsp/peakband.h"
 #include "utils/globals.h"
 
 //==============================================================================
@@ -69,9 +70,8 @@ private:
     juce::AudioParameterChoice* lowCutSlopeParam  { nullptr };
     juce::AudioParameterFloat*  highCutFreqParam  { nullptr };
     juce::AudioParameterChoice* highCutSlopeParam { nullptr };
-    juce::AudioParameterFloat*  peakFreqParam     { nullptr };
-    juce::AudioParameterFloat*  peakGainParam     { nullptr };
-    juce::AudioParameterFloat*  peakQParam        { nullptr };
+
+    std::array<PeakBand, Globals::getNumPeakBands()> peakBands;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GraphicEqProcessor)

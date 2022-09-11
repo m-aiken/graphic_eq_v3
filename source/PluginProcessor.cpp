@@ -26,14 +26,17 @@ GraphicEqProcessor::GraphicEqProcessor()
         target = param;
     };
 
-    const auto& eqParams = EqProperties::getEqParams();
-    assignFloatParam(lowCutFreqParam, eqParams.at(EqProperties::ParamNames::LOW_CUT_FREQ));
-    assignChoiceParam(lowCutSlopeParam, eqParams.at(EqProperties::ParamNames::LOW_CUT_SLOPE));
-    assignFloatParam(highCutFreqParam, eqParams.at(EqProperties::ParamNames::HIGH_CUT_FREQ));
-    assignChoiceParam(highCutSlopeParam, eqParams.at(EqProperties::ParamNames::HIGH_CUT_SLOPE));
-    assignFloatParam(peakFreqParam, eqParams.at(EqProperties::ParamNames::PEAK_FREQ));
-    assignFloatParam(peakGainParam, eqParams.at(EqProperties::ParamNames::PEAK_GAIN));
-    assignFloatParam(peakQParam, eqParams.at(EqProperties::ParamNames::PEAK_Q));
+    const auto& eqParams = EqProperties::getCutParams();
+    assignFloatParam(lowCutFreqParam, eqParams.at(EqProperties::CutControls::LOW_CUT_FREQ));
+    assignChoiceParam(lowCutSlopeParam, eqParams.at(EqProperties::CutControls::LOW_CUT_SLOPE));
+    assignFloatParam(highCutFreqParam, eqParams.at(EqProperties::CutControls::HIGH_CUT_FREQ));
+    assignChoiceParam(highCutSlopeParam, eqParams.at(EqProperties::CutControls::HIGH_CUT_SLOPE));
+
+    for (size_t i = 0; i < peakBands.size(); ++i) {
+        assignFloatParam(peakBands.at(i).peakFreqParam, EqProperties::getPeakControlParamName(EqProperties::PeakControl::FREQUENCY, i));
+        assignFloatParam(peakBands.at(i).peakGainParam, EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, i));
+        assignFloatParam(peakBands.at(i).peakQParam, EqProperties::getPeakControlParamName(EqProperties::PeakControl::QUALITY, i));
+    }
 }
 
 GraphicEqProcessor::~GraphicEqProcessor()
@@ -123,14 +126,16 @@ void GraphicEqProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     auto lowCutCoefficients = FilterUtils::makeHighPassFilter(lowCutFreqParam, lowCutSlopeParam, sampleRate);
     auto highCutCoefficients = FilterUtils::makeLowPassFilter(highCutFreqParam, highCutSlopeParam, sampleRate);
 
-    FilterUtils::updateCutCoefficients(leftChain, Globals::ChainPositions::LowCut, lowCutCoefficients, lowCutSlopeParam);
-    FilterUtils::updateCutCoefficients(leftChain, Globals::ChainPositions::HighCut, highCutCoefficients, highCutSlopeParam);
+    FilterUtils::updateCutCoefficients(leftChain, FilterUtils::ChainPositions::LowCut, lowCutCoefficients, lowCutSlopeParam);
+    FilterUtils::updateCutCoefficients(leftChain, FilterUtils::ChainPositions::HighCut, highCutCoefficients, highCutSlopeParam);
 
-    FilterUtils::updateCutCoefficients(rightChain, Globals::ChainPositions::LowCut, lowCutCoefficients, lowCutSlopeParam);
-    FilterUtils::updateCutCoefficients(rightChain, Globals::ChainPositions::HighCut, highCutCoefficients, highCutSlopeParam);
+    FilterUtils::updateCutCoefficients(rightChain, FilterUtils::ChainPositions::LowCut, lowCutCoefficients, lowCutSlopeParam);
+    FilterUtils::updateCutCoefficients(rightChain, FilterUtils::ChainPositions::HighCut, highCutCoefficients, highCutSlopeParam);
 
-    FilterUtils::updatePeakCoefficients(leftChain, peakFreqParam, peakQParam, peakGainParam, sampleRate);
-    FilterUtils::updatePeakCoefficients(rightChain, peakFreqParam, peakQParam, peakGainParam, sampleRate);
+    for (size_t i = 0; i < peakBands.size(); ++i) {
+        FilterUtils::updatePeakCoefficients(leftChain, static_cast<FilterUtils::ChainPositions>(i+1), peakBands.at(i).peakFreqParam, peakBands.at(i).peakQParam, peakBands.at(i).peakGainParam, sampleRate);
+        FilterUtils::updatePeakCoefficients(rightChain, static_cast<FilterUtils::ChainPositions>(i+1), peakBands.at(i).peakFreqParam, peakBands.at(i).peakQParam, peakBands.at(i).peakGainParam, sampleRate);
+    }
 
     lScsf.prepare(samplesPerBlock);
     rScsf.prepare(samplesPerBlock);
@@ -187,14 +192,16 @@ void GraphicEqProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     auto lowCutCoefficients = FilterUtils::makeHighPassFilter(lowCutFreqParam, lowCutSlopeParam, getSampleRate());
     auto highCutCoefficients = FilterUtils::makeLowPassFilter(highCutFreqParam, highCutSlopeParam, getSampleRate());
 
-    FilterUtils::updateCutCoefficients(leftChain, Globals::ChainPositions::LowCut, lowCutCoefficients, lowCutSlopeParam);
-    FilterUtils::updateCutCoefficients(leftChain, Globals::ChainPositions::HighCut, highCutCoefficients, highCutSlopeParam);
+    FilterUtils::updateCutCoefficients(leftChain, FilterUtils::ChainPositions::LowCut, lowCutCoefficients, lowCutSlopeParam);
+    FilterUtils::updateCutCoefficients(leftChain, FilterUtils::ChainPositions::HighCut, highCutCoefficients, highCutSlopeParam);
 
-    FilterUtils::updateCutCoefficients(rightChain, Globals::ChainPositions::LowCut, lowCutCoefficients, lowCutSlopeParam);
-    FilterUtils::updateCutCoefficients(rightChain, Globals::ChainPositions::HighCut, highCutCoefficients, highCutSlopeParam);
+    FilterUtils::updateCutCoefficients(rightChain, FilterUtils::ChainPositions::LowCut, lowCutCoefficients, lowCutSlopeParam);
+    FilterUtils::updateCutCoefficients(rightChain, FilterUtils::ChainPositions::HighCut, highCutCoefficients, highCutSlopeParam);
 
-    FilterUtils::updatePeakCoefficients(leftChain, peakFreqParam, peakQParam, peakGainParam, getSampleRate());
-    FilterUtils::updatePeakCoefficients(rightChain, peakFreqParam, peakQParam, peakGainParam, getSampleRate());
+    for (size_t i = 0; i < peakBands.size(); ++i) {
+        FilterUtils::updatePeakCoefficients(leftChain, static_cast<FilterUtils::ChainPositions>(i+1), peakBands.at(i).peakFreqParam, peakBands.at(i).peakQParam, peakBands.at(i).peakGainParam, getSampleRate());
+        FilterUtils::updatePeakCoefficients(rightChain, static_cast<FilterUtils::ChainPositions>(i+1), peakBands.at(i).peakFreqParam, peakBands.at(i).peakQParam, peakBands.at(i).peakGainParam, getSampleRate());
+    }
 
     juce::dsp::AudioBlock<float> block(buffer);
     auto leftBlock = block.getSingleChannelBlock(Globals::Channel::Left);
@@ -241,7 +248,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout GraphicEqProcessor::createPa
 {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
-    EqProperties::addEqParams(layout);
+    EqProperties::addCutParams(layout);
+    EqProperties::addPeakParams(layout);
     AnalyzerProperties::addAnalyzerParams(layout);
 
     return layout;

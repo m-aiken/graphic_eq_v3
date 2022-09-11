@@ -1,40 +1,61 @@
-#include "filterUtils.h"
+#include "filterutils.h"
 
 //==============================================================================
-void FilterUtils::updatePeakCoefficients(MonoChain& monoChain, juce::AudioParameterFloat* freqParam, juce::AudioParameterFloat* qParam, juce::AudioParameterFloat* gainParam, double sampleRate)
+void FilterUtils::updatePeakCoefficients(MonoChain& monoChain,
+                                         const ChainPositions& chainPosition,
+                                         juce::AudioParameterFloat* freqParam,
+                                         juce::AudioParameterFloat* qParam,
+                                         juce::AudioParameterFloat* gainParam,
+                                         double sampleRate)
 {
     auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate,
                                                                                 freqParam->get(),
                                                                                 qParam->get(),
                                                                                 juce::Decibels::decibelsToGain(gainParam->get()));
 
-    *monoChain.get<Globals::ChainPositions::Peak>().coefficients = *peakCoefficients;
+    switch (chainPosition) {
+        case ChainPositions::Peak_0: {
+            *monoChain.get<ChainPositions::Peak_0>().coefficients = *peakCoefficients;
+            break;
+        }
+        case ChainPositions::Peak_1: {
+            *monoChain.get<ChainPositions::Peak_1>().coefficients = *peakCoefficients;
+            break;
+        }
+        case ChainPositions::Peak_2: {
+            *monoChain.get<ChainPositions::Peak_2>().coefficients = *peakCoefficients;
+            break;
+        }
+    }
 }
 
-void FilterUtils::updateCutCoefficients(MonoChain& monoChain, const Globals::ChainPositions& chainPosition, CoefficientsType& coefficients, juce::AudioParameterChoice* slopeParam)
+void FilterUtils::updateCutCoefficients(MonoChain& monoChain,
+                                        const ChainPositions& chainPosition,
+                                        CoefficientsType& coefficients,
+                                        juce::AudioParameterChoice* slopeParam)
 {
-    auto& cutFilterChain = chainPosition == Globals::ChainPositions::LowCut ? monoChain.get<Globals::ChainPositions::LowCut>() : monoChain.get<Globals::ChainPositions::HighCut>();
-    cutFilterChain.setBypassed<Globals::Slope_12>(true);
-    cutFilterChain.setBypassed<Globals::Slope_24>(true);
-    cutFilterChain.setBypassed<Globals::Slope_36>(true);
-    cutFilterChain.setBypassed<Globals::Slope_48>(true);
+    auto& cutFilterChain = chainPosition == ChainPositions::LowCut ? monoChain.get<ChainPositions::LowCut>() : monoChain.get<ChainPositions::HighCut>();
+    cutFilterChain.setBypassed<Slope_12>(true);
+    cutFilterChain.setBypassed<Slope_24>(true);
+    cutFilterChain.setBypassed<Slope_36>(true);
+    cutFilterChain.setBypassed<Slope_48>(true);
 
     switch (slopeParam->getIndex()) {
-        case Globals::Slope_48: {
-            *cutFilterChain.template get<Globals::Slope_48>().coefficients = *coefficients[Globals::Slope_48];
-            cutFilterChain.setBypassed<Globals::Slope_48>(false);
+        case Slope_48: {
+            *cutFilterChain.template get<Slope_48>().coefficients = *coefficients[Slope_48];
+            cutFilterChain.setBypassed<Slope_48>(false);
         }
-        case Globals::Slope_36: {
-            *cutFilterChain.template get<Globals::Slope_36>().coefficients = *coefficients[Globals::Slope_36];
-            cutFilterChain.setBypassed<Globals::Slope_36>(false);
+        case Slope_36: {
+            *cutFilterChain.template get<Slope_36>().coefficients = *coefficients[Slope_36];
+            cutFilterChain.setBypassed<Slope_36>(false);
         }
-        case Globals::Slope_24: {
-            *cutFilterChain.template get<Globals::Slope_24>().coefficients = *coefficients[Globals::Slope_24];
-            cutFilterChain.setBypassed<Globals::Slope_24>(false);
+        case Slope_24: {
+            *cutFilterChain.template get<Slope_24>().coefficients = *coefficients[Slope_24];
+            cutFilterChain.setBypassed<Slope_24>(false);
         }
-        case Globals::Slope_12: {
-            *cutFilterChain.template get<Globals::Slope_12>().coefficients = *coefficients[Globals::Slope_12];
-            cutFilterChain.setBypassed<Globals::Slope_12>(false);
+        case Slope_12: {
+            *cutFilterChain.template get<Slope_12>().coefficients = *coefficients[Slope_12];
+            cutFilterChain.setBypassed<Slope_12>(false);
             break;
         }
         default: {

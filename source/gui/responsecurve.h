@@ -3,7 +3,9 @@
 #include <JuceHeader.h>
 #include "analyzerbase.h"
 #include "responsecurvenode.h"
-#include "../dsp/filterUtils.h"
+#include "../dsp/filterutils.h"
+#include "../dsp/peakband.h"
+#include "../utils/globals.h"
 
 //==============================================================================
 struct ResponseCurve : AnalyzerBase, juce::AudioProcessorParameter::Listener, juce::Timer
@@ -34,7 +36,8 @@ private:
 
     juce::Atomic<bool> parametersChanged { false };
 
-    ResponseCurveNode peakNode;
+    std::array<ResponseCurveNode, Globals::getNumPeakBands()> peakNodes;
+
     int nodeDiameter { 16 };
 
     juce::AudioParameterFloat*  lowCutFreqParam   { nullptr };
@@ -43,7 +46,5 @@ private:
     juce::AudioParameterFloat*  highCutFreqParam  { nullptr };
     juce::AudioParameterChoice* highCutSlopeParam { nullptr };
 
-    juce::AudioParameterFloat*  peakFreqParam     { nullptr };
-    juce::AudioParameterFloat*  peakGainParam     { nullptr };
-    juce::AudioParameterFloat*  peakQParam        { nullptr };
+    std::array<PeakBand, Globals::getNumPeakBands()> peakBands;
 };

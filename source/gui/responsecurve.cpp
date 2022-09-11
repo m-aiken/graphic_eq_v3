@@ -1,5 +1,4 @@
 #include "responsecurve.h"
-#include "../utils/globals.h"
 #include "../dsp/eqproperties.h"
 
 //==============================================================================
@@ -19,20 +18,24 @@ ResponseCurve::ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double 
         target = param;
     };
 
-    const auto& eqParams = EqProperties::getEqParams();
-    assignFloatParam(lowCutFreqParam, eqParams.at(EqProperties::ParamNames::LOW_CUT_FREQ));
-    assignChoiceParam(lowCutSlopeParam, eqParams.at(EqProperties::ParamNames::LOW_CUT_SLOPE));
-    assignFloatParam(highCutFreqParam, eqParams.at(EqProperties::ParamNames::HIGH_CUT_FREQ));
-    assignChoiceParam(highCutSlopeParam, eqParams.at(EqProperties::ParamNames::HIGH_CUT_SLOPE));
-    assignFloatParam(peakFreqParam, eqParams.at(EqProperties::ParamNames::PEAK_FREQ));
-    assignFloatParam(peakGainParam, eqParams.at(EqProperties::ParamNames::PEAK_GAIN));
-    assignFloatParam(peakQParam, eqParams.at(EqProperties::ParamNames::PEAK_Q));
+    const auto& eqParams = EqProperties::getCutParams();
+    assignFloatParam(lowCutFreqParam, eqParams.at(EqProperties::CutControls::LOW_CUT_FREQ));
+    assignChoiceParam(lowCutSlopeParam, eqParams.at(EqProperties::CutControls::LOW_CUT_SLOPE));
+    assignFloatParam(highCutFreqParam, eqParams.at(EqProperties::CutControls::HIGH_CUT_FREQ));
+    assignChoiceParam(highCutSlopeParam, eqParams.at(EqProperties::CutControls::HIGH_CUT_SLOPE));
 
-    addAndMakeVisible(peakNode);
+    for (size_t i = 0; i < peakBands.size(); ++i) {
+        assignFloatParam(peakBands.at(i).peakFreqParam, EqProperties::getPeakControlParamName(EqProperties::PeakControl::FREQUENCY, i));
+        assignFloatParam(peakBands.at(i).peakGainParam, EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, i));
+        assignFloatParam(peakBands.at(i).peakQParam, EqProperties::getPeakControlParamName(EqProperties::PeakControl::QUALITY, i));
+    }
+
+    for (size_t i = 0; i < peakNodes.size(); ++i) {
+        addAndMakeVisible(peakNodes.at(i));
+    }
 
     addListeners();
     updateMonoChain();
-    updateNodeCoordinates(peakNode, peakFreqParam, peakGainParam);
     startTimerHz(60);
 }
 
@@ -50,9 +53,11 @@ void ResponseCurve::paint(juce::Graphics& g)
     auto responseCurveMin = fftBoundingBox.getBottom();
     auto responseCurveMax = fftBoundingBox.getY();
 
-    auto& lowCut = monoChain.get<Globals::ChainPositions::LowCut>();
-    auto& peak = monoChain.get<Globals::ChainPositions::Peak>();
-    auto& highCut = monoChain.get<Globals::ChainPositions::HighCut>();
+    auto& lowCut = monoChain.get<FilterUtils::ChainPositions::LowCut>();
+    auto& peak0 = monoChain.get<FilterUtils::ChainPositions::Peak_0>();
+    auto& peak1 = monoChain.get<FilterUtils::ChainPositions::Peak_1>();
+    auto& peak2 = monoChain.get<FilterUtils::ChainPositions::Peak_2>();
+    auto& highCut = monoChain.get<FilterUtils::ChainPositions::HighCut>();
 
     std::vector<double> magnitudes;
     magnitudes.resize(boundsWidth);
@@ -64,8 +69,16 @@ void ResponseCurve::paint(juce::Graphics& g)
                                        Globals::getMinFrequency(),
                                        Globals::getMaxFrequency());
 
-        if (!monoChain.isBypassed<Globals::ChainPositions::Peak>()) {
-            mag *= peak.coefficients->getMagnitudeForFrequency(freq, sampleRate);
+        if (!monoChain.isBypassed<FilterUtils::ChainPositions::Peak_0>()) {
+            mag *= peak0.coefficients->getMagnitudeForFrequency(freq, sampleRate);
+        }
+
+        if (!monoChain.isBypassed<FilterUtils::ChainPositions::Peak_1>()) {
+            mag *= peak1.coefficients->getMagnitudeForFrequency(freq, sampleRate);
+        }
+
+        if (!monoChain.isBypassed<FilterUtils::ChainPositions::Peak_2>()) {
+            mag *= peak2.coefficients->getMagnitudeForFrequency(freq, sampleRate);
         }
 
         if (!lowCut.isBypassed<0>()) mag *= lowCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
@@ -105,7 +118,9 @@ void ResponseCurve::resized()
 {
     AnalyzerBase::resized();
 
-    peakNode.setBounds(peakNode.getCoordinates().getX(), peakNode.getCoordinates().getY(), nodeDiameter, nodeDiameter);
+    for (size_t i = 0; i < peakNodes.size(); ++i) {
+        peakNodes.at(i).setBounds(peakNodes.at(i).getCoordinates().getX(), peakNodes.at(i).getCoordinates().getY(), nodeDiameter, nodeDiameter);
+    }
 }
 
 void ResponseCurve::updateMonoChain()
@@ -113,9 +128,12 @@ void ResponseCurve::updateMonoChain()
     auto lowCutCoefficients = FilterUtils::makeHighPassFilter(lowCutFreqParam, lowCutSlopeParam, sampleRate);
     auto highCutCoefficients = FilterUtils::makeLowPassFilter(highCutFreqParam, highCutSlopeParam, sampleRate);
 
-    FilterUtils::updateCutCoefficients(monoChain, Globals::ChainPositions::LowCut, lowCutCoefficients, lowCutSlopeParam);
-    FilterUtils::updateCutCoefficients(monoChain, Globals::ChainPositions::HighCut, highCutCoefficients, highCutSlopeParam);
-    FilterUtils::updatePeakCoefficients(monoChain, peakFreqParam, peakQParam, peakGainParam, sampleRate);
+    FilterUtils::updateCutCoefficients(monoChain, FilterUtils::ChainPositions::LowCut, lowCutCoefficients, lowCutSlopeParam);
+    FilterUtils::updateCutCoefficients(monoChain, FilterUtils::ChainPositions::HighCut, highCutCoefficients, highCutSlopeParam);
+
+    for (size_t i = 0; i < peakBands.size(); ++i) {
+        FilterUtils::updatePeakCoefficients(monoChain, static_cast<FilterUtils::ChainPositions>(i+1), peakBands.at(i).peakFreqParam, peakBands.at(i).peakQParam, peakBands.at(i).peakGainParam, sampleRate);
+    }
 }
 
 void ResponseCurve::updateNodeCoordinates(ResponseCurveNode& node, juce::AudioParameterFloat* freqParam, juce::AudioParameterFloat* gainParam)
@@ -145,7 +163,10 @@ void ResponseCurve::timerCallback()
 {
     if(parametersChanged.compareAndSetBool(false, true)) {
         updateMonoChain();
-        updateNodeCoordinates(peakNode, peakFreqParam, peakGainParam);
+        for (size_t i = 0; i < peakNodes.size(); ++i) {
+            updateNodeCoordinates(peakNodes.at(i), peakBands.at(i).peakFreqParam, peakBands.at(i).peakGainParam);
+        }
+
         resized();
         repaint();
     }
@@ -153,26 +174,32 @@ void ResponseCurve::timerCallback()
 
 void ResponseCurve::addListeners()
 {
-    const auto& eqParams = EqProperties::getEqParams();
+    const auto& eqParams = EqProperties::getCutParams();
 
-    apvts.getParameter(eqParams.at(EqProperties::ParamNames::LOW_CUT_FREQ))->addListener(this);
-    apvts.getParameter(eqParams.at(EqProperties::ParamNames::LOW_CUT_SLOPE))->addListener(this);
-    apvts.getParameter(eqParams.at(EqProperties::ParamNames::HIGH_CUT_FREQ))->addListener(this);
-    apvts.getParameter(eqParams.at(EqProperties::ParamNames::HIGH_CUT_SLOPE))->addListener(this);
-    apvts.getParameter(eqParams.at(EqProperties::ParamNames::PEAK_FREQ))->addListener(this);
-    apvts.getParameter(eqParams.at(EqProperties::ParamNames::PEAK_GAIN))->addListener(this);
-    apvts.getParameter(eqParams.at(EqProperties::ParamNames::PEAK_Q))->addListener(this);
+    apvts.getParameter(eqParams.at(EqProperties::CutControls::LOW_CUT_FREQ))->addListener(this);
+    apvts.getParameter(eqParams.at(EqProperties::CutControls::LOW_CUT_SLOPE))->addListener(this);
+    apvts.getParameter(eqParams.at(EqProperties::CutControls::HIGH_CUT_FREQ))->addListener(this);
+    apvts.getParameter(eqParams.at(EqProperties::CutControls::HIGH_CUT_SLOPE))->addListener(this);
+
+    for (size_t i = 0; i < peakBands.size(); ++i) {
+        apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::FREQUENCY, i))->addListener(this);
+        apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, i))->addListener(this);
+        apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::QUALITY, i))->addListener(this);
+    }
 }
 
 void ResponseCurve::removeListeners()
 {
-    const auto& eqParams = EqProperties::getEqParams();
+    const auto& eqParams = EqProperties::getCutParams();
 
-    apvts.getParameter(eqParams.at(EqProperties::ParamNames::LOW_CUT_FREQ))->removeListener(this);
-    apvts.getParameter(eqParams.at(EqProperties::ParamNames::LOW_CUT_SLOPE))->removeListener(this);
-    apvts.getParameter(eqParams.at(EqProperties::ParamNames::HIGH_CUT_FREQ))->removeListener(this);
-    apvts.getParameter(eqParams.at(EqProperties::ParamNames::HIGH_CUT_SLOPE))->removeListener(this);
-    apvts.getParameter(eqParams.at(EqProperties::ParamNames::PEAK_FREQ))->removeListener(this);
-    apvts.getParameter(eqParams.at(EqProperties::ParamNames::PEAK_GAIN))->removeListener(this);
-    apvts.getParameter(eqParams.at(EqProperties::ParamNames::PEAK_Q))->removeListener(this);
+    apvts.getParameter(eqParams.at(EqProperties::CutControls::LOW_CUT_FREQ))->removeListener(this);
+    apvts.getParameter(eqParams.at(EqProperties::CutControls::LOW_CUT_SLOPE))->removeListener(this);
+    apvts.getParameter(eqParams.at(EqProperties::CutControls::HIGH_CUT_FREQ))->removeListener(this);
+    apvts.getParameter(eqParams.at(EqProperties::CutControls::HIGH_CUT_SLOPE))->removeListener(this);
+
+    for (size_t i = 0; i < peakBands.size(); ++i) {
+        apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::FREQUENCY, i))->removeListener(this);
+        apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, i))->removeListener(this);
+        apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::QUALITY, i))->removeListener(this);
+    }
 }

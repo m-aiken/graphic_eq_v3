@@ -13,7 +13,7 @@ AnalyzerControls::AnalyzerControls(juce::AudioProcessorValueTreeState& apvts)
     fftOrderSlider = std::make_unique<CustomLinearSlider>(*fftOrderParam);
 
     auto decayRateParam = apvts.getParameter(params.at(AnalyzerProperties::ParamNames::Analyzer_Decay_Rate));
-    jassert(decayRateParam);
+    jassert(decayRateParam != nullptr);
     decayRateSlider = std::make_unique<CustomRotaryControl>(*decayRateParam, "dB/s", "Decay Rate");
 
     fftOrderAttachment  = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, params.at(AnalyzerProperties::ParamNames::Analyzer_Points), *fftOrderSlider);

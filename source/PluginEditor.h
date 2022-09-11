@@ -7,6 +7,8 @@
 #include "gui/responsecurve.h"
 #include "gui/customlookandfeel.h"
 #include "gui/analyzercontrols.h"
+#include "gui/eqcontrolscontainer.h"
+//#include "gui/peakcontrol.h"
 
 //==============================================================================
 class GraphicEqEditor : public juce::AudioProcessorEditor
@@ -28,6 +30,9 @@ private:
     ResponseCurve responseCurve;
 
     AnalyzerControls analyzerControls;
+
+    EqControlsContainer eqControls;
+//    PeakControl peakControl0;
 
     CustomLookAndFeel lnf;
     

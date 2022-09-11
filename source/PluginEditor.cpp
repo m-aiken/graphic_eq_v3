@@ -9,13 +9,15 @@ GraphicEqEditor::GraphicEqEditor (GraphicEqProcessor& p)
   processorRef (p),
   spectrumAnalyzer(processorRef.getSampleRate(), processorRef.lScsf, processorRef.rScsf, processorRef.apvts),
   responseCurve(processorRef.apvts, processorRef.getSampleRate()),
-  analyzerControls(processorRef.apvts)
+  analyzerControls(processorRef.apvts),
+  eqControls(processorRef.apvts)
 {
     setLookAndFeel(&lnf);
 
     addAndMakeVisible(spectrumAnalyzer);
     addAndMakeVisible(responseCurve);
-    addAndMakeVisible(analyzerControls);
+//    addAndMakeVisible(analyzerControls);
+    addAndMakeVisible(eqControls);
 
     setSize (800, 600);
 }
@@ -45,8 +47,16 @@ void GraphicEqEditor::resized()
 
     responseCurve.setBounds(spectrumAnalyzer.getBounds());
 
+    auto tempEqControlsWidth = spectrumAnalyzer.getWidth() * 0.8;
+    eqControls.setBounds(bounds.getCentreX() - (tempEqControlsWidth * 0.5),
+                         spectrumAnalyzer.getBottom() + padding,
+                         tempEqControlsWidth,
+                         bounds.getBottom() - spectrumAnalyzer.getBottom() - (padding * 2));
+
+    /*
     analyzerControls.setBounds(padding,
                                spectrumAnalyzer.getBottom() + padding,
                                mainWindowWidth / 3,
                                bounds.getBottom() - spectrumAnalyzer.getBottom() - (padding * 2));
+    */
 }

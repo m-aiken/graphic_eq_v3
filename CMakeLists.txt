@@ -98,11 +98,17 @@ target_sources(GraphicEq
         source/gui/customlookandfeel.cpp
         source/gui/customrotarycontrol.h
         source/gui/customrotarycontrol.cpp
+        source/gui/cutcontrol.h
+        source/gui/cutcontrol.cpp
         source/gui/dbscale.h
         source/gui/dbscale.cpp
+        source/gui/eqcontrolscontainer.h
+        source/gui/eqcontrolscontainer.cpp
         source/gui/paramlistener.h
         source/gui/pathproducer.h
         source/gui/pathproducer.cpp
+        source/gui/peakcontrol.h
+        source/gui/peakcontrol.cpp
         source/gui/responsecurve.h
         source/gui/responsecurve.cpp
         source/gui/responsecurvenode.h

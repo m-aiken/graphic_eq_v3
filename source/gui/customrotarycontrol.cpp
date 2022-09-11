@@ -8,34 +8,7 @@ CustomRotaryControl::CustomRotaryControl(juce::RangedAudioParameter& rap, const 
   param(&rap),
   suffix(unitSuffix)
 {
-    setLabels();
     setName(title);
-}
-
-void CustomRotaryControl::setLabels()
-{
-    labels.clear();
-    if (auto* choiceParam = dynamic_cast<juce::AudioParameterChoice*>(param))
-    {
-        auto choices = choiceParam->choices;
-
-        for ( auto& choice : choices )
-        {
-            if ( choice.substring(choice.indexOf(".")) != ".5" )
-            {
-                choice = choice.substring(0, choice.indexOf("."));
-            }
-        }
-
-        labels.add({0.f, choices[0] + suffix});
-        labels.add({1.f, choices[choices.size() - 1] + suffix});
-    }
-    else
-    {
-        auto range = param->getNormalisableRange();
-        labels.add({0.f, juce::String(range.start) + suffix});
-        labels.add({1.f, juce::String(range.end) + suffix});
-    }
 }
 
 void CustomRotaryControl::paint(juce::Graphics& g)
@@ -61,6 +34,7 @@ void CustomRotaryControl::paint(juce::Graphics& g)
                                          endAngle);
 
     auto rotaryBounds = getRotaryBounds().reduced(4);
+
     getLookAndFeel().drawRotarySlider(g,
                                       rotaryBounds.getX(),      // x
                                       rotaryBounds.getY(),      // y
@@ -83,25 +57,6 @@ void CustomRotaryControl::paint(juce::Graphics& g)
     r.setSize(g.getCurrentFont().getStringWidth(str), getTextHeight());
     r.setCentre(center);
     g.drawFittedText(str, r.toNearestInt(), juce::Justification::centred, 1);
-
-    // value range labels
-    for ( auto i = 0; i < labels.size(); ++i )
-    {
-        auto pos = labels[i].pos;
-        jassert(0.f <= pos);
-        jassert(pos <= 1.f);
-
-        auto angle = juce::jmap<float>(pos, 0.f, 1.f, startAngle, endAngle);
-        auto c = center.getPointOnCircumference(radius + getTextHeight() * 0.5f + 1, angle);
-
-        juce::Rectangle<float> r;
-        auto str = labels[i].label;
-        r.setSize(g.getCurrentFont().getStringWidth(str), getTextHeight());
-        r.setCentre(c);
-        r.setY(r.getY() + getTextHeight());
-
-        g.drawFittedText(str, r.toNearestInt(), juce::Justification::centred, 1);
-    }
 }
 
 juce::Rectangle<int> CustomRotaryControl::getRotaryBounds() const
@@ -124,19 +79,16 @@ juce::String CustomRotaryControl::getDisplayString() const
 {
     juce::String str;
 
-    if (auto* choiceParam = dynamic_cast<juce::AudioParameterChoice*>(param))
-    {
+    if (auto* choiceParam = dynamic_cast<juce::AudioParameterChoice*>(param)) {
         auto currentChoice = choiceParam->getCurrentChoiceName();
         str = ( currentChoice.substring(currentChoice.indexOf(".")) == ".5" )
               ? currentChoice
               : currentChoice.substring(0, currentChoice.indexOf("."));
     }
-    else if (auto* floatParam = dynamic_cast<juce::AudioParameterFloat*>(param))
-    {
+    else if (auto* floatParam = dynamic_cast<juce::AudioParameterFloat*>(param)) {
         str = juce::String(getValue());
     }
-    else
-    {
+    else {
         jassertfalse;
     }
 

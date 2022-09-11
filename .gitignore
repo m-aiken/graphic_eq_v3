@@ -2,3 +2,5 @@
 **/cmake-build-debug
 **/graphic_eq.filtergraph
 **/source/utils/.DS_Store
+**/source/gui/.DS_Store
+**/source/dsp/.DS_Store

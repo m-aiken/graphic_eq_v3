@@ -57,6 +57,9 @@ void ResponseCurve::paint(juce::Graphics& g)
     auto& peak0 = monoChain.get<FilterUtils::ChainPositions::Peak_0>();
     auto& peak1 = monoChain.get<FilterUtils::ChainPositions::Peak_1>();
     auto& peak2 = monoChain.get<FilterUtils::ChainPositions::Peak_2>();
+    auto& peak3 = monoChain.get<FilterUtils::ChainPositions::Peak_3>();
+    auto& peak4 = monoChain.get<FilterUtils::ChainPositions::Peak_4>();
+    auto& peak5 = monoChain.get<FilterUtils::ChainPositions::Peak_5>();
     auto& highCut = monoChain.get<FilterUtils::ChainPositions::HighCut>();
 
     std::vector<double> magnitudes;
@@ -79,6 +82,18 @@ void ResponseCurve::paint(juce::Graphics& g)
 
         if (!monoChain.isBypassed<FilterUtils::ChainPositions::Peak_2>()) {
             mag *= peak2.coefficients->getMagnitudeForFrequency(freq, sampleRate);
+        }
+
+        if (!monoChain.isBypassed<FilterUtils::ChainPositions::Peak_3>()) {
+            mag *= peak3.coefficients->getMagnitudeForFrequency(freq, sampleRate);
+        }
+
+        if (!monoChain.isBypassed<FilterUtils::ChainPositions::Peak_4>()) {
+            mag *= peak4.coefficients->getMagnitudeForFrequency(freq, sampleRate);
+        }
+
+        if (!monoChain.isBypassed<FilterUtils::ChainPositions::Peak_5>()) {
+            mag *= peak5.coefficients->getMagnitudeForFrequency(freq, sampleRate);
         }
 
         if (!lowCut.isBypassed<0>()) mag *= lowCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);

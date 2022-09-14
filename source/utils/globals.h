@@ -13,7 +13,7 @@ namespace Globals
     constexpr int getMaxBandNum() { return 7; }
 
     constexpr int getNumMaxBands() { return 8; }
-    constexpr int getNumPeakBands() { return 3; }
+    constexpr int getNumPeakBands() { return 6; }
 
     constexpr float getMinFrequency() { return 20.f; }
     constexpr float getMaxFrequency() { return 20000.f; }

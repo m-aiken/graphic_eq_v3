@@ -19,21 +19,21 @@ void CustomRotaryControl::paint(juce::Graphics& g)
     auto range = param->getNormalisableRange();
     auto bounds = getLocalBounds();
 
-    g.setFont(Globals::getFont());
+    g.setFont(Globals::getFont().withHeight(getTextHeight()));
     g.setColour(ColourPalette::getColour(ColourPalette::Blue));
-
+    /*
     g.drawFittedText(getName(),
                      bounds.removeFromTop(getTextHeight()),
                      juce::Justification::centred,
                      1);
-
+    */
     auto valueToDraw = juce::jmap<float>(getValue(),
                                          range.start,
                                          range.end,
                                          startAngle,
                                          endAngle);
 
-    auto rotaryBounds = getRotaryBounds().reduced(4);
+    auto rotaryBounds = getRotaryBounds();
 
     getLookAndFeel().drawRotarySlider(g,
                                       rotaryBounds.getX(),      // x
@@ -47,8 +47,9 @@ void CustomRotaryControl::paint(juce::Graphics& g)
 
     auto center = rotaryBounds.toFloat().getCentre();
     auto radius = rotaryBounds.getWidth() * 0.5f;
-
+    /*
     g.setFont(rotaryBounds.getHeight() * 0.2);
+
 
     // current value string
     g.setColour(ColourPalette::getColour(ColourPalette::Blue));
@@ -57,6 +58,14 @@ void CustomRotaryControl::paint(juce::Graphics& g)
     r.setSize(g.getCurrentFont().getStringWidth(str), getTextHeight());
     r.setCentre(center);
     g.drawFittedText(str, r.toNearestInt(), juce::Justification::centred, 1);
+    */
+
+//    g.setColour(ColourPalette::getColour(ColourPalette::Blue));
+    juce::Rectangle<float> r;
+//    auto str = getDisplayString();
+    r.setSize(g.getCurrentFont().getStringWidth(getName()), getTextHeight());
+    r.setCentre(center);
+    g.drawFittedText(getName(), r.toNearestInt(), juce::Justification::centred, 1);
 }
 
 juce::Rectangle<int> CustomRotaryControl::getRotaryBounds() const
@@ -65,7 +74,7 @@ juce::Rectangle<int> CustomRotaryControl::getRotaryBounds() const
 
     auto size = juce::jmin(bounds.getWidth(), bounds.getHeight());
 
-    size -= getTextHeight() * 2;
+    size -= getTextHeight() * 0.6;
 
     juce::Rectangle<int> r;
     r.setSize(size, size);

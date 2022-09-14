@@ -8,11 +8,11 @@ PeakControl::PeakControl(juce::AudioProcessorValueTreeState& apvts, const int _b
 {
     auto freqParam = apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::FREQUENCY, bandNum));
     jassert(freqParam != nullptr);
-    freqSlider = std::make_unique<CustomRotaryControl>(*freqParam, "Hz", "Freq");
+    freqSlider = std::make_unique<CustomRotaryControl>(*freqParam, "Hz", "F");
 
     auto gainParam = apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, bandNum));
     jassert(gainParam != nullptr);
-    gainSlider = std::make_unique<CustomRotaryControl>(*gainParam, "dB", "Gain");
+    gainSlider = std::make_unique<CustomRotaryControl>(*gainParam, "dB", "G");
 
     auto qParam = apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::QUALITY, bandNum));
     jassert(qParam != nullptr);
@@ -32,9 +32,9 @@ void PeakControl::paint(juce::Graphics& g)
     g.fillAll(ColourPalette::getColour(ColourPalette::Green).withAlpha(0.1f));
 
     auto bounds = getLocalBounds();
-    auto textHeight = 14;
 
-    g.setFont(Globals::getFont());
+    g.setFont(Globals::getFont().withHeight(12.f));
+    auto textHeight = g.getCurrentFont().getHeight();
     g.setColour(ColourPalette::getColour(ColourPalette::Blue));
 
     g.drawFittedText("P" + juce::String(bandNum),
@@ -50,20 +50,20 @@ void PeakControl::resized()
 {
     auto bounds = getLocalBounds();
     auto padding = 2;
-    auto diameter = (bounds.getHeight() * 0.5) - (padding * 2);
+    auto rotaryDiameter = (bounds.getWidth() * 0.5) - padding;
 
-    freqSlider->setBounds(0,
+    freqSlider->setBounds(padding,
                           padding,
-                          diameter,
-                          diameter);
+                          rotaryDiameter,
+                          rotaryDiameter);
 
-    gainSlider->setBounds(0,
-                          freqSlider->getBottom() + padding,
-                          diameter,
-                          diameter);
+    gainSlider->setBounds(padding,
+                          bounds.getCentreY() + padding,
+                          rotaryDiameter,
+                          rotaryDiameter);
 
-    qSlider->setBounds(bounds.getRight() - diameter + padding,
-                       bounds.getCentreY() - (diameter * 0.5),
-                       diameter,
-                       diameter);
+    qSlider->setBounds(bounds.getRight() - rotaryDiameter - padding,
+                       bounds.getCentreY() - (rotaryDiameter * 0.5),
+                       rotaryDiameter,
+                       rotaryDiameter);
 }

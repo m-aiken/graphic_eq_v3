@@ -47,11 +47,11 @@ void GraphicEqEditor::resized()
 
     responseCurve.setBounds(spectrumAnalyzer.getBounds());
 
-    auto tempEqControlsWidth = spectrumAnalyzer.getWidth() * 0.8;
+    auto tempEqControlsWidth = 732; // current fftBoundingBox width
     eqControls.setBounds(bounds.getCentreX() - (tempEqControlsWidth * 0.5),
                          spectrumAnalyzer.getBottom() + padding,
                          tempEqControlsWidth,
-                         bounds.getBottom() - spectrumAnalyzer.getBottom() - (padding * 2));
+                         (bounds.getBottom() - spectrumAnalyzer.getBottom()) * 0.5);
 
     /*
     analyzerControls.setBounds(padding,

@@ -26,6 +26,18 @@ void FilterUtils::updatePeakCoefficients(MonoChain& monoChain,
             *monoChain.get<ChainPositions::Peak_2>().coefficients = *peakCoefficients;
             break;
         }
+        case ChainPositions::Peak_3: {
+            *monoChain.get<ChainPositions::Peak_3>().coefficients = *peakCoefficients;
+            break;
+        }
+        case ChainPositions::Peak_4: {
+            *monoChain.get<ChainPositions::Peak_4>().coefficients = *peakCoefficients;
+            break;
+        }
+        case ChainPositions::Peak_5: {
+            *monoChain.get<ChainPositions::Peak_5>().coefficients = *peakCoefficients;
+            break;
+        }
     }
 }
 

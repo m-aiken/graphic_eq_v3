@@ -15,4 +15,7 @@ private:
     PeakControl peakControl0;
     PeakControl peakControl1;
     PeakControl peakControl2;
+    PeakControl peakControl3;
+    PeakControl peakControl4;
+    PeakControl peakControl5;
 };

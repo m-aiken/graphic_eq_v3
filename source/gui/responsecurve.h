@@ -38,7 +38,7 @@ private:
 
     std::array<ResponseCurveNode, Globals::getNumPeakBands()> peakNodes;
 
-    int nodeDiameter { 16 };
+    int nodeDiameter { 12 };
 
     juce::AudioParameterFloat*  lowCutFreqParam   { nullptr };
     juce::AudioParameterChoice* lowCutSlopeParam  { nullptr };

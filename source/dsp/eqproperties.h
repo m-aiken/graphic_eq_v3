@@ -92,7 +92,7 @@ namespace EqProperties
         auto freqNormalisableRange = juce::NormalisableRange(Globals::getMinFrequency(), Globals::getMaxFrequency(), 1.f, 0.25f);
         auto gainNormalisableRange = juce::NormalisableRange(Globals::getNegativeInf(), Globals::getMaxDecibels(), 0.5f, 1.f);
 
-        std::vector<float> defaultFreqs { 750.f, 2000.f, 10000.f };
+        std::vector<float> defaultFreqs { 100.f, 200.f, 500.f, 1000.f, 2000.f, 5000.f };
 
         for (int i = 0; i < Globals::getNumPeakBands(); ++i) {
             layout.add(std::make_unique<juce::AudioParameterFloat>(getPeakControlParamName(PeakControl::FREQUENCY, i),
@@ -108,7 +108,7 @@ namespace EqProperties
             layout.add(std::make_unique<juce::AudioParameterFloat>(getPeakControlParamName(PeakControl::QUALITY, i),
                                                                    getPeakControlParamName(PeakControl::QUALITY, i),
                                                                    juce::NormalisableRange(0.1f, 10.f, 0.05f, 1.f),
-                                                                   1.f));
+                                                                   5.f));
         }
     }
 

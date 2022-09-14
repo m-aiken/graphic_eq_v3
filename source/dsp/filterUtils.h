@@ -9,7 +9,7 @@ struct FilterUtils
     using Filter = juce::dsp::IIR::Filter<float>;
     // Cut Filter chain: x4 Filters to allow for 12/24/36/48 dB/oct options
     using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
-    using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, Filter, Filter, CutFilter>;
+    using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, Filter, Filter, Filter, Filter, Filter, CutFilter>;
     using CoefficientsType = juce::ReferenceCountedArray<juce::dsp::FilterDesign<float>::IIRCoefficients>;
 
     enum ChainPositions
@@ -18,6 +18,9 @@ struct FilterUtils
         Peak_0,
         Peak_1,
         Peak_2,
+        Peak_3,
+        Peak_4,
+        Peak_5,
         HighCut
     };
 

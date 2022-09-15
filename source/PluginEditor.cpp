@@ -51,7 +51,7 @@ void GraphicEqEditor::resized()
     eqControls.setBounds(bounds.getCentreX() - (tempEqControlsWidth * 0.5),
                          spectrumAnalyzer.getBottom() + padding,
                          tempEqControlsWidth,
-                         (bounds.getBottom() - spectrumAnalyzer.getBottom()) * 0.5);
+                         bounds.getBottom() - spectrumAnalyzer.getBottom() - (padding * 2));
 
     /*
     analyzerControls.setBounds(padding,

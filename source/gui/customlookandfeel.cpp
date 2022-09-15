@@ -24,7 +24,7 @@ void CustomLookAndFeel::drawRotarySlider(juce::Graphics& g,
     r.setLeft(centre.getX() - 2);
     r.setRight(centre.getX() + 2);
     r.setTop(bounds.getY() + 4);
-    r.setBottom(bounds.getY() + 12);
+    r.setBottom(bounds.getY() + 8);
 
     p.addRoundedRectangle(r, 2.f);
 
@@ -48,13 +48,11 @@ void CustomLookAndFeel::drawLinearSlider(juce::Graphics& g,
     auto tooltipHeight = height * 0.15;
     float tooltipY = sliderPos - (tooltipHeight * 0.5);
 
-    if (tooltipY < y)
-    {
+    if (tooltipY < y) {
         tooltipY = y;
     }
 
-    if (height - sliderPos < tooltipHeight)
-    {
+    if (height - sliderPos < tooltipHeight) {
         tooltipY = height - tooltipHeight;
     }
 

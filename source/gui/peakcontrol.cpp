@@ -53,7 +53,7 @@ void PeakControl::paint(juce::Graphics& g)
     auto vW = valueRect.getWidth() * 0.5;
     auto vH = valueRect.getHeight() / 3;
 
-    g.drawFittedText("Hz:", 0, vY , vW, vH, juce::Justification::centred, 1);
+    g.drawFittedText("Hz:", 0, vY, vW, vH, juce::Justification::centred, 1);
     g.drawFittedText(juce::String(freqSlider->getValue()), vCX, vY, vW, vH, juce::Justification::centred, 1);
     g.drawFittedText("dB:", 0, vY + vH , vW, vH, juce::Justification::centred, 1);
     g.drawFittedText(juce::String(gainSlider->getValue()), vCX, vY + vH, vW, vH, juce::Justification::centred, 1);

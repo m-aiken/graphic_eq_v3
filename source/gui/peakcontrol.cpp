@@ -46,8 +46,8 @@ void PeakControl::paint(juce::Graphics& g)
                      1);
 
     // Values
-    auto valueRect = juce::Rectangle<int>(0, bounds.getCentreY(), bounds.getWidth(), bounds.getHeight() * 0.5);
-    auto vX = valueRect.getCentreX();
+    auto valueRectHeight = bounds.getHeight() * 0.4;
+    auto valueRect = juce::Rectangle<int>(0, bounds.getBottom() - valueRectHeight, bounds.getWidth(), valueRectHeight);
     auto vCX = valueRect.getCentreX();
     auto vY = valueRect.getY();
     auto vW = valueRect.getWidth() * 0.5;

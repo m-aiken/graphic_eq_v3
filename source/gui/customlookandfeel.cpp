@@ -14,7 +14,6 @@ void CustomLookAndFeel::drawRotarySlider(juce::Graphics& g,
     g.setColour(ColourPalette::getColour(ColourPalette::Salmon));
     g.fillEllipse(bounds);
     g.setColour(ColourPalette::getColour(ColourPalette::Blue));
-    g.drawEllipse(bounds, 1.f);
 
     juce::Path p;
 
@@ -45,20 +44,24 @@ void CustomLookAndFeel::drawLinearSlider(juce::Graphics& g,
                                          const juce::Slider::SliderStyle sliderStyle,
                                          juce::Slider& slider)
 {
-    auto tooltipHeight = height * 0.15;
-    float tooltipY = sliderPos - (tooltipHeight * 0.5);
+    auto background = juce::Rectangle<float>(x, y, width, height);
+    g.setColour(ColourPalette::getColour(ColourPalette::Green).withAlpha(0.1f));
+    g.fillRect(background);
 
-    if (tooltipY < y) {
-        tooltipY = y;
+    auto tooltipWidth = width * 0.15;
+    float tooltipX = sliderPos - (tooltipWidth * 0.5);
+
+    if (tooltipX < x) {
+        tooltipX = x;
     }
 
-    if (height - sliderPos < tooltipHeight) {
-        tooltipY = height - tooltipHeight;
+    if (width - sliderPos < tooltipWidth) {
+        tooltipX = width - tooltipWidth;
     }
 
-    auto tooltip = juce::Rectangle<float>(0.f, tooltipY, width, tooltipHeight);
+    auto tooltip = juce::Rectangle<float>(tooltipX, y, tooltipWidth, tooltipWidth);
     g.setColour(ColourPalette::getColour(ColourPalette::Salmon));
-    g.fillRect(tooltip.reduced(2.f, 2.f));
+    g.fillRect(tooltip);
 }
 /*
 void CustomLookAndFeel::drawToggleButton(juce::Graphics& g,

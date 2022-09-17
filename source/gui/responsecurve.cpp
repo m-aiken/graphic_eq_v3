@@ -1,5 +1,6 @@
 #include "responsecurve.h"
 #include "../dsp/eqproperties.h"
+#include "../utils/colourpalette.h"
 
 //==============================================================================
 ResponseCurve::ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double _sampleRate)
@@ -125,7 +126,7 @@ void ResponseCurve::paint(juce::Graphics& g)
         responseCurveLine.lineTo(boundsX + i, mapFilterGainRangeToAnalyzerBounds(magnitudes.at(i)));
     }
 
-    g.setColour(juce::Colours::black);
+    g.setColour(ColourPalette::getColour(ColourPalette::Blue));
     g.strokePath(responseCurveLine, juce::PathStrokeType(2.f));
 }
 

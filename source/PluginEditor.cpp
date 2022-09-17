@@ -7,16 +7,16 @@
 GraphicEqEditor::GraphicEqEditor (GraphicEqProcessor& p)
 : AudioProcessorEditor (&p),
   processorRef (p),
+  analyzerControls(processorRef.apvts),
   spectrumAnalyzer(processorRef.getSampleRate(), processorRef.lScsf, processorRef.rScsf, processorRef.apvts),
   responseCurve(processorRef.apvts, processorRef.getSampleRate()),
-  analyzerControls(processorRef.apvts),
   eqControls(processorRef.apvts)
 {
     setLookAndFeel(&lnf);
 
+    addAndMakeVisible(analyzerControls);
     addAndMakeVisible(spectrumAnalyzer);
     addAndMakeVisible(responseCurve);
-//    addAndMakeVisible(analyzerControls);
     addAndMakeVisible(eqControls);
 
     setSize (800, 600);
@@ -40,23 +40,21 @@ void GraphicEqEditor::resized()
     auto mainWindowHeight = bounds.getHeight();
     auto padding = 10;
 
-    spectrumAnalyzer.setBounds(padding,
+    auto tempEqControlsWidth = 732; // current fftBoundingBox width
+    analyzerControls.setBounds(bounds.getCentreX() - (tempEqControlsWidth * 0.5),
                                padding,
+                               tempEqControlsWidth,
+                               padding * 3);
+
+    spectrumAnalyzer.setBounds(padding,
+                               padding * 5,
                                mainWindowWidth - (padding * 2),
-                               static_cast<int>(std::floor((mainWindowHeight * 0.7) - padding)));
+                               static_cast<int>(std::floor((mainWindowHeight * 0.6) - padding)));
 
     responseCurve.setBounds(spectrumAnalyzer.getBounds());
 
-    auto tempEqControlsWidth = 732; // current fftBoundingBox width
     eqControls.setBounds(bounds.getCentreX() - (tempEqControlsWidth * 0.5),
                          spectrumAnalyzer.getBottom() + padding,
                          tempEqControlsWidth,
                          bounds.getBottom() - spectrumAnalyzer.getBottom() - (padding * 2));
-
-    /*
-    analyzerControls.setBounds(padding,
-                               spectrumAnalyzer.getBottom() + padding,
-                               mainWindowWidth / 3,
-                               bounds.getBottom() - spectrumAnalyzer.getBottom() - (padding * 2));
-    */
 }

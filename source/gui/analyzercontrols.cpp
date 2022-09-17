@@ -31,7 +31,7 @@ void AnalyzerControls::paint(juce::Graphics& g)
     auto padding = 6;
     auto labelHeight = 20;
     auto textHeight = 14;
-
+    /*
     g.setFont(Globals::getFont());
     g.setColour(ColourPalette::getColour(ColourPalette::Blue));
 
@@ -74,10 +74,12 @@ void AnalyzerControls::paint(juce::Graphics& g)
                      textHeight,
                      juce::Justification::centredLeft,
                      1);
+    */
 }
 
 void AnalyzerControls::resized()
 {
+    /*
     auto bounds = getLocalBounds();
     auto sliderWidth = 16;
     auto padding = 6;
@@ -93,4 +95,5 @@ void AnalyzerControls::resized()
                                labelHeight + padding,
                                rotaryDiameter,
                                rotaryDiameter);
+    */
 }

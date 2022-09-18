@@ -118,6 +118,7 @@ void ResponseCurve::paint(juce::Graphics& g)
                                  responseCurveMax);
     };
 
+    g.setColour(ColourPalette::getColour(ColourPalette::Blue));
     juce::Path responseCurveLine;
 
     responseCurveLine.startNewSubPath(boundsX, mapFilterGainRangeToAnalyzerBounds(magnitudes.at(0)));
@@ -126,19 +127,19 @@ void ResponseCurve::paint(juce::Graphics& g)
         responseCurveLine.lineTo(boundsX + i, mapFilterGainRangeToAnalyzerBounds(magnitudes.at(i)));
     }
 
-    g.setColour(ColourPalette::getColour(ColourPalette::Blue));
     g.strokePath(responseCurveLine, juce::PathStrokeType(2.f));
 
+    auto nodeRadius = static_cast<int>(std::floor(nodeDiameter * 0.5));
     for (size_t i = 0; i < peakNodes.size(); ++i) {
         auto normalizedFrequency = juce::mapFromLog10<float>(peakBands.at(i).peakFreqParam->get(),
                                                              Globals::getMinFrequency(),
                                                              Globals::getMaxFrequency());
 
-        auto nodeX = static_cast<int>(std::floor(boundsX + boundsWidth * normalizedFrequency));
-        auto nodeY = mapFilterGainRangeToAnalyzerBounds(magnitudes.at(nodeX));
-        auto nodeRadius = static_cast<int>(std::floor(nodeDiameter * 0.5));
+        auto nodeX = boundsX + static_cast<int>(std::floor(boundsWidth * normalizedFrequency));
+        auto nodeY = mapFilterGainRangeToAnalyzerBounds(magnitudes.at(nodeX - boundsX));
 
         peakNodes.at(i).setBounds(nodeX - nodeRadius, nodeY - nodeRadius, nodeDiameter, nodeDiameter);
+        peakNodes.at(i).setCoordinates(nodeX - nodeRadius, nodeY - nodeRadius);
     }
 }
 

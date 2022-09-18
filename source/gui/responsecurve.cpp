@@ -161,24 +161,6 @@ void ResponseCurve::updateMonoChain()
     }
 }
 
-void ResponseCurve::updateNodeCoordinates(ResponseCurveNode& node, juce::AudioParameterFloat* freqParam, juce::AudioParameterFloat* gainParam)
-{
-    auto normalizedFrequency = juce::mapFromLog10<float>(freqParam->get(),
-                                                         Globals::getMinFrequency(),
-                                                         Globals::getMaxFrequency());
-
-    auto frequencyX = static_cast<int>(std::floor(fftBoundingBox.getX() + fftBoundingBox.getWidth() * normalizedFrequency));
-
-    auto gainY = static_cast<int>(std::floor(juce::jmap<float>(gainParam->get(),
-                                                               Globals::getNegativeInf(),
-                                                               Globals::getMaxDecibels(),
-                                                               fftBoundingBox.getBottom(),
-                                                               fftBoundingBox.getY())));
-
-    auto nodeRadius = static_cast<int>(std::floor(nodeDiameter * 0.5));
-    node.setCoordinates(frequencyX - nodeRadius, gainY - nodeRadius);
-}
-
 void ResponseCurve::parameterValueChanged(int parameterIndex, float newValue)
 {
     parametersChanged.set(true);

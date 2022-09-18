@@ -49,10 +49,71 @@ ResponseCurve::~ResponseCurve()
 void ResponseCurve::paint(juce::Graphics& g)
 {
     g.reduceClipRegion(fftBoundingBox);
+
     auto boundsWidth = fftBoundingBox.getWidth();
     auto boundsX = fftBoundingBox.getX();
     auto responseCurveMin = fftBoundingBox.getBottom();
     auto responseCurveMax = fftBoundingBox.getY();
+    auto nodeRadius = static_cast<int>(std::floor(nodeDiameter * 0.5));
+
+    std::vector<double> magnitudes = getMagnitudes(boundsWidth);
+
+    auto mapFilterGainRangeToAnalyzerBounds = [&](double magnitude){
+        return juce::jmap<float>(magnitude,
+                                 Globals::getNegativeInf(),
+                                 Globals::getMaxDecibels(),
+                                 responseCurveMin,
+                                 responseCurveMax);
+    };
+
+    // Drawing the line
+    g.setColour(ColourPalette::getColour(ColourPalette::Blue));
+    juce::Path responseCurveLine;
+
+    responseCurveLine.startNewSubPath(boundsX, mapFilterGainRangeToAnalyzerBounds(magnitudes.at(0)));
+
+    for (size_t i = 1; i < magnitudes.size(); ++i) {
+        responseCurveLine.lineTo(boundsX + i, mapFilterGainRangeToAnalyzerBounds(magnitudes.at(i)));
+    }
+
+    g.strokePath(responseCurveLine, juce::PathStrokeType(2.f));
+
+    // Drawing the nodes
+    for (size_t i = 0; i < peakNodes.size(); ++i) {
+        auto normalizedFrequency = juce::mapFromLog10<float>(peakBands.at(i).peakFreqParam->get(),
+                                                             Globals::getMinFrequency(),
+                                                             Globals::getMaxFrequency());
+
+        auto nodeX = boundsX + static_cast<int>(std::floor(boundsWidth * normalizedFrequency));
+        auto nodeY = mapFilterGainRangeToAnalyzerBounds(magnitudes.at(nodeX - boundsX));
+
+        peakNodes.at(i).setBounds(nodeX - nodeRadius, nodeY - nodeRadius, nodeDiameter, nodeDiameter);
+        peakNodes.at(i).setCoordinates(nodeX - nodeRadius, nodeY - nodeRadius);
+    }
+}
+
+void ResponseCurve::resized()
+{
+    AnalyzerBase::resized();
+}
+
+void ResponseCurve::updateMonoChain()
+{
+    auto lowCutCoefficients = FilterUtils::makeHighPassFilter(lowCutFreqParam, lowCutSlopeParam, sampleRate);
+    auto highCutCoefficients = FilterUtils::makeLowPassFilter(highCutFreqParam, highCutSlopeParam, sampleRate);
+
+    FilterUtils::updateCutCoefficients(monoChain, FilterUtils::ChainPositions::LowCut, lowCutCoefficients, lowCutSlopeParam);
+    FilterUtils::updateCutCoefficients(monoChain, FilterUtils::ChainPositions::HighCut, highCutCoefficients, highCutSlopeParam);
+
+    for (size_t i = 0; i < peakBands.size(); ++i) {
+        FilterUtils::updatePeakCoefficients(monoChain, static_cast<FilterUtils::ChainPositions>(i+1), peakBands.at(i).peakFreqParam, peakBands.at(i).peakQParam, peakBands.at(i).peakGainParam, sampleRate);
+    }
+}
+
+std::vector<double> ResponseCurve::getMagnitudes(int boundsWidth)
+{
+    std::vector<double> magnitudes;
+    magnitudes.resize(boundsWidth);
 
     auto& lowCut = monoChain.get<FilterUtils::ChainPositions::LowCut>();
     auto& peak0 = monoChain.get<FilterUtils::ChainPositions::Peak_0>();
@@ -62,9 +123,6 @@ void ResponseCurve::paint(juce::Graphics& g)
     auto& peak4 = monoChain.get<FilterUtils::ChainPositions::Peak_4>();
     auto& peak5 = monoChain.get<FilterUtils::ChainPositions::Peak_5>();
     auto& highCut = monoChain.get<FilterUtils::ChainPositions::HighCut>();
-
-    std::vector<double> magnitudes;
-    magnitudes.resize(boundsWidth);
 
     for (auto i = 0; i < boundsWidth; ++i)
     {
@@ -110,55 +168,7 @@ void ResponseCurve::paint(juce::Graphics& g)
         magnitudes.at(i) = juce::Decibels::gainToDecibels(mag);
     }
 
-    auto mapFilterGainRangeToAnalyzerBounds = [&](double magnitude){
-        return juce::jmap<float>(magnitude,
-                                 Globals::getNegativeInf(),
-                                 Globals::getMaxDecibels(),
-                                 responseCurveMin,
-                                 responseCurveMax);
-    };
-
-    g.setColour(ColourPalette::getColour(ColourPalette::Blue));
-    juce::Path responseCurveLine;
-
-    responseCurveLine.startNewSubPath(boundsX, mapFilterGainRangeToAnalyzerBounds(magnitudes.at(0)));
-
-    for (size_t i = 1; i < magnitudes.size(); ++i) {
-        responseCurveLine.lineTo(boundsX + i, mapFilterGainRangeToAnalyzerBounds(magnitudes.at(i)));
-    }
-
-    g.strokePath(responseCurveLine, juce::PathStrokeType(2.f));
-
-    auto nodeRadius = static_cast<int>(std::floor(nodeDiameter * 0.5));
-    for (size_t i = 0; i < peakNodes.size(); ++i) {
-        auto normalizedFrequency = juce::mapFromLog10<float>(peakBands.at(i).peakFreqParam->get(),
-                                                             Globals::getMinFrequency(),
-                                                             Globals::getMaxFrequency());
-
-        auto nodeX = boundsX + static_cast<int>(std::floor(boundsWidth * normalizedFrequency));
-        auto nodeY = mapFilterGainRangeToAnalyzerBounds(magnitudes.at(nodeX - boundsX));
-
-        peakNodes.at(i).setBounds(nodeX - nodeRadius, nodeY - nodeRadius, nodeDiameter, nodeDiameter);
-        peakNodes.at(i).setCoordinates(nodeX - nodeRadius, nodeY - nodeRadius);
-    }
-}
-
-void ResponseCurve::resized()
-{
-    AnalyzerBase::resized();
-}
-
-void ResponseCurve::updateMonoChain()
-{
-    auto lowCutCoefficients = FilterUtils::makeHighPassFilter(lowCutFreqParam, lowCutSlopeParam, sampleRate);
-    auto highCutCoefficients = FilterUtils::makeLowPassFilter(highCutFreqParam, highCutSlopeParam, sampleRate);
-
-    FilterUtils::updateCutCoefficients(monoChain, FilterUtils::ChainPositions::LowCut, lowCutCoefficients, lowCutSlopeParam);
-    FilterUtils::updateCutCoefficients(monoChain, FilterUtils::ChainPositions::HighCut, highCutCoefficients, highCutSlopeParam);
-
-    for (size_t i = 0; i < peakBands.size(); ++i) {
-        FilterUtils::updatePeakCoefficients(monoChain, static_cast<FilterUtils::ChainPositions>(i+1), peakBands.at(i).peakFreqParam, peakBands.at(i).peakQParam, peakBands.at(i).peakGainParam, sampleRate);
-    }
+    return magnitudes;
 }
 
 void ResponseCurve::parameterValueChanged(int parameterIndex, float newValue)

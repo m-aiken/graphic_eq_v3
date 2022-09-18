@@ -17,6 +17,7 @@ struct ResponseCurve : AnalyzerBase, juce::AudioProcessorParameter::Listener, ju
     void resized() override;
 
     void updateMonoChain();
+    std::vector<double> getMagnitudes(int boundsWidth);
 
     void parameterValueChanged(int parameterIndex, float newValue) override;
     void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) override {}

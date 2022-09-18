@@ -128,15 +128,23 @@ void ResponseCurve::paint(juce::Graphics& g)
 
     g.setColour(ColourPalette::getColour(ColourPalette::Blue));
     g.strokePath(responseCurveLine, juce::PathStrokeType(2.f));
+
+    for (size_t i = 0; i < peakNodes.size(); ++i) {
+        auto normalizedFrequency = juce::mapFromLog10<float>(peakBands.at(i).peakFreqParam->get(),
+                                                             Globals::getMinFrequency(),
+                                                             Globals::getMaxFrequency());
+
+        auto nodeX = static_cast<int>(std::floor(boundsX + boundsWidth * normalizedFrequency));
+        auto nodeY = mapFilterGainRangeToAnalyzerBounds(magnitudes.at(nodeX));
+        auto nodeRadius = static_cast<int>(std::floor(nodeDiameter * 0.5));
+
+        peakNodes.at(i).setBounds(nodeX - nodeRadius, nodeY - nodeRadius, nodeDiameter, nodeDiameter);
+    }
 }
 
 void ResponseCurve::resized()
 {
     AnalyzerBase::resized();
-
-    for (size_t i = 0; i < peakNodes.size(); ++i) {
-        peakNodes.at(i).setBounds(peakNodes.at(i).getCoordinates().getX(), peakNodes.at(i).getCoordinates().getY(), nodeDiameter, nodeDiameter);
-    }
 }
 
 void ResponseCurve::updateMonoChain()
@@ -179,11 +187,6 @@ void ResponseCurve::timerCallback()
 {
     if(parametersChanged.compareAndSetBool(false, true)) {
         updateMonoChain();
-        for (size_t i = 0; i < peakNodes.size(); ++i) {
-            updateNodeCoordinates(peakNodes.at(i), peakBands.at(i).peakFreqParam, peakBands.at(i).peakGainParam);
-        }
-
-        resized();
         repaint();
     }
 }

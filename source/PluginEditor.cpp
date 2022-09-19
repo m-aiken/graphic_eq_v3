@@ -14,8 +14,6 @@ GraphicEqEditor::GraphicEqEditor (GraphicEqProcessor& p)
 {
     setLookAndFeel(&lnf);
 
-    addAndMakeVisible(powerButton);
-
     addAndMakeVisible(analyzerControls);
     addAndMakeVisible(spectrumAnalyzer);
     addAndMakeVisible(responseCurve);
@@ -41,9 +39,7 @@ void GraphicEqEditor::resized()
     auto mainWindowWidth = bounds.getWidth();
     auto mainWindowHeight = bounds.getHeight();
     auto padding = 10;
-
-    powerButton.setBounds(padding, padding, 16, 16);
-
+    
     auto tempEqControlsWidth = 732; // current fftBoundingBox width
     analyzerControls.setBounds(bounds.getCentreX() - (tempEqControlsWidth * 0.5),
                                padding,

@@ -17,7 +17,7 @@ CutControl::CutControl(juce::AudioProcessorValueTreeState& apvts, const FilterUt
     auto slopeParamName = params.at(chainPosition == FilterUtils::ChainPositions::LowCut ? EqProperties::CutControls::LOW_CUT_SLOPE : EqProperties::CutControls::HIGH_CUT_SLOPE);
     auto slopeParam = apvts.getParameter(slopeParamName);
     jassert(slopeParam != nullptr);
-    slopeSlider = std::make_unique<CustomRotaryControl>(*slopeParam, "dB/Oct", "dB/Oct");
+    slopeSlider = std::make_unique<CustomLinearSlider>(*slopeParam);
     slopeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, slopeParamName, *slopeSlider);
 
     addAndMakeVisible(powerButton);
@@ -28,8 +28,6 @@ CutControl::CutControl(juce::AudioProcessorValueTreeState& apvts, const FilterUt
 
 void CutControl::paint(juce::Graphics& g)
 {
-    g.fillAll(ColourPalette::getColour(ColourPalette::Green).withAlpha(0.1f));
-
     auto bounds = getLocalBounds();
 
     g.setFont(Globals::getFont().withHeight(12.f));
@@ -44,6 +42,29 @@ void CutControl::paint(juce::Graphics& g)
                      juce::Justification::centred,
                      1);
 
+    auto slopeTextHeight = 10;
+    auto sliderQuarter = slopeSlider->getWidth() * 0.25;
+    auto sliderX = slopeSlider->getX();
+    auto sliderBottom = slopeSlider->getBottom();
+
+    g.drawFittedText("dB/Oct",
+                     sliderX,
+                     slopeSlider->getY() - slopeTextHeight - 4,
+                     slopeSlider->getWidth(),
+                     slopeTextHeight,
+                     juce::Justification::centred,
+                     1);
+
+    for (auto i = 0; i < 4; ++i) {
+        g.drawFittedText(juce::String((i+1) * 12),
+                         sliderX + (sliderQuarter * i),
+                         sliderBottom + 4,
+                         sliderQuarter,
+                         slopeTextHeight,
+                         juce::Justification::centred,
+                         1);
+    }
+
     // Values
     auto valueRectHeight = bounds.getHeight() * 0.4;
     auto valueRect = juce::Rectangle<int>(0, bounds.getBottom() - valueRectHeight, bounds.getWidth(), valueRectHeight);
@@ -54,8 +75,6 @@ void CutControl::paint(juce::Graphics& g)
 
     g.drawFittedText("Hz:", 0, vY + vH , vW, vH, juce::Justification::centred, 1);
     g.drawFittedText(juce::String(freqSlider->getValue()), vCX, vY + vH, vW, vH, juce::Justification::centred, 1);
-    g.drawFittedText("dB/Oct:" , 0, vY + (vH*2), vW, vH, juce::Justification::centred, 1);
-    g.drawFittedText(juce::String(slopeSlider->getValue()) , vCX, vY + (vH*2), vW, vH, juce::Justification::centred, 1);
 }
 
 void CutControl::resized()
@@ -66,12 +85,13 @@ void CutControl::resized()
     powerButton.setBounds(6, 6, 16, 16);
 
     freqSlider->setBounds(bounds.getCentreX() - (diameter * 0.5),
-                          bounds.getCentreX() - (diameter * 0.65),
+                          bounds.getCentreX() - (diameter * 0.5),
                           diameter,
                           diameter);
 
-    slopeSlider->setBounds(bounds.getCentreX() - (diameter * 0.5),
-                           freqSlider->getBottom() + (diameter * 0.15),
-                           diameter,
-                           diameter);
+    auto padding = 10;
+    slopeSlider->setBounds(padding,
+                           freqSlider->getBottom() + (padding * 3),
+                           bounds.getWidth() - (padding * 2),
+                           padding);
 }

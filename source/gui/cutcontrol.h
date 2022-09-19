@@ -3,6 +3,7 @@
 #include <JuceHeader.h>
 #include "powerbutton.h"
 #include "customrotarycontrol.h"
+#include "customlinearslider.h"
 #include "../dsp/filterutils.h"
 
 //==============================================================================
@@ -18,7 +19,8 @@ private:
     PowerButton powerButton;
 
     std::unique_ptr<CustomRotaryControl> freqSlider;
-    std::unique_ptr<CustomRotaryControl> slopeSlider;
+    std::unique_ptr<CustomLinearSlider> slopeSlider;
+
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> freqAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> slopeAttachment;
 };

@@ -48,7 +48,7 @@ void CustomLookAndFeel::drawLinearSlider(juce::Graphics& g,
     g.setColour(ColourPalette::getColour(ColourPalette::Green).withAlpha(0.1f));
     g.fillRect(background);
 
-    auto tooltipWidth = width * 0.15;
+    auto tooltipWidth = width * 0.25 <= 20 ? width * 0.25 : width * 0.15;
     float tooltipX = sliderPos - (tooltipWidth * 0.5);
 
     if (tooltipX < x) {
@@ -59,7 +59,7 @@ void CustomLookAndFeel::drawLinearSlider(juce::Graphics& g,
         tooltipX = width - tooltipWidth;
     }
 
-    auto tooltip = juce::Rectangle<float>(tooltipX, y, tooltipWidth, tooltipWidth);
+    auto tooltip = juce::Rectangle<float>(tooltipX, y, tooltipWidth, height);
     g.setColour(ColourPalette::getColour(ColourPalette::Salmon));
     g.fillRect(tooltip);
 }

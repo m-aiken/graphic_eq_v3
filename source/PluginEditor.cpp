@@ -39,7 +39,7 @@ void GraphicEqEditor::resized()
     auto mainWindowWidth = bounds.getWidth();
     auto mainWindowHeight = bounds.getHeight();
     auto padding = 10;
-    
+
     auto tempEqControlsWidth = 732; // current fftBoundingBox width
     analyzerControls.setBounds(bounds.getCentreX() - (tempEqControlsWidth * 0.5),
                                padding,

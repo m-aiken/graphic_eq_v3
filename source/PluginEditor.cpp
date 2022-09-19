@@ -6,7 +6,7 @@
 //==============================================================================
 GraphicEqEditor::GraphicEqEditor (GraphicEqProcessor& p)
 : AudioProcessorEditor (&p),
-  processorRef (p),
+  processorRef(p),
   analyzerControls(processorRef.apvts),
   spectrumAnalyzer(processorRef.getSampleRate(), processorRef.lScsf, processorRef.rScsf, processorRef.apvts),
   responseCurve(processorRef.apvts, processorRef.getSampleRate()),
@@ -19,7 +19,9 @@ GraphicEqEditor::GraphicEqEditor (GraphicEqProcessor& p)
     addAndMakeVisible(responseCurve);
     addAndMakeVisible(eqControls);
 
-    setSize (800, 600);
+    addAndMakeVisible(analyzerOverlay);
+
+    setSize(800, 600);
 }
 
 GraphicEqEditor::~GraphicEqEditor()
@@ -57,4 +59,6 @@ void GraphicEqEditor::resized()
                          spectrumAnalyzer.getBottom() + padding,
                          tempEqControlsWidth,
                          bounds.getBottom() - spectrumAnalyzer.getBottom() - (padding * 2));
+
+    analyzerOverlay.setBounds(spectrumAnalyzer.getBounds());
 }

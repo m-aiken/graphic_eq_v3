@@ -92,6 +92,8 @@ target_sources(GraphicEq
         source/gui/analyzerbase.h
         source/gui/analyzercontrols.h
         source/gui/analyzercontrols.cpp
+        source/gui/analyzeroverlay.h
+        source/gui/analyzeroverlay.cpp
         source/gui/customlinearslider.h
         source/gui/customlinearslider.cpp
         source/gui/customlookandfeel.h

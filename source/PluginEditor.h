@@ -9,6 +9,7 @@
 #include "gui/analyzercontrols.h"
 #include "gui/eqcontrolscontainer.h"
 //#include "gui/peakcontrol.h"
+#include "gui/analyzeroverlay.h"
 
 //==============================================================================
 class GraphicEqEditor : public juce::AudioProcessorEditor
@@ -31,6 +32,8 @@ private:
     ResponseCurve responseCurve;
     EqControlsContainer eqControls;
 //    PeakControl peakControl0;
+
+    AnalyzerOverlay analyzerOverlay;
 
     CustomLookAndFeel lnf;
     

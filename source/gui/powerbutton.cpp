@@ -9,12 +9,12 @@ void PowerButton::paint(juce::Graphics& g)
     auto bounds = getLocalBounds();
     float lineThickness = 2.f;
 
-    g.setColour(ColourPalette::getColour(ColourPalette::Blue));
+    g.setColour(getToggleState() ? ColourPalette::getColour(ColourPalette::Green) : ColourPalette::getColour(ColourPalette::Blue));
     g.drawEllipse(bounds.toFloat().reduced(lineThickness), lineThickness);
 
     g.setColour(ColourPalette::getColour(ColourPalette::Eggshell));
     g.fillRect(bounds.getCentreX() - lineThickness, 0.f, lineThickness * 2, bounds.getHeight() * 0.5f);
 
-    g.setColour(ColourPalette::getColour(ColourPalette::Blue));
+    g.setColour(getToggleState() ? ColourPalette::getColour(ColourPalette::Green) : ColourPalette::getColour(ColourPalette::Blue));
     g.fillRect(bounds.getCentreX() - (lineThickness * 0.5), lineThickness * 0.5, lineThickness, bounds.getHeight() * 0.4f);
 }

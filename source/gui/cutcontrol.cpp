@@ -20,6 +20,8 @@ CutControl::CutControl(juce::AudioProcessorValueTreeState& apvts, const FilterUt
     slopeSlider = std::make_unique<CustomRotaryControl>(*slopeParam, "dB/Oct", "dB/Oct");
     slopeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, slopeParamName, *slopeSlider);
 
+    addAndMakeVisible(powerButton);
+
     addAndMakeVisible(*freqSlider);
     addAndMakeVisible(*slopeSlider);
 }
@@ -60,6 +62,8 @@ void CutControl::resized()
 {
     auto bounds = getLocalBounds();
     auto diameter = (bounds.getWidth() * 0.55);
+
+    powerButton.setBounds(6, 6, 16, 16);
 
     freqSlider->setBounds(bounds.getCentreX() - (diameter * 0.5),
                           bounds.getCentreX() - (diameter * 0.65),

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "powerbutton.h"
 #include "customrotarycontrol.h"
 #include "../dsp/filterutils.h"
 
@@ -13,6 +14,8 @@ struct CutControl : juce::Component
 
 private:
     FilterUtils::ChainPositions chainPosition;
+
+    PowerButton powerButton;
 
     std::unique_ptr<CustomRotaryControl> freqSlider;
     std::unique_ptr<CustomRotaryControl> slopeSlider;

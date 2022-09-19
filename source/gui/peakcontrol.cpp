@@ -22,6 +22,8 @@ PeakControl::PeakControl(juce::AudioProcessorValueTreeState& apvts, const int _b
     gainAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, bandNum), *gainSlider);
     qAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, EqProperties::getPeakControlParamName(EqProperties::PeakControl::QUALITY, bandNum), *qSlider);
 
+    addAndMakeVisible(powerButton);
+
     addAndMakeVisible(*freqSlider);
     addAndMakeVisible(*gainSlider);
     addAndMakeVisible(*qSlider);
@@ -68,18 +70,20 @@ void PeakControl::resized()
     auto padding = 2;
     auto rotaryDiameter = (rotaryBounds.getWidth() * 0.5) - padding;
 
+    powerButton.setBounds(6, 6, 16, 16);
+
     freqSlider->setBounds(padding,
-                          padding,
+                          rotaryDiameter * 0.5,
                           rotaryDiameter,
                           rotaryDiameter);
 
     gainSlider->setBounds(padding,
-                          rotaryBounds.getCentreY() + padding,
+                          rotaryBounds.getCentreY() + (rotaryDiameter * 0.5),
                           rotaryDiameter,
                           rotaryDiameter);
 
     qSlider->setBounds(rotaryBounds.getRight() - rotaryDiameter - padding,
-                       rotaryBounds.getCentreY() - (rotaryDiameter * 0.5),
+                       rotaryBounds.getCentreY(),
                        rotaryDiameter,
                        rotaryDiameter);
 }

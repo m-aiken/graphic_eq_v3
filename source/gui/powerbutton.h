@@ -3,7 +3,7 @@
 #include <JuceHeader.h>
 
 //==============================================================================
-struct PowerButton : juce::Component
+struct PowerButton : juce::ToggleButton
 {
     void paint(juce::Graphics& g) override;
 };

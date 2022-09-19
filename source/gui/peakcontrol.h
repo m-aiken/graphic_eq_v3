@@ -1,6 +1,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "powerbutton.h"
 #include "customrotarycontrol.h"
 
 //==============================================================================
@@ -12,6 +13,8 @@ struct PeakControl : juce::Component
 
 private:
     int bandNum;
+
+    PowerButton powerButton;
 
     std::unique_ptr<CustomRotaryControl> freqSlider;
     std::unique_ptr<CustomRotaryControl> gainSlider;

@@ -17,26 +17,24 @@ void AnalyzerOverlay::resized()
 
 void AnalyzerOverlay::mouseDrag(const juce::MouseEvent& event)
 {
+    auto xCoord = event.position.getX() - fftBoundingBox.getX();
+    auto yCoord = event.position.getY() - fftBoundingBox.getY();
+
     auto boundsWidth = fftBoundingBox.getWidth();
-    auto boundsX = fftBoundingBox.getX();
-    auto boundsY = fftBoundingBox.getY();
-    auto boundsRight = fftBoundingBox.getRight();
-    auto responseCurveMin = fftBoundingBox.getBottom();
-    auto responseCurveMax = fftBoundingBox.getY();
+    auto boundsHeight = fftBoundingBox.getHeight();
 
-    auto xCoord = event.position.getX() - boundsX;
-    auto yCoord = event.position.getY() - boundsY;
+    if (xCoord >= 0 && xCoord <= boundsWidth && yCoord >= 0 && yCoord <= boundsHeight) {
+        auto xFrequency = mapToLog10<double>(static_cast<double>(xCoord) / boundsWidth,
+                                             Globals::getMinFrequency(),
+                                             Globals::getMaxFrequency());
 
-    auto xFrequency = mapToLog10<double>(static_cast<double>(xCoord) / boundsWidth,
-                                         Globals::getMinFrequency(),
-                                         Globals::getMaxFrequency());
+        auto yDecibels = juce::jmap<float>(yCoord,
+                                           0,
+                                           boundsHeight,
+                                           Globals::getMaxDecibels(),
+                                           Globals::getNegativeInf());
 
-    // map y coord to magnitude, then gert ??? (the value to update the gain param) from magnitude
-
-    if (xFrequency >= Globals::getMinFrequency() && xFrequency <= Globals::getMaxFrequency()) {
-        // update frequency params
+        DBG(juce::String("x: ") << xFrequency);
+        DBG(juce::String("y: ") << yDecibels);
     }
-
-    DBG(juce::String("x: ") << xFrequency);
-    DBG(juce::String("y: ") << yCoord);
 }

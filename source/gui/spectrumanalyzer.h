@@ -2,15 +2,13 @@
 
 #include <JuceHeader.h>
 
-#include "analyzerbase.h"
 #include "pathproducer.h"
-#include "dbscale.h"
 #include "paramlistener.h"
 #include "../dsp/singlesamplefifo.h"
 #include "../utils/globals.h"
 
 //==============================================================================
-struct SpectrumAnalyzer : AnalyzerBase, juce::Timer
+struct SpectrumAnalyzer : juce::Component, juce::Timer
 {
     SpectrumAnalyzer(double _sampleRate,
                      SingleChannelSampleFifo<juce::AudioBuffer<float>>& leftScsf,
@@ -37,8 +35,6 @@ private:
     void updateOrder(float value);
     void animate();
 
-    DbScale analyzerScale, eqScale;
-
     std::unique_ptr<ParamListener<float>> analyzerOrderParamListener;
     std::unique_ptr<ParamListener<float>> analyzerDecayRateParamListener;
 
@@ -46,6 +42,4 @@ private:
          leftScaleMax  {Globals::getMaxDecibels()},
          rightScaleMin {Globals::getNegativeInf()},
          rightScaleMax {Globals::getMaxDecibels()};
-
-    int scaleDivision { 12 };
 };

@@ -8,15 +8,15 @@ PeakControl::PeakControl(juce::AudioProcessorValueTreeState& apvts, const int _b
 {
     auto freqParam = apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::FREQUENCY, bandNum));
     jassert(freqParam != nullptr);
-    freqSlider = std::make_unique<CustomRotaryControl>(*freqParam, "Hz", "Hz");
+    freqSlider = std::make_unique<CustomRotaryControl>(*freqParam, "Hz");
 
     auto gainParam = apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, bandNum));
     jassert(gainParam != nullptr);
-    gainSlider = std::make_unique<CustomRotaryControl>(*gainParam, "dB", "dB");
+    gainSlider = std::make_unique<CustomRotaryControl>(*gainParam, "dB");
 
     auto qParam = apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::QUALITY, bandNum));
     jassert(qParam != nullptr);
-    qSlider = std::make_unique<CustomRotaryControl>(*qParam, "", "Q");
+    qSlider = std::make_unique<CustomRotaryControl>(*qParam, "Q");
 
     freqAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, EqProperties::getPeakControlParamName(EqProperties::PeakControl::FREQUENCY, bandNum), *freqSlider);
     gainAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, bandNum), *gainSlider);
@@ -35,7 +35,7 @@ void PeakControl::paint(juce::Graphics& g)
 
     auto bounds = getLocalBounds();
 
-    g.setFont(Globals::getFont().withHeight(12.f));
+    g.setFont(Globals::getFont());
     auto textHeight = g.getCurrentFont().getHeight();
     g.setColour(ColourPalette::getColour(ColourPalette::Blue));
 

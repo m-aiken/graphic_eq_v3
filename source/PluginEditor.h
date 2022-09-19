@@ -8,7 +8,6 @@
 #include "gui/customlookandfeel.h"
 #include "gui/analyzercontrols.h"
 #include "gui/eqcontrolscontainer.h"
-//#include "gui/peakcontrol.h"
 #include "gui/analyzeroverlay.h"
 
 //==============================================================================
@@ -22,6 +21,9 @@ public:
     void paint (juce::Graphics&) override;
     void resized() override;
 
+    void drawDbLabels(juce::Graphics& g, juce::Rectangle<int>& labelBounds);
+    void drawFrequencyLabels(juce::Graphics& g, juce::Rectangle<int>& labelBounds);
+
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
@@ -31,8 +33,6 @@ private:
     SpectrumAnalyzer spectrumAnalyzer;
     ResponseCurve responseCurve;
     EqControlsContainer eqControls;
-//    PeakControl peakControl0;
-
     AnalyzerOverlay analyzerOverlay;
 
     CustomLookAndFeel lnf;

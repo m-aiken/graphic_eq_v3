@@ -11,7 +11,7 @@ CutControl::CutControl(juce::AudioProcessorValueTreeState& apvts, const FilterUt
     auto freqParamName = params.at(chainPosition == FilterUtils::ChainPositions::LowCut ? EqProperties::CutControls::LOW_CUT_FREQ : EqProperties::CutControls::HIGH_CUT_FREQ);
     auto freqParam = apvts.getParameter(freqParamName);
     jassert(freqParam != nullptr);
-    freqSlider = std::make_unique<CustomRotaryControl>(*freqParam, "Hz", "Hz");
+    freqSlider = std::make_unique<CustomRotaryControl>(*freqParam, "Hz");
     freqAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, freqParamName, *freqSlider);
 
     auto slopeParamName = params.at(chainPosition == FilterUtils::ChainPositions::LowCut ? EqProperties::CutControls::LOW_CUT_SLOPE : EqProperties::CutControls::HIGH_CUT_SLOPE);
@@ -30,7 +30,7 @@ void CutControl::paint(juce::Graphics& g)
 {
     auto bounds = getLocalBounds();
 
-    g.setFont(Globals::getFont().withHeight(12.f));
+    g.setFont(Globals::getFont());
     auto textHeight = g.getCurrentFont().getHeight();
     g.setColour(ColourPalette::getColour(ColourPalette::Blue));
 

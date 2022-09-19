@@ -1,20 +1,18 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "analyzerbase.h"
 #include "responsecurvenode.h"
 #include "../dsp/filterutils.h"
 #include "../dsp/peakband.h"
 #include "../utils/globals.h"
 
 //==============================================================================
-struct ResponseCurve : AnalyzerBase, juce::AudioProcessorParameter::Listener, juce::Timer
+struct ResponseCurve : juce::Component, juce::AudioProcessorParameter::Listener, juce::Timer
 {
     ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double _sampleRate);
     ~ResponseCurve();
 
     void paint(juce::Graphics& g) override;
-    void resized() override;
 
     void updateMonoChain();
     std::vector<double> getMagnitudes(int boundsWidth);

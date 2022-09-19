@@ -26,17 +26,16 @@ void DbScale::buildBackgroundImage(int dbDivision, juce::Rectangle<int> meterBou
     juce::Graphics g(bkgd);
     g.addTransform(juce::AffineTransform::scale(scaleFactor));
 
-    auto ticks = getTicks(dbDivision, meterBounds, minDb, maxDb);
-    auto boundsX = bounds.getX();
-    auto boundsWidth = bounds.getWidth();
-    auto textHeight = 14;
-    auto meterY = meterBounds.getY();
-
     g.setFont(Globals::getFont());
     g.setColour(ColourPalette::getColour(ColourPalette::Blue));
 
-    for ( auto i = 0; i < ticks.size(); ++i )
-    {
+    auto ticks = getTicks(dbDivision, meterBounds, minDb, maxDb);
+    auto boundsX = bounds.getX();
+    auto boundsWidth = bounds.getWidth();
+    auto textHeight = g.getCurrentFont().getHeight();
+    auto meterY = meterBounds.getY();
+
+    for ( auto i = 0; i < ticks.size(); ++i ) {
         auto dbString = juce::String(ticks[i].db);
 
         g.drawFittedText((ticks[i].db > 0 ? '+' + dbString : dbString), // text
@@ -44,15 +43,14 @@ void DbScale::buildBackgroundImage(int dbDivision, juce::Rectangle<int> meterBou
                          ticks[i].y + meterY - (textHeight / 2),        // y
                          boundsWidth,                                   // width
                          textHeight,                                    // height
-                         juce::Justification::centred,                  // justification
+                         juce::Justification::centred,                   // justification
                          1);                                            // max num lines
     }
 }
 
 std::vector<Tick> DbScale::getTicks(int dbDivision, juce::Rectangle<int> meterBounds, int minDb, int maxDb)
 {
-    if ( minDb > maxDb )
-    {
+    if ( minDb > maxDb ) {
         std::swap(minDb, maxDb);
     }
 
@@ -63,8 +61,7 @@ std::vector<Tick> DbScale::getTicks(int dbDivision, juce::Rectangle<int> meterBo
 
     auto meterHeight = meterBounds.getHeight();
 
-    for ( auto db = minDb; db <= maxDb; db += dbDivision )
-    {
+    for ( auto db = minDb; db <= maxDb; db += dbDivision ) {
         Tick tick;
         tick.db = db;
         tick.y = juce::jmap<int>(db, Globals::getNegativeInf(), Globals::getMaxDecibels(), meterHeight, 0);

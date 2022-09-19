@@ -5,23 +5,17 @@
 //==============================================================================
 void AnalyzerOverlay::paint(juce::Graphics& g)
 {
-    g.reduceClipRegion(fftBoundingBox);
-    g.setColour(ColourPalette::getColour(ColourPalette::Salmon).withAlpha(0.1f));
-    g.fillRect(fftBoundingBox);
-}
-
-void AnalyzerOverlay::resized()
-{
-    AnalyzerBase::resized();
+    g.fillAll(ColourPalette::getColour(ColourPalette::Salmon).withAlpha(0.1f));
 }
 
 void AnalyzerOverlay::mouseDrag(const juce::MouseEvent& event)
 {
-    auto xCoord = event.position.getX() - fftBoundingBox.getX();
-    auto yCoord = event.position.getY() - fftBoundingBox.getY();
+    auto xCoord = event.position.getX();
+    auto yCoord = event.position.getY();
 
-    auto boundsWidth = fftBoundingBox.getWidth();
-    auto boundsHeight = fftBoundingBox.getHeight();
+    auto bounds = getLocalBounds();
+    auto boundsWidth = bounds.getWidth();
+    auto boundsHeight = bounds.getHeight();
 
     if (xCoord >= 0 && xCoord <= boundsWidth && yCoord >= 0 && yCoord <= boundsHeight) {
         auto xFrequency = mapToLog10<double>(static_cast<double>(xCoord) / boundsWidth,

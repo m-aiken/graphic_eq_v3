@@ -48,13 +48,12 @@ ResponseCurve::~ResponseCurve()
 
 void ResponseCurve::paint(juce::Graphics& g)
 {
-    g.reduceClipRegion(fftBoundingBox);
-
-    auto boundsWidth = fftBoundingBox.getWidth();
-    auto boundsX = fftBoundingBox.getX();
-    auto responseCurveMin = fftBoundingBox.getBottom();
-    auto responseCurveMax = fftBoundingBox.getY();
-    auto nodeRadius = static_cast<int>(std::floor(nodeDiameter * 0.5));
+    auto bounds           = getLocalBounds();
+    auto boundsWidth      = bounds.getWidth();
+    auto boundsX          = bounds.getX();
+    auto responseCurveMin = bounds.getBottom();
+    auto responseCurveMax = bounds.getY();
+    auto nodeRadius       = static_cast<int>(std::floor(nodeDiameter * 0.5));
 
     std::vector<double> magnitudes = getMagnitudes(boundsWidth);
 
@@ -92,14 +91,9 @@ void ResponseCurve::paint(juce::Graphics& g)
     }
 }
 
-void ResponseCurve::resized()
-{
-    AnalyzerBase::resized();
-}
-
 void ResponseCurve::updateMonoChain()
 {
-    auto lowCutCoefficients = FilterUtils::makeHighPassFilter(lowCutFreqParam, lowCutSlopeParam, sampleRate);
+    auto lowCutCoefficients  = FilterUtils::makeHighPassFilter(lowCutFreqParam, lowCutSlopeParam, sampleRate);
     auto highCutCoefficients = FilterUtils::makeLowPassFilter(highCutFreqParam, highCutSlopeParam, sampleRate);
 
     FilterUtils::updateCutCoefficients(monoChain, FilterUtils::ChainPositions::LowCut, lowCutCoefficients, lowCutSlopeParam);
@@ -115,13 +109,13 @@ std::vector<double> ResponseCurve::getMagnitudes(int boundsWidth)
     std::vector<double> magnitudes;
     magnitudes.resize(boundsWidth);
 
-    auto& lowCut = monoChain.get<FilterUtils::ChainPositions::LowCut>();
-    auto& peak0 = monoChain.get<FilterUtils::ChainPositions::Peak_0>();
-    auto& peak1 = monoChain.get<FilterUtils::ChainPositions::Peak_1>();
-    auto& peak2 = monoChain.get<FilterUtils::ChainPositions::Peak_2>();
-    auto& peak3 = monoChain.get<FilterUtils::ChainPositions::Peak_3>();
-    auto& peak4 = monoChain.get<FilterUtils::ChainPositions::Peak_4>();
-    auto& peak5 = monoChain.get<FilterUtils::ChainPositions::Peak_5>();
+    auto& lowCut  = monoChain.get<FilterUtils::ChainPositions::LowCut>();
+    auto& peak0   = monoChain.get<FilterUtils::ChainPositions::Peak_0>();
+    auto& peak1   = monoChain.get<FilterUtils::ChainPositions::Peak_1>();
+    auto& peak2   = monoChain.get<FilterUtils::ChainPositions::Peak_2>();
+    auto& peak3   = monoChain.get<FilterUtils::ChainPositions::Peak_3>();
+    auto& peak4   = monoChain.get<FilterUtils::ChainPositions::Peak_4>();
+    auto& peak5   = monoChain.get<FilterUtils::ChainPositions::Peak_5>();
     auto& highCut = monoChain.get<FilterUtils::ChainPositions::HighCut>();
 
     for (auto i = 0; i < boundsWidth; ++i)

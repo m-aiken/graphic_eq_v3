@@ -9,6 +9,7 @@
 #include "gui/analyzercontrols.h"
 #include "gui/eqcontrolscontainer.h"
 //#include "gui/peakcontrol.h"
+#include "gui/powerbutton.h"
 
 //==============================================================================
 class GraphicEqEditor : public juce::AudioProcessorEditor
@@ -25,6 +26,8 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     GraphicEqProcessor& processorRef;
+
+    PowerButton powerButton;
 
     AnalyzerControls analyzerControls;
     SpectrumAnalyzer spectrumAnalyzer;

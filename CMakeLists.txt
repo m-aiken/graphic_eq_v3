@@ -109,6 +109,8 @@ target_sources(GraphicEq
         source/gui/pathproducer.cpp
         source/gui/peakcontrol.h
         source/gui/peakcontrol.cpp
+        source/gui/powerbutton.h
+        source/gui/powerbutton.cpp
         source/gui/responsecurve.h
         source/gui/responsecurve.cpp
         source/gui/responsecurvenode.h

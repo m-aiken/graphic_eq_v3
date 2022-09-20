@@ -33,11 +33,11 @@ GraphicEqEditor::~GraphicEqEditor()
 void GraphicEqEditor::paint (juce::Graphics& g)
 {
     g.fillAll(ColourPalette::getColour(ColourPalette::Eggshell));
-
     g.setFont(Globals::getFont());
-
     g.setColour(ColourPalette::getColour(ColourPalette::Blue));
+
     auto analyzerBounds = spectrumAnalyzer.getBounds();
+
     juce::Rectangle<int> leftDbScaleBounds(0, analyzerBounds.getY(), analyzerBounds.getX(), analyzerBounds.getHeight());
     juce::Rectangle<int> rightDbScaleBounds(analyzerBounds.getRight(), analyzerBounds.getY(), analyzerBounds.getX(), analyzerBounds.getHeight());
 
@@ -54,7 +54,7 @@ void GraphicEqEditor::resized()
     auto bounds = getLocalBounds();
     auto mainWindowWidth = bounds.getWidth();
     auto mainWindowHeight = bounds.getHeight();
-    auto padding = 10;
+    auto padding = Globals::getFont().getHeight();
 
     juce::Rectangle<int> analyzerBounds(padding * 3,
                                         padding * 6,
@@ -80,7 +80,7 @@ void GraphicEqEditor::resized()
 
 void GraphicEqEditor::drawDbLabels(juce::Graphics& g, juce::Rectangle<int>& labelBounds)
 {
-    auto textHeight = Globals::getFont().getHeight();
+    auto textHeight = g.getCurrentFont().getHeight();
 
     auto maxDb = Globals::getMaxDecibels();
     auto minDb = Globals::getNegativeInf();

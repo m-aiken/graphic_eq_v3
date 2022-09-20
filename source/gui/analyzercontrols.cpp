@@ -29,54 +29,14 @@ void AnalyzerControls::paint(juce::Graphics& g)
 
     g.setColour(ColourPalette::getColour(ColourPalette::Green).withAlpha(0.1f));
 
-    auto lineThickness = 4.f;
-    auto offset = lineThickness * 0.5f;
-    auto lineTop = bounds.getY();
-    auto lineBottom = bounds.getBottom();
-    auto boundsDivision = bounds.getWidth() * 0.25;
-    // startX, startY, endX, endY, lineThickness
-    /*
-    g.drawLine(bounds.getX(),
-               lineTop,
-               bounds.getX(),
-               lineBottom,
-               lineThickness);
-    */
-    /*
-    g.drawLine(boundsDivision - offset,
-               lineTop,
-               boundsDivision - offset,
-               lineBottom,
-               lineThickness);
+    auto sliderHeight = Globals::getFont().getHeight();
+    auto sliderWidth = bounds.getWidth() * 0.25;
 
-    g.drawLine((boundsDivision * 2) - offset,
-               lineTop,
-               (boundsDivision * 2) - offset,
-               lineBottom,
-               lineThickness);
-
-    g.drawLine((boundsDivision * 3) - offset,
-               lineTop,
-               (boundsDivision * 3) - offset,
-               lineBottom,
-               lineThickness);
-    */
-    /*
-    g.drawLine(bounds.getRight() - lineThickness,
-               lineTop,
-               bounds.getRight() - lineThickness,
-               lineBottom,
-               lineThickness);
-    */
-
-    auto sliderHeight = bounds.getHeight() / 3;
-    auto sliderWidth = bounds.getWidth() * 0.2;
-
-    g.setFont(Globals::getFont().withHeight(sliderHeight));
+    g.setFont(Globals::getFont());
     g.setColour(ColourPalette::getColour(ColourPalette::Blue));
 
     g.drawFittedText("FFT Order (2048/4096/8192)",
-                     bounds.getCentreX(),
+                     bounds.getCentreX() - (sliderWidth * 0.5),
                      0,
                      sliderWidth,
                      sliderHeight,
@@ -95,17 +55,17 @@ void AnalyzerControls::paint(juce::Graphics& g)
 void AnalyzerControls::resized()
 {
     auto bounds = getLocalBounds();
-    auto sliderWidth = bounds.getWidth() * 0.2;
-    auto sliderHeight = bounds.getHeight() / 3;
-    auto padding = 6;
+    auto sliderWidth = bounds.getWidth() * 0.25;
+    auto sliderHeight = Globals::getFont().getHeight();
+    auto padding = sliderHeight * 0.2;
 
-    fftOrderSlider->setBounds(bounds.getCentreX(),
-                              sliderHeight,
+    fftOrderSlider->setBounds(bounds.getCentreX() - (sliderWidth * 0.5),
+                              sliderHeight + padding,
                               sliderWidth,
                               sliderHeight);
 
     decayRateSlider->setBounds(bounds.getRight() - sliderWidth,
-                               sliderHeight,
+                               sliderHeight + padding,
                                sliderWidth,
                                sliderHeight);
 }

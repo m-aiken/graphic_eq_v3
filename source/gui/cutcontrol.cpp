@@ -42,16 +42,15 @@ void CutControl::paint(juce::Graphics& g)
                      juce::Justification::centred,
                      1);
 
-    auto slopeTextHeight = 10;
     auto sliderQuarter = slopeSlider->getWidth() * 0.25;
     auto sliderX = slopeSlider->getX();
     auto sliderBottom = slopeSlider->getBottom();
 
     g.drawFittedText("dB/Oct",
                      sliderX,
-                     slopeSlider->getY() - slopeTextHeight - 4,
+                     slopeSlider->getY() - textHeight - 4,
                      slopeSlider->getWidth(),
-                     slopeTextHeight,
+                     textHeight,
                      juce::Justification::centred,
                      1);
 
@@ -60,7 +59,7 @@ void CutControl::paint(juce::Graphics& g)
                          sliderX + (sliderQuarter * i),
                          sliderBottom + 4,
                          sliderQuarter,
-                         slopeTextHeight,
+                         textHeight,
                          juce::Justification::centred,
                          1);
     }
@@ -89,7 +88,7 @@ void CutControl::resized()
                           diameter,
                           diameter);
 
-    auto padding = 10;
+    auto padding = Globals::getFont().getHeight();
     slopeSlider->setBounds(padding,
                            freqSlider->getBottom() + (padding * 3),
                            bounds.getWidth() - (padding * 2),

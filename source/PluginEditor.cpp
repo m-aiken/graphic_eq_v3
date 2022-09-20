@@ -117,17 +117,17 @@ void GraphicEqEditor::drawFrequencyLabels(juce::Graphics& g, juce::Rectangle<int
     auto boundsWidth = labelBounds.getWidth();
 
     auto textHeight = g.getCurrentFont().getHeight();
-    auto textWidth = 30;
+    auto textWidth = textHeight * 2.5;
 
-    for ( auto i = 1; i < freqs.size() - 1; ++i ) {
+    for (auto i = 1; i < freqs.size() - 1; ++i) {
         auto normalizedX = juce::mapFromLog10<float>(freqs[i], minFreq, maxFreq);
         auto labelX = boundsX + boundsWidth * normalizedX;
 
         juce::String text = freqs[i] >= 1000.f ? juce::String(freqs[i] / 1000.f) + "kHz" : juce::String(freqs[i]) + "Hz";
 
         g.drawFittedText(text,                                    // text
-                         labelX - (textWidth * 1.5),              // x
-                         boundsY - textHeight,                    // y
+                         labelX - (textWidth * 0.5),              // x
+                         boundsY - (textHeight * 0.5),            // y
                          textWidth,                               // width
                          textHeight,                              // height
                          juce::Justification::horizontallyCentred, // justification

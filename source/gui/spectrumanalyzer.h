@@ -21,11 +21,11 @@ struct SpectrumAnalyzer : juce::Component, juce::Timer
                      SingleChannelSampleFifo<juce::AudioBuffer<float>>& rightScsf,
                      juce::AudioProcessorValueTreeState& apvts);
 
-    void timerCallback() override;
     void paint(juce::Graphics& g) override;
     void resized() override;
 
-    void customizeScales(int lsMin, int lsMax, int rsMin, int rsMax, int division);
+    void timerCallback() override;
+
 private:
     double sampleRate;
     SpectrumGrid backgroundGrid;
@@ -44,9 +44,4 @@ private:
 
     std::unique_ptr<ParamListener<float>> analyzerOrderParamListener;
     std::unique_ptr<ParamListener<float>> analyzerDecayRateParamListener;
-
-    float leftScaleMin  {Globals::getNegativeInf()},
-         leftScaleMax  {Globals::getMaxDecibels()},
-         rightScaleMin {Globals::getNegativeInf()},
-         rightScaleMax {Globals::getMaxDecibels()};
 };

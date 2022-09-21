@@ -86,25 +86,6 @@ SpectrumAnalyzer::SpectrumAnalyzer(double _sampleRate,
     animate();
 }
 
-void SpectrumAnalyzer::timerCallback()
-{
-    if (!active) {
-        leftAnalyzerPath.clear();
-        rightAnalyzerPath.clear();
-        stopTimer();
-    }
-    else {
-        if ( leftPathProducer.getNumAvailableForReading() > 0 ) {
-            while ( leftPathProducer.pull(leftAnalyzerPath) ) { } // get most recent
-        }
-
-        if ( rightPathProducer.getNumAvailableForReading() > 0 ) {
-            while ( rightPathProducer.pull(rightAnalyzerPath) ) { } // get most recent
-        }
-    }
-    repaint();
-}
-
 void SpectrumAnalyzer::paint(juce::Graphics& g)
 {
     auto bounds = getLocalBounds();
@@ -131,19 +112,23 @@ void SpectrumAnalyzer::resized()
     rightPathProducer.setFFTRectBounds(bounds.toFloat());
 }
 
-void SpectrumAnalyzer::customizeScales(int lsMin, int lsMax, int rsMin, int rsMax, int division)
+void SpectrumAnalyzer::timerCallback()
 {
-    leftScaleMin = lsMin;
-    leftScaleMax = lsMax;
-    rightScaleMin = rsMin;
-    rightScaleMax = rsMax;
-
-    leftPathProducer.changePathRange(leftScaleMin, leftScaleMax);
-    rightPathProducer.changePathRange(leftScaleMin, leftScaleMax);
-
-    if (!getLocalBounds().isEmpty()) {
-        repaint();
+    if (!active) {
+        leftAnalyzerPath.clear();
+        rightAnalyzerPath.clear();
+        stopTimer();
     }
+    else {
+        if ( leftPathProducer.getNumAvailableForReading() > 0 ) {
+            while ( leftPathProducer.pull(leftAnalyzerPath) ) { } // get most recent
+        }
+
+        if ( rightPathProducer.getNumAvailableForReading() > 0 ) {
+            while ( rightPathProducer.pull(rightAnalyzerPath) ) { } // get most recent
+        }
+    }
+    repaint();
 }
 
 void SpectrumAnalyzer::setActive(bool activeState)

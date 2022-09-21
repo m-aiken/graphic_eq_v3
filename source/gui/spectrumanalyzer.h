@@ -8,6 +8,12 @@
 #include "../utils/globals.h"
 
 //==============================================================================
+struct SpectrumGrid : juce::Component
+{
+    void paint(juce::Graphics& g) override;
+};
+
+//==============================================================================
 struct SpectrumAnalyzer : juce::Component, juce::Timer
 {
     SpectrumAnalyzer(double _sampleRate,
@@ -16,19 +22,20 @@ struct SpectrumAnalyzer : juce::Component, juce::Timer
                      juce::AudioProcessorValueTreeState& apvts);
 
     void timerCallback() override;
-    void resized() override;
     void paint(juce::Graphics& g) override;
+    void resized() override;
+
     void customizeScales(int lsMin, int lsMax, int rsMin, int rsMax, int division);
 private:
     double sampleRate;
+    SpectrumGrid backgroundGrid;
+
     juce::Path leftAnalyzerPath, rightAnalyzerPath;
 
     PathProducer leftPathProducer, rightPathProducer;
 
 //    bool active { false };
     bool active { true }; // TODO for test only
-
-    void paintBackground(juce::Graphics& g);
 
     void setActive(bool activeState);
     void updateDecayRate(float decayRate);

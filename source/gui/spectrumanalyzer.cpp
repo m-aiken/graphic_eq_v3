@@ -5,16 +5,16 @@
 //==============================================================================
 void SpectrumGrid::paint(juce::Graphics& g)
 {
-    auto bounds = getLocalBounds();
+    auto bounds        = getLocalBounds();
     const float minFreq = Globals::getMinFrequency();
     const float maxFreq = Globals::getMaxFrequency();
-    const float minDb = Globals::getNegativeInf();
-    const float maxDb = Globals::getMaxDecibels();
-    auto boundsX = bounds.getX();
-    auto boundsY = bounds.getY();
-    auto boundsWidth = bounds.getWidth();
-    auto boundsBottom = bounds.getBottom();
-    auto boundsRight = bounds.getRight();
+    const float minDb   = Globals::getNegativeInf();
+    const float maxDb   = Globals::getMaxDecibels();
+    auto boundsX       = bounds.getX();
+    auto boundsY       = bounds.getY();
+    auto boundsWidth   = bounds.getWidth();
+    auto boundsBottom  = bounds.getBottom();
+    auto boundsRight   = bounds.getRight();
 
     g.setFont(Globals::getFont());
 

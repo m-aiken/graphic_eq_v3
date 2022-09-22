@@ -20,7 +20,7 @@ PeakControl::PeakControl(juce::AudioProcessorValueTreeState& apvts, const int _b
 
     freqAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, EqProperties::getPeakControlParamName(EqProperties::PeakControl::FREQUENCY, bandNum), *freqSlider);
     gainAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, bandNum), *gainSlider);
-    qAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, EqProperties::getPeakControlParamName(EqProperties::PeakControl::QUALITY, bandNum), *qSlider);
+    qAttachment    = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, EqProperties::getPeakControlParamName(EqProperties::PeakControl::QUALITY, bandNum), *qSlider);
 
     addAndMakeVisible(powerButton);
 
@@ -49,11 +49,12 @@ void PeakControl::paint(juce::Graphics& g)
 
     // Values
     auto valueRectHeight = bounds.getHeight() * 0.4;
-    auto valueRect = juce::Rectangle<int>(0, bounds.getBottom() - valueRectHeight, bounds.getWidth(), valueRectHeight);
+    auto valueRect       = juce::Rectangle<int>(0, bounds.getBottom() - valueRectHeight, bounds.getWidth(), valueRectHeight);
+
     auto vCX = valueRect.getCentreX();
-    auto vY = valueRect.getY();
-    auto vW = valueRect.getWidth() * 0.5;
-    auto vH = valueRect.getHeight() / 3;
+    auto vY  = valueRect.getY();
+    auto vW  = valueRect.getWidth() * 0.5;
+    auto vH  = valueRect.getHeight() / 3;
 
     g.drawFittedText("Hz:", 0, vY, vW, vH, juce::Justification::centred, 1);
     g.drawFittedText(juce::String(freqSlider->getValue()), vCX, vY, vW, vH, juce::Justification::centred, 1);
@@ -65,9 +66,9 @@ void PeakControl::paint(juce::Graphics& g)
 
 void PeakControl::resized()
 {
-    auto bounds = getLocalBounds();
-    auto rotaryBounds = juce::Rectangle<int>(0, 0, bounds.getWidth(), bounds.getHeight() * 0.5);
-    auto padding = 2;
+    auto bounds         = getLocalBounds();
+    auto rotaryBounds   = juce::Rectangle<int>(0, 0, bounds.getWidth(), bounds.getHeight() * 0.5);
+    auto padding        = 2;
     auto rotaryDiameter = (rotaryBounds.getWidth() * 0.5) - padding;
 
     powerButton.setBounds(6, 6, 16, 16);

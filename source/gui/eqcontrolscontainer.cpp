@@ -27,7 +27,7 @@ void EqControlsContainer::resized()
     juce::Grid grid;
 
     using Track = juce::Grid::TrackInfo;
-    using Fr = juce::Grid::Fr;
+    using Fr    = juce::Grid::Fr;
 
     grid.templateColumns = {
             Track(Fr(1)),

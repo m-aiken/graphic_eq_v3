@@ -22,25 +22,21 @@ PathProducer::~PathProducer()
 
 void PathProducer::run()
 {
-    while (!threadShouldExit())
-    {
-        if ( !processingIsEnabled.load() )
-        {
+    while (!threadShouldExit()) {
+        if (!processingIsEnabled.load()) {
             wait(10);
             continue;
         }
 
-        while ( singleChannelSampleFifo->getNumCompleteBuffersAvailable() > 0 )
-        {
+        while (singleChannelSampleFifo->getNumCompleteBuffersAvailable() > 0) {
             juce::AudioBuffer<float> tempBuffer;
 
-            if ( threadShouldExit() )
+            if (threadShouldExit())
                 break;
 
-            if ( singleChannelSampleFifo->getAudioBuffer(tempBuffer) )
-            {
-                auto size = juce::jmin(tempBuffer.getNumSamples(), bufferForGenerator.getNumSamples());
-                auto readPtr = bufferForGenerator.getReadPointer(0, size);
+            if (singleChannelSampleFifo->getAudioBuffer(tempBuffer)) {
+                auto size     = juce::jmin(tempBuffer.getNumSamples(), bufferForGenerator.getNumSamples());
+                auto readPtr  = bufferForGenerator.getReadPointer(0, size);
                 auto writePtr = bufferForGenerator.getWritePointer(0, 0);
                 std::copy(readPtr, readPtr + (bufferForGenerator.getNumSamples() - size), writePtr);
 
@@ -52,17 +48,15 @@ void PathProducer::run()
             }
         }
 
-        while ( fftDataGenerator.getNumAvailableFFTDataBlocks() > 0 )
-        {
+        while (fftDataGenerator.getNumAvailableFFTDataBlocks() > 0) {
             std::vector<float> fftData;
 
-            if ( threadShouldExit() )
+            if (threadShouldExit())
                 break;
 
-            if ( fftDataGenerator.getFFTData(fftData) )
-            {
-                auto fftSize = getFFTSize();
-                auto numBins = static_cast<int>(fftSize * 0.5);
+            if (fftDataGenerator.getFFTData(fftData)) {
+                auto fftSize   = getFFTSize();
+                auto numBins   = static_cast<int>(fftSize * 0.5);
                 auto decayRate = decayRateInDbPerSec.load() / 60.f;
 
                 updateRenderData(renderData, fftData, numBins, decayRate);
@@ -86,13 +80,11 @@ void PathProducer::changeOrder(Globals::FFTOrder order)
     renderData.resize(static_cast<size_t>(fftSize * 2), negativeInfinity.load());
     bufferForGenerator.setSize(1, fftSize);
 
-    while ( !singleChannelSampleFifo->isPrepared() )
-    {
+    while (!singleChannelSampleFifo->isPrepared()) {
         wait(5);
     }
 
-    if ( !fftBounds.isEmpty() )
-    {
+    if (!fftBounds.isEmpty()) {
         startThread();
     }
 }
@@ -116,8 +108,7 @@ void PathProducer::setFFTRectBounds(juce::Rectangle<float> bounds)
 {
     pauseThread();
 
-    if ( !bounds.isEmpty() )
-    {
+    if (!bounds.isEmpty()) {
         fftBounds = bounds;
     }
 
@@ -152,14 +143,12 @@ void PathProducer::changePathRange(float negativeInfinityDb, float maxDb)
 
 void PathProducer::updateRenderData(std::vector<float>& renData, const std::vector<float>& fftData, int numBins, float decayRate)
 {
-    if ( decayRate >= 0.f )
-    {
-        for ( auto i = 0; i < numBins; ++i )
-        {
+    if (decayRate >= 0.f) {
+        for (auto i = 0; i < numBins; ++i) {
             auto previousValue = renData[i];
-            auto candidate = fftData[i];
-            auto finalValue = juce::jmax(candidate, previousValue - decayRate);
-            renData[i] = juce::jlimit(negativeInfinity.load(), maxDecibels.load(), finalValue);
+            auto candidate     = fftData[i];
+            auto finalValue     = juce::jmax(candidate, previousValue - decayRate);
+            renData[i]         = juce::jlimit(negativeInfinity.load(), maxDecibels.load(), finalValue);
         }
     }
 }

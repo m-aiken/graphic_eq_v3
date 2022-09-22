@@ -27,15 +27,14 @@ struct SpectrumAnalyzer : juce::Component, juce::Timer
     void timerCallback() override;
 
 private:
-    double sampleRate;
+    double       sampleRate;
     SpectrumGrid backgroundGrid;
-
-    juce::Path leftAnalyzerPath, rightAnalyzerPath;
-
-    PathProducer leftPathProducer, rightPathProducer;
-
-//    bool active { false };
-    bool active { true }; // TODO for test only
+    juce::Path   leftAnalyzerPath;
+    juce::Path   rightAnalyzerPath;
+    PathProducer leftPathProducer;
+    PathProducer rightPathProducer;
+//    bool         active { false };
+    bool         active { true }; // TODO for test only
 
     void setActive(bool activeState);
     void updateDecayRate(float decayRate);

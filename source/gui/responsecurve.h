@@ -26,23 +26,17 @@ struct ResponseCurve : juce::Component, juce::AudioProcessorParameter::Listener,
     void removeListeners();
 
 private:
-    juce::AudioProcessorValueTreeState& apvts;
-
-    FilterUtils::MonoChain monoChain;
-
-    double sampleRate;
-
+    double             sampleRate;
+    int                nodeDiameter { 12 };
     juce::Atomic<bool> parametersChanged { false };
 
+    juce::AudioProcessorValueTreeState& apvts;
+    FilterUtils::MonoChain              monoChain;
+    juce::AudioParameterFloat*          lowCutFreqParam   { nullptr };
+    juce::AudioParameterChoice*         lowCutSlopeParam  { nullptr };
+    juce::AudioParameterFloat*          highCutFreqParam  { nullptr };
+    juce::AudioParameterChoice*         highCutSlopeParam { nullptr };
+
+    std::array<PeakBand, Globals::getNumPeakBands()>          peakBands;
     std::array<ResponseCurveNode, Globals::getNumPeakBands()> peakNodes;
-
-    int nodeDiameter { 12 };
-
-    juce::AudioParameterFloat*  lowCutFreqParam   { nullptr };
-    juce::AudioParameterChoice* lowCutSlopeParam  { nullptr };
-
-    juce::AudioParameterFloat*  highCutFreqParam  { nullptr };
-    juce::AudioParameterChoice* highCutSlopeParam { nullptr };
-
-    std::array<PeakBand, Globals::getNumPeakBands()> peakBands;
 };

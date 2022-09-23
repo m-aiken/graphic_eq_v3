@@ -14,13 +14,13 @@ GraphicEqProcessor::GraphicEqProcessor()
                      #endif
                        )
 {
-    auto assignFloatParam = [&](auto& target, auto& paramName){
+    auto assignFloatParam = [&](auto& target, auto& paramName) {
         auto param = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter(paramName));
         jassert(param != nullptr);
         target = param;
     };
 
-    auto assignChoiceParam = [&](auto& target, auto& paramName){
+    auto assignChoiceParam = [&](auto& target, auto& paramName) {
         auto param = dynamic_cast<juce::AudioParameterChoice*>(apvts.getParameter(paramName));
         jassert(param != nullptr);
         target = param;
@@ -116,14 +116,14 @@ void GraphicEqProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     juce::ignoreUnused (sampleRate);
 
     juce::dsp::ProcessSpec spec;
-    spec.sampleRate = sampleRate;
+    spec.sampleRate       = sampleRate;
     spec.maximumBlockSize = samplesPerBlock;
-    spec.numChannels = getTotalNumOutputChannels();
+    spec.numChannels      = getTotalNumOutputChannels();
 
     leftChain.prepare(spec);
     rightChain.prepare(spec);
 
-    auto lowCutCoefficients = FilterUtils::makeHighPassFilter(lowCutFreqParam, lowCutSlopeParam, sampleRate);
+    auto lowCutCoefficients  = FilterUtils::makeHighPassFilter(lowCutFreqParam, lowCutSlopeParam, sampleRate);
     auto highCutCoefficients = FilterUtils::makeLowPassFilter(highCutFreqParam, highCutSlopeParam, sampleRate);
 
     FilterUtils::updateCutCoefficients(leftChain, FilterUtils::ChainPositions::LowCut, lowCutCoefficients, lowCutSlopeParam);
@@ -189,7 +189,7 @@ void GraphicEqProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    auto lowCutCoefficients = FilterUtils::makeHighPassFilter(lowCutFreqParam, lowCutSlopeParam, getSampleRate());
+    auto lowCutCoefficients  = FilterUtils::makeHighPassFilter(lowCutFreqParam, lowCutSlopeParam, getSampleRate());
     auto highCutCoefficients = FilterUtils::makeLowPassFilter(highCutFreqParam, highCutSlopeParam, getSampleRate());
 
     FilterUtils::updateCutCoefficients(leftChain, FilterUtils::ChainPositions::LowCut, lowCutCoefficients, lowCutSlopeParam);
@@ -204,7 +204,7 @@ void GraphicEqProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     }
 
     juce::dsp::AudioBlock<float> block(buffer);
-    auto leftBlock = block.getSingleChannelBlock(Globals::Channel::Left);
+    auto leftBlock  = block.getSingleChannelBlock(Globals::Channel::Left);
     auto rightBlock = block.getSingleChannelBlock(Globals::Channel::Right);
 
     juce::dsp::ProcessContextReplacing<float> leftCtx(leftBlock);
@@ -238,8 +238,7 @@ void GraphicEqProcessor::getStateInformation (juce::MemoryBlock& destData)
 void GraphicEqProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     auto tree = juce::ValueTree::readFromData(data, sizeInBytes);
-    if ( tree.isValid() )
-    {
+    if (tree.isValid()) {
         apvts.replaceState(tree);
     }
 }

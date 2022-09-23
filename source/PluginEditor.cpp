@@ -51,10 +51,10 @@ void GraphicEqEditor::paint (juce::Graphics& g)
 
 void GraphicEqEditor::resized()
 {
-    auto bounds = getLocalBounds();
-    auto mainWindowWidth = bounds.getWidth();
+    auto bounds           = getLocalBounds();
+    auto mainWindowWidth  = bounds.getWidth();
     auto mainWindowHeight = bounds.getHeight();
-    auto padding = Globals::getFont().getHeight();
+    auto padding          = Globals::getFont().getHeight();
 
     juce::Rectangle<int> analyzerBounds(padding * 3,
                                         padding * 6,
@@ -85,14 +85,14 @@ void GraphicEqEditor::drawDbLabels(juce::Graphics& g, juce::Rectangle<int>& labe
     auto maxDb = Globals::getMaxDecibels();
     auto minDb = Globals::getNegativeInf();
 
-    auto dbScaleY = labelBounds.getY();
+    auto dbScaleY      = labelBounds.getY();
     auto dbScaleHeight = labelBounds.getHeight();
-    auto dbScaleWidth = labelBounds.getWidth();
-    auto dbScaleX = labelBounds.getX();
+    auto dbScaleWidth  = labelBounds.getWidth();
+    auto dbScaleX      = labelBounds.getX();
 
     for (auto db = minDb; db <= maxDb; db += 12) {
-        auto yCoord = juce::jmap<int>(db, minDb, maxDb, dbScaleHeight, 0);
-        auto textY = yCoord + dbScaleY - (textHeight * 0.5);
+        auto yCoord   = juce::jmap<int>(db, minDb, maxDb, dbScaleHeight, 0);
+        auto textY    = yCoord + dbScaleY - (textHeight * 0.5);
         auto dbString = juce::String(db);
 
         g.drawFittedText((db > 0 ? '+' + dbString : dbString), // text
@@ -112,16 +112,16 @@ void GraphicEqEditor::drawFrequencyLabels(juce::Graphics& g, juce::Rectangle<int
     const float minFreq = Globals::getMinFrequency();
     const float maxFreq = Globals::getMaxFrequency();
 
-    auto boundsX = labelBounds.getX();
-    auto boundsY = labelBounds.getY();
+    auto boundsX     = labelBounds.getX();
+    auto boundsY     = labelBounds.getY();
     auto boundsWidth = labelBounds.getWidth();
 
     auto textHeight = g.getCurrentFont().getHeight();
-    auto textWidth = textHeight * 2.5;
+    auto textWidth  = textHeight * 2.5;
 
     for (auto i = 1; i < freqs.size() - 1; ++i) {
         auto normalizedX = juce::mapFromLog10<float>(freqs[i], minFreq, maxFreq);
-        auto labelX = boundsX + boundsWidth * normalizedX;
+        auto labelX      = boundsX + boundsWidth * normalizedX;
 
         juce::String text = freqs[i] >= 1000.f ? juce::String(freqs[i] / 1000.f) + "kHz" : juce::String(freqs[i]) + "Hz";
 

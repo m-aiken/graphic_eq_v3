@@ -29,11 +29,11 @@ private:
     // access the processor object that created it.
     GraphicEqProcessor& processorRef;
     
-    AnalyzerControls analyzerControls;
-    SpectrumAnalyzer spectrumAnalyzer;
-    ResponseCurve responseCurve;
+    AnalyzerControls    analyzerControls;
+    SpectrumAnalyzer    spectrumAnalyzer;
+    ResponseCurve       responseCurve;
     EqControlsContainer eqControls;
-    AnalyzerOverlay analyzerOverlay;
+    AnalyzerOverlay     analyzerOverlay;
 
     CustomLookAndFeel lnf;
     

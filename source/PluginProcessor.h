@@ -64,7 +64,8 @@ private:
      *     CutFilter, Filter, CutFilter
     */
 
-    FilterUtils::MonoChain leftChain, rightChain;
+    FilterUtils::MonoChain leftChain;
+    FilterUtils::MonoChain rightChain;
 
     juce::AudioParameterFloat*  lowCutFreqParam   { nullptr };
     juce::AudioParameterChoice* lowCutSlopeParam  { nullptr };

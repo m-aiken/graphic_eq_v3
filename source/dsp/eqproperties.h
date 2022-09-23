@@ -54,8 +54,7 @@ namespace EqProperties
 
         juce::StringArray cutChoices;
 
-        for (auto i = 0; i < 4; ++i)
-        {
+        for (auto i = 0; i < 4; ++i) {
             juce::String str;
             str << (12 + i*12);
             str << " dB/Oct";

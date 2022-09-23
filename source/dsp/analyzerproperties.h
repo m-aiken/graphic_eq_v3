@@ -16,30 +16,28 @@ namespace AnalyzerProperties
 
     inline const std::map<ParamNames, juce::String>& getAnalyzerParams()
     {
-        static std::map<ParamNames, juce::String> paramNamesMap =
-                {
-                    { Analyzer_Points,     "Analyzer Points" },
-                    { Analyzer_Decay_Rate, "Analyzer Decay Rate" }
-                };
+        static std::map<ParamNames, juce::String> paramNamesMap = {
+                { Analyzer_Points,     "Analyzer Points" },
+                { Analyzer_Decay_Rate, "Analyzer Decay Rate" }
+        };
 
         return paramNamesMap;
     }
 
     inline const std::map<Globals::FFTOrder, juce::String>& getAnalyzerPoints()
     {
-        static std::map<Globals::FFTOrder, juce::String> fftOrderMap =
-                {
-                    { Globals::order2048, "order2048" },
-                    { Globals::order4096, "order4096" },
-                    { Globals::order8192, "order8192" }
-                };
+        static std::map<Globals::FFTOrder, juce::String> fftOrderMap = {
+                { Globals::order2048, "order2048" },
+                { Globals::order4096, "order4096" },
+                { Globals::order8192, "order8192" }
+        };
 
         return fftOrderMap;
     }
 
     inline void addAnalyzerParams(juce::AudioProcessorValueTreeState::ParameterLayout& layout)
     {
-        const auto& params = getAnalyzerParams();
+        const auto& params    = getAnalyzerParams();
         const auto& fftOrders = getAnalyzerPoints();
 
         layout.add(std::make_unique<juce::AudioParameterChoice>(params.at(Analyzer_Points),

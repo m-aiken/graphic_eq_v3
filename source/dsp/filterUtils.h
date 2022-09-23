@@ -8,8 +8,8 @@ struct FilterUtils
 {
     using Filter = juce::dsp::IIR::Filter<float>;
     // Cut Filter chain: x4 Filters to allow for 12/24/36/48 dB/oct options
-    using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
-    using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, Filter, Filter, Filter, Filter, Filter, CutFilter>;
+    using CutFilter       = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
+    using MonoChain       = juce::dsp::ProcessorChain<CutFilter, Filter, Filter, Filter, Filter, Filter, Filter, CutFilter>;
     using CoefficientsType = juce::ReferenceCountedArray<juce::dsp::FilterDesign<float>::IIRCoefficients>;
 
     enum ChainPositions

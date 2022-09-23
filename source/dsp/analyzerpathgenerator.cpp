@@ -14,15 +14,14 @@ void AnalyzerPathGenerator::generatePath(const std::vector<float>& renderData,
     const float maxFreq = Globals::getMaxFrequency();
 
     auto fftBoundsBottom = fftBounds.getBottom();
-    auto fftBoundsY = fftBounds.getY();
-    auto fftBoundsWidth = fftBounds.getWidth();
+    auto fftBoundsY      = fftBounds.getY();
+    auto fftBoundsWidth  = fftBounds.getWidth();
 
     juce::Path path;
     path.preallocateSpace(3 * static_cast<int>(fftBoundsWidth));
 
     auto yCoord = juce::jmap<float>(renderData[0], negativeInfinity, maxDb, fftBoundsBottom, fftBoundsY);
-    if ( std::isnan(yCoord) || std::isinf(yCoord) )
-    {
+    if (std::isnan(yCoord) || std::isinf(yCoord)) {
         yCoord = fftBoundsBottom;
     }
 
@@ -32,18 +31,15 @@ void AnalyzerPathGenerator::generatePath(const std::vector<float>& renderData,
 
     const int pathResolution = 2;
 
-    for ( auto i = 1; i < numBins + 1; i += pathResolution )
-    {
+    for (auto i = 1; i < numBins + 1; i += pathResolution) {
         yCoord = juce::jmap<float>(renderData[i], negativeInfinity, maxDb, fftBoundsBottom, fftBoundsY);
 
-        if ( !std::isnan(yCoord) && !std::isinf(yCoord) )
-        {
-            auto binFreq = i * binWidth;
+        if (!std::isnan(yCoord) && !std::isinf(yCoord)) {
+            auto binFreq     = i * binWidth;
             auto normalizedX = juce::mapFromLog10(binFreq, minFreq, maxFreq);
-            auto xCoord = std::floor(normalizedX * fftBoundsWidth);
+            auto xCoord      = std::floor(normalizedX * fftBoundsWidth);
 
-            if ( xCoord - lastXCoord >= pathResolution && xCoord <= fftBoundsWidth )
-            {
+            if (xCoord - lastXCoord >= pathResolution && xCoord <= fftBoundsWidth) {
                 path.lineTo(xCoord, yCoord);
                 lastXCoord = xCoord;
             }

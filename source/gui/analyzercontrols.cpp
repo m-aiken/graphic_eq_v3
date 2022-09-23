@@ -30,7 +30,7 @@ void AnalyzerControls::paint(juce::Graphics& g)
     g.setColour(ColourPalette::getColour(ColourPalette::Green).withAlpha(0.1f));
 
     auto sliderHeight = Globals::getFont().getHeight();
-    auto sliderWidth = bounds.getWidth() * 0.25;
+    auto sliderWidth  = bounds.getWidth() * 0.25;
 
     g.setFont(Globals::getFont());
     g.setColour(ColourPalette::getColour(ColourPalette::Blue));
@@ -54,10 +54,10 @@ void AnalyzerControls::paint(juce::Graphics& g)
 
 void AnalyzerControls::resized()
 {
-    auto bounds = getLocalBounds();
-    auto sliderWidth = bounds.getWidth() * 0.25;
+    auto bounds       = getLocalBounds();
+    auto sliderWidth  = bounds.getWidth() * 0.25;
     auto sliderHeight = Globals::getFont().getHeight();
-    auto padding = sliderHeight * 0.2;
+    auto padding      = sliderHeight * 0.2;
 
     fftOrderSlider->setBounds(bounds.getCentreX() - (sliderWidth * 0.5),
                               sliderHeight + padding,

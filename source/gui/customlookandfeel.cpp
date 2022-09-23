@@ -49,7 +49,7 @@ void CustomLookAndFeel::drawLinearSlider(juce::Graphics& g,
     g.fillRect(background);
 
     auto tooltipWidth = width * 0.25 <= 20 ? width * 0.25 : width * 0.15;
-    float tooltipX = sliderPos - (tooltipWidth * 0.5);
+    float tooltipX     = sliderPos - (tooltipWidth * 0.5);
 
     if (tooltipX < x) {
         tooltipX = x;

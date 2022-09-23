@@ -6,7 +6,7 @@ void PowerButton::paint(juce::Graphics& g)
 {
     g.fillAll(ColourPalette::getColour(ColourPalette::Eggshell));
 
-    auto bounds = getLocalBounds();
+    auto bounds        = getLocalBounds();
     float lineThickness = 2.f;
 
     g.setColour(getToggleState() ? ColourPalette::getColour(ColourPalette::Green) : ColourPalette::getColour(ColourPalette::Blue));

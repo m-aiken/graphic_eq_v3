@@ -13,8 +13,8 @@ void AnalyzerOverlay::mouseDrag(const juce::MouseEvent& event)
     auto xCoord = event.position.getX();
     auto yCoord = event.position.getY();
 
-    auto bounds = getLocalBounds();
-    auto boundsWidth = bounds.getWidth();
+    auto bounds       = getLocalBounds();
+    auto boundsWidth  = bounds.getWidth();
     auto boundsHeight = bounds.getHeight();
 
     if (xCoord >= 0 && xCoord <= boundsWidth && yCoord >= 0 && yCoord <= boundsHeight) {

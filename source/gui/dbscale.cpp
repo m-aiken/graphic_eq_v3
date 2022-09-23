@@ -13,7 +13,7 @@ void DbScale::buildBackgroundImage(int dbDivision, juce::Rectangle<int> meterBou
     jassert( minDb < maxDb );
 
     auto bounds = getLocalBounds();
-    if ( bounds.isEmpty() )
+    if (bounds.isEmpty())
         return;
 
     auto scaleFactor = juce::Desktop::getInstance().getGlobalScaleFactor();
@@ -29,13 +29,13 @@ void DbScale::buildBackgroundImage(int dbDivision, juce::Rectangle<int> meterBou
     g.setFont(Globals::getFont());
     g.setColour(ColourPalette::getColour(ColourPalette::Blue));
 
-    auto ticks = getTicks(dbDivision, meterBounds, minDb, maxDb);
-    auto boundsX = bounds.getX();
+    auto ticks       = getTicks(dbDivision, meterBounds, minDb, maxDb);
+    auto boundsX     = bounds.getX();
     auto boundsWidth = bounds.getWidth();
-    auto textHeight = g.getCurrentFont().getHeight();
-    auto meterY = meterBounds.getY();
+    auto textHeight  = g.getCurrentFont().getHeight();
+    auto meterY      = meterBounds.getY();
 
-    for ( auto i = 0; i < ticks.size(); ++i ) {
+    for (auto i = 0; i < ticks.size(); ++i) {
         auto dbString = juce::String(ticks[i].db);
 
         g.drawFittedText((ticks[i].db > 0 ? '+' + dbString : dbString), // text
@@ -50,7 +50,7 @@ void DbScale::buildBackgroundImage(int dbDivision, juce::Rectangle<int> meterBou
 
 std::vector<Tick> DbScale::getTicks(int dbDivision, juce::Rectangle<int> meterBounds, int minDb, int maxDb)
 {
-    if ( minDb > maxDb ) {
+    if (minDb > maxDb) {
         std::swap(minDb, maxDb);
     }
 
@@ -61,7 +61,7 @@ std::vector<Tick> DbScale::getTicks(int dbDivision, juce::Rectangle<int> meterBo
 
     auto meterHeight = meterBounds.getHeight();
 
-    for ( auto db = minDb; db <= maxDb; db += dbDivision ) {
+    for (auto db = minDb; db <= maxDb; db += dbDivision) {
         Tick tick;
         tick.db = db;
         tick.y = juce::jmap<int>(db, Globals::getNegativeInf(), Globals::getMaxDecibels(), meterHeight, 0);

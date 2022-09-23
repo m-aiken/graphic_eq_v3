@@ -9,7 +9,12 @@ void CustomLinearSlider::paint(juce::Graphics& g)
 //    g.drawRect(bounds);
 
     auto paramNormalisableRange = param->getNormalisableRange();
-    auto scaledValue = juce::jmap<float>(param->convertFrom0to1(param->getValue()), paramNormalisableRange.start, paramNormalisableRange.end, bounds.getX(), bounds.getRight());
+    auto scaledValue            = juce::jmap<float>(param->convertFrom0to1(param->getValue()),
+                                                    paramNormalisableRange.start,
+                                                    paramNormalisableRange.end,
+                                                    bounds.getX(),
+                                                    bounds.getRight());
+
     getLookAndFeel().drawLinearSlider(g,                                           // graphics
                                       bounds.getX(),                               // x
                                       bounds.getY(),                               // y

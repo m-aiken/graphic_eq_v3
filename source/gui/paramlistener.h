@@ -24,8 +24,7 @@ struct ParamListener : juce::Timer
     void timerCallback() override
     {
         auto newValue = param->getValue();
-        if ( newValue != paramValue )
-        {
+        if (newValue != paramValue) {
             paramValue = newValue;
 
             handleValueChanged(param->convertFrom0to1(paramValue));

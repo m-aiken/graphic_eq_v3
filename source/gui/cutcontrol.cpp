@@ -20,8 +20,20 @@ CutControl::CutControl(juce::AudioProcessorValueTreeState& apvts, const FilterUt
     slopeSlider     = std::make_unique<CustomLinearSlider>(*slopeParam);
     slopeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, slopeParamName, *slopeSlider);
 
-    addAndMakeVisible(powerButton);
+    powerButton.setToggleState(true, juce::NotificationType::dontSendNotification); // probably temporary - should be saved and loaded??
 
+    powerButton.onClick = [this]() {
+        bool toggleState = powerButton.getToggleState();
+
+        freqSlider->setEnabled(toggleState);
+        slopeSlider->setEnabled(toggleState);
+
+        float dim = 0.2f;
+        freqSlider->setAlpha(toggleState ? 1.f : dim);
+        slopeSlider->setAlpha(toggleState ? 1.f : dim);
+    };
+
+    addAndMakeVisible(powerButton);
     addAndMakeVisible(*freqSlider);
     addAndMakeVisible(*slopeSlider);
 }

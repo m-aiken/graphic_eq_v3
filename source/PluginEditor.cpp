@@ -9,17 +9,14 @@ GraphicEqEditor::GraphicEqEditor (GraphicEqProcessor& p)
 : AudioProcessorEditor (&p),
   processorRef(p),
   analyzerControls(processorRef.apvts),
-  spectrumAnalyzer(processorRef.getSampleRate(), processorRef.lScsf, processorRef.rScsf, processorRef.apvts),
-  responseCurve(processorRef.apvts, processorRef.getSampleRate()),
+  analyzerContainer(processorRef.apvts, processorRef.getSampleRate(), processorRef.lScsf, processorRef.rScsf),
   eqControls(processorRef.apvts)
 {
     setLookAndFeel(&lnf);
 
     addAndMakeVisible(analyzerControls);
-    addAndMakeVisible(spectrumAnalyzer);
-    addAndMakeVisible(responseCurve);
+    addAndMakeVisible(analyzerContainer);
     addAndMakeVisible(eqControls);
-    addAndMakeVisible(analyzerOverlay);
 
     setSize(800, 600);
 }
@@ -36,7 +33,7 @@ void GraphicEqEditor::paint (juce::Graphics& g)
     g.setFont(Globals::getFont());
     g.setColour(ColourPalette::getColour(ColourPalette::Blue));
 
-    auto analyzerBounds = spectrumAnalyzer.getBounds();
+    auto analyzerBounds = analyzerContainer.getBounds();
 
     juce::Rectangle<int> leftDbScaleBounds(0, analyzerBounds.getY(), analyzerBounds.getX(), analyzerBounds.getHeight());
     juce::Rectangle<int> rightDbScaleBounds(analyzerBounds.getRight(), analyzerBounds.getY(), analyzerBounds.getX(), analyzerBounds.getHeight());
@@ -68,14 +65,12 @@ void GraphicEqEditor::resized()
                                analyzerwidth,
                                padding * 3);
 
-    spectrumAnalyzer.setBounds(analyzerBounds);
-    responseCurve.setBounds(analyzerBounds);
-    analyzerOverlay.setBounds(analyzerBounds);
+    analyzerContainer.setBounds(analyzerBounds);
 
     eqControls.setBounds(bounds.getCentreX() - (analyzerwidth * 0.5),
-                         spectrumAnalyzer.getBottom() + padding,
+                         analyzerContainer.getBottom() + padding,
                          analyzerwidth,
-                         bounds.getBottom() - spectrumAnalyzer.getBottom() - (padding * 2));
+                         bounds.getBottom() - analyzerContainer.getBottom() - (padding * 2));
 }
 
 void GraphicEqEditor::drawDbLabels(juce::Graphics& g, juce::Rectangle<int>& labelBounds)

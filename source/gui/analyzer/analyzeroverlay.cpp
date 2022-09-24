@@ -1,6 +1,6 @@
 #include "analyzeroverlay.h"
-#include "../utils/colourpalette.h"
-#include "../utils/globals.h"
+#include "../../utils/colourpalette.h"
+#include "../../utils/globals.h"
 
 //==============================================================================
 void AnalyzerOverlay::paint(juce::Graphics& g)

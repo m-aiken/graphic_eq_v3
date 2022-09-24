@@ -1,8 +1,8 @@
 #pragma once
 
-#include <JuceHeader.h>
-#include "../utils/globals.h"
-#include "../utils/colourpalette.h"
+#include "JuceHeader.h"
+#include "../../utils/globals.h"
+#include "../../utils/colourpalette.h"
 
 //==============================================================================
 struct Node : juce::Component

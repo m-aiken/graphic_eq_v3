@@ -1,11 +1,11 @@
 #pragma once
 
-#include <JuceHeader.h>
+#include "JuceHeader.h"
 
-#include "pathproducer.h"
-#include "paramlistener.h"
-#include "../dsp/singlesamplefifo.h"
-#include "../utils/globals.h"
+#include "../pathproducer.h"
+#include "../paramlistener.h"
+#include "../../dsp/singlesamplefifo.h"
+#include "../../utils/globals.h"
 
 //==============================================================================
 struct SpectrumGrid : juce::Component

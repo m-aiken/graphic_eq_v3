@@ -1,6 +1,6 @@
 #include "spectrumanalyzer.h"
-#include "../dsp/analyzerproperties.h"
-#include "../utils/colourpalette.h"
+#include "../../dsp/analyzerproperties.h"
+#include "../../utils/colourpalette.h"
 
 //==============================================================================
 void SpectrumGrid::paint(juce::Graphics& g)

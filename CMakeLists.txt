@@ -89,11 +89,19 @@ target_sources(GraphicEq
         source/dsp/peakband.h
         source/dsp/singlesamplefifo.h
 
+        source/gui/analyzer/analyzercontainer.h
+        source/gui/analyzer/analyzercontainer.cpp
+        source/gui/analyzer/analyzeroverlay.h
+        source/gui/analyzer/analyzeroverlay.cpp
+        source/gui/analyzer/responsecurve.h
+        source/gui/analyzer/responsecurve.cpp
+        source/gui/analyzer/responsecurvenodes.h
+        source/gui/analyzer/responsecurvenodes.cpp
+        source/gui/analyzer/spectrumanalyzer.h
+        source/gui/analyzer/spectrumanalyzer.cpp
         source/gui/analyzerbase.h
         source/gui/analyzercontrols.h
         source/gui/analyzercontrols.cpp
-        source/gui/analyzeroverlay.h
-        source/gui/analyzeroverlay.cpp
         source/gui/customlinearslider.h
         source/gui/customlinearslider.cpp
         source/gui/customlookandfeel.h
@@ -113,12 +121,6 @@ target_sources(GraphicEq
         source/gui/peakcontrol.cpp
         source/gui/powerbutton.h
         source/gui/powerbutton.cpp
-        source/gui/responsecurve.h
-        source/gui/responsecurve.cpp
-        source/gui/responsecurvenode.h
-        source/gui/responsecurvenode.cpp
-        source/gui/spectrumanalyzer.h
-        source/gui/spectrumanalyzer.cpp
         source/gui/tick.h
         )
 

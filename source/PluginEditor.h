@@ -3,12 +3,10 @@
 #include <JuceHeader.h>
 
 #include "PluginProcessor.h"
-#include "gui/spectrumanalyzer.h"
-#include "gui/responsecurve.h"
+#include "gui/analyzer/analyzercontainer.h"
 #include "gui/customlookandfeel.h"
 #include "gui/analyzercontrols.h"
 #include "gui/eqcontrolscontainer.h"
-#include "gui/analyzeroverlay.h"
 
 //==============================================================================
 class GraphicEqEditor : public juce::AudioProcessorEditor
@@ -30,10 +28,8 @@ private:
     GraphicEqProcessor& processorRef;
     
     AnalyzerControls    analyzerControls;
-    SpectrumAnalyzer    spectrumAnalyzer;
-    ResponseCurve       responseCurve;
+    AnalyzerContainer   analyzerContainer;
     EqControlsContainer eqControls;
-    AnalyzerOverlay     analyzerOverlay;
 
     CustomLookAndFeel lnf;
     

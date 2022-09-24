@@ -1,6 +1,6 @@
 #include "responsecurve.h"
-#include "../dsp/eqproperties.h"
-#include "../utils/colourpalette.h"
+#include "../../dsp/eqproperties.h"
+#include "../../utils/colourpalette.h"
 
 //==============================================================================
 ResponseCurve::ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double _sampleRate)

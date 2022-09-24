@@ -1,4 +1,4 @@
-#include "responsecurvenode.h"
+#include "responsecurvenodes.h"
 
 //==============================================================================
 ResponseCurveNodes::ResponseCurveNodes()

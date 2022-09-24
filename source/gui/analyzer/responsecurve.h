@@ -1,10 +1,10 @@
 #pragma once
 
-#include <JuceHeader.h>
-#include "responsecurvenode.h"
-#include "../dsp/filterutils.h"
-#include "../dsp/peakband.h"
-#include "../utils/globals.h"
+#include "JuceHeader.h"
+#include "responsecurvenodes.h"
+#include "../../dsp/filterutils.h"
+#include "../../dsp/peakband.h"
+#include "../../utils/globals.h"
 
 //==============================================================================
 struct ResponseCurve : juce::Component, juce::AudioProcessorParameter::Listener, juce::Timer

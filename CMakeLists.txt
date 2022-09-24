@@ -91,8 +91,6 @@ target_sources(GraphicEq
 
         source/gui/analyzer/analyzercontainer.h
         source/gui/analyzer/analyzercontainer.cpp
-        source/gui/analyzer/analyzeroverlay.h
-        source/gui/analyzer/analyzeroverlay.cpp
         source/gui/analyzer/responsecurve.h
         source/gui/analyzer/responsecurve.cpp
         source/gui/analyzer/responsecurvenodes.h

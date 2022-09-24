@@ -2,7 +2,6 @@
 
 #include "JuceHeader.h"
 #include "spectrumgrid.h"
-#include "analyzeroverlay.h"
 #include "responsecurve.h"
 //#include "responsecurvenodes.h"
 #include "spectrumanalyzer.h"
@@ -16,11 +15,12 @@ struct AnalyzerContainer : juce::Component
                       SingleChannelSampleFifo<juce::AudioBuffer<float>>& leftScsf,
                       SingleChannelSampleFifo<juce::AudioBuffer<float>>& rightScsf);
 
+    void paint(juce::Graphics& g) override;
     void resized() override;
+    void mouseDrag(const juce::MouseEvent& event) override;
 
 private:
     SpectrumGrid     backgroundGrid;
     SpectrumAnalyzer spectrumAnalyzer;
     ResponseCurve    responseCurve;
-    AnalyzerOverlay  analyzerOverlay;
 };

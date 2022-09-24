@@ -1,6 +1,7 @@
 #pragma once
 
 #include "JuceHeader.h"
+#include "spectrumgrid.h"
 #include "analyzeroverlay.h"
 #include "responsecurve.h"
 //#include "responsecurvenodes.h"
@@ -18,6 +19,7 @@ struct AnalyzerContainer : juce::Component
     void resized() override;
 
 private:
+    SpectrumGrid     backgroundGrid;
     SpectrumAnalyzer spectrumAnalyzer;
     ResponseCurve    responseCurve;
     AnalyzerOverlay  analyzerOverlay;

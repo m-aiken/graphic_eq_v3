@@ -1,6 +1,6 @@
 #include "cutcontrol.h"
-#include "../dsp/eqproperties.h"
-#include "../utils/colourpalette.h"
+#include "../../dsp/eqproperties.h"
+#include "../../utils/colourpalette.h"
 
 //==============================================================================
 CutControl::CutControl(juce::AudioProcessorValueTreeState& apvts, const FilterUtils::ChainPositions& _chainPosition)

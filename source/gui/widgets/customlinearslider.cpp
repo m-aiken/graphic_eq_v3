@@ -1,5 +1,5 @@
 #include "customlinearslider.h"
-#include "../utils/colourpalette.h"
+#include "../../utils/colourpalette.h"
 
 //==============================================================================
 void CustomLinearSlider::paint(juce::Graphics& g)

@@ -1,5 +1,5 @@
 #include "powerbutton.h"
-#include "../utils/colourpalette.h"
+#include "../../utils/colourpalette.h"
 
 //==============================================================================
 void PowerButton::paint(juce::Graphics& g)

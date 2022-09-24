@@ -8,6 +8,7 @@ AnalyzerContainer::AnalyzerContainer(juce::AudioProcessorValueTreeState& apvts,
 : spectrumAnalyzer(sampleRate, leftScsf, rightScsf, apvts),
   responseCurve(apvts, sampleRate)
 {
+    addAndMakeVisible(backgroundGrid);
     addAndMakeVisible(spectrumAnalyzer);
     addAndMakeVisible(responseCurve);
     addAndMakeVisible(analyzerOverlay);
@@ -16,6 +17,7 @@ AnalyzerContainer::AnalyzerContainer(juce::AudioProcessorValueTreeState& apvts,
 void AnalyzerContainer::resized()
 {
     auto bounds = getLocalBounds();
+    backgroundGrid.setBounds(bounds);
     spectrumAnalyzer.setBounds(bounds);
     responseCurve.setBounds(bounds);
     analyzerOverlay.setBounds(bounds);

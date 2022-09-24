@@ -1,10 +1,10 @@
 #pragma once
 
-#include <JuceHeader.h>
-#include "powerbutton.h"
-#include "customrotarycontrol.h"
-#include "customlinearslider.h"
-#include "../dsp/filterutils.h"
+#include "JuceHeader.h"
+#include "../widgets/powerbutton.h"
+#include "../widgets/customrotarycontrol.h"
+#include "../widgets/customlinearslider.h"
+#include "../../dsp/filterutils.h"
 
 //==============================================================================
 struct CutControl : juce::Component

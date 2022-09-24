@@ -1,7 +1,7 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "customlinearslider.h"
+#include "widgets/customlinearslider.h"
 
 //==============================================================================
 struct AnalyzerControls : juce::Component

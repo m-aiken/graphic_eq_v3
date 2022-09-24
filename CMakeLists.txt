@@ -99,29 +99,31 @@ target_sources(GraphicEq
         source/gui/analyzer/responsecurvenodes.cpp
         source/gui/analyzer/spectrumanalyzer.h
         source/gui/analyzer/spectrumanalyzer.cpp
+        source/gui/analyzer/spectrumgrid.h
+        source/gui/analyzer/spectrumgrid.cpp
         source/gui/analyzerbase.h
         source/gui/analyzercontrols.h
         source/gui/analyzercontrols.cpp
-        source/gui/customlinearslider.h
-        source/gui/customlinearslider.cpp
+        source/gui/bandcontrols/cutcontrol.h
+        source/gui/bandcontrols/cutcontrol.cpp
+        source/gui/bandcontrols/eqcontrolscontainer.h
+        source/gui/bandcontrols/eqcontrolscontainer.cpp
+        source/gui/bandcontrols/peakcontrol.h
+        source/gui/bandcontrols/peakcontrol.cpp
         source/gui/customlookandfeel.h
         source/gui/customlookandfeel.cpp
-        source/gui/customrotarycontrol.h
-        source/gui/customrotarycontrol.cpp
-        source/gui/cutcontrol.h
-        source/gui/cutcontrol.cpp
         source/gui/dbscale.h
         source/gui/dbscale.cpp
-        source/gui/eqcontrolscontainer.h
-        source/gui/eqcontrolscontainer.cpp
         source/gui/paramlistener.h
         source/gui/pathproducer.h
         source/gui/pathproducer.cpp
-        source/gui/peakcontrol.h
-        source/gui/peakcontrol.cpp
-        source/gui/powerbutton.h
-        source/gui/powerbutton.cpp
         source/gui/tick.h
+        source/gui/widgets/customlinearslider.h
+        source/gui/widgets/customlinearslider.cpp
+        source/gui/widgets/customrotarycontrol.h
+        source/gui/widgets/customrotarycontrol.cpp
+        source/gui/widgets/powerbutton.h
+        source/gui/widgets/powerbutton.cpp
         )
 
 # `target_compile_definitions` adds some preprocessor definitions to our target. In a Projucer

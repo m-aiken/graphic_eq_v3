@@ -6,7 +6,7 @@
 #include "gui/analyzer/analyzercontainer.h"
 #include "gui/customlookandfeel.h"
 #include "gui/analyzercontrols.h"
-#include "gui/eqcontrolscontainer.h"
+#include "gui/bandcontrols/eqcontrolscontainer.h"
 
 //==============================================================================
 class GraphicEqEditor : public juce::AudioProcessorEditor

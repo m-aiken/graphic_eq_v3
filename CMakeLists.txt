@@ -101,7 +101,6 @@ target_sources(GraphicEq
         source/gui/analyzer/spectrumanalyzer.cpp
         source/gui/analyzer/spectrumgrid.h
         source/gui/analyzer/spectrumgrid.cpp
-        source/gui/analyzerbase.h
         source/gui/analyzercontrols.h
         source/gui/analyzercontrols.cpp
         source/gui/bandcontrols/cutcontrol.h
@@ -112,12 +111,9 @@ target_sources(GraphicEq
         source/gui/bandcontrols/peakcontrol.cpp
         source/gui/customlookandfeel.h
         source/gui/customlookandfeel.cpp
-        source/gui/dbscale.h
-        source/gui/dbscale.cpp
         source/gui/paramlistener.h
         source/gui/pathproducer.h
         source/gui/pathproducer.cpp
-        source/gui/tick.h
         source/gui/widgets/customlinearslider.h
         source/gui/widgets/customlinearslider.cpp
         source/gui/widgets/customrotarycontrol.h

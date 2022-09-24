@@ -13,6 +13,7 @@ struct ResponseCurve : juce::Component, juce::AudioProcessorParameter::Listener,
     ~ResponseCurve();
 
     void paint(juce::Graphics& g) override;
+    void resized() override;
 
     void updateMonoChain();
     std::vector<double> getMagnitudes(int boundsWidth);
@@ -27,7 +28,6 @@ struct ResponseCurve : juce::Component, juce::AudioProcessorParameter::Listener,
 
 private:
     double             sampleRate;
-    int                nodeDiameter { 12 };
     juce::Atomic<bool> parametersChanged { false };
 
     juce::AudioProcessorValueTreeState& apvts;
@@ -37,6 +37,6 @@ private:
     juce::AudioParameterFloat*          highCutFreqParam  { nullptr };
     juce::AudioParameterChoice*         highCutSlopeParam { nullptr };
 
-    std::array<PeakBand, Globals::getNumPeakBands()>          peakBands;
-    std::array<ResponseCurveNode, Globals::getNumPeakBands()> peakNodes;
+    std::array<PeakBand, Globals::getNumPeakBands()> peakBands;
+    ResponseCurveNodes                               peakNodes;
 };

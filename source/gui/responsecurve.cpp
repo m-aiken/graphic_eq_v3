@@ -31,9 +31,7 @@ ResponseCurve::ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double 
         assignFloatParam(peakBands.at(i).peakQParam, EqProperties::getPeakControlParamName(EqProperties::PeakControl::QUALITY, i));
     }
 
-    for (size_t i = 0; i < peakNodes.size(); ++i) {
-        addAndMakeVisible(peakNodes.at(i));
-    }
+    addAndMakeVisible(peakNodes);
 
     addListeners();
     updateMonoChain();
@@ -53,7 +51,6 @@ void ResponseCurve::paint(juce::Graphics& g)
     auto boundsX          = bounds.getX();
     auto responseCurveMin = bounds.getBottom();
     auto responseCurveMax = bounds.getY();
-    auto nodeRadius       = static_cast<int>(std::floor(nodeDiameter * 0.5));
 
     std::vector<double> magnitudes = getMagnitudes(boundsWidth);
 
@@ -77,8 +74,8 @@ void ResponseCurve::paint(juce::Graphics& g)
 
     g.strokePath(responseCurveLine, juce::PathStrokeType(2.f));
 
-    // Drawing the nodes
-    for (size_t i = 0; i < peakNodes.size(); ++i) {
+    // Calculate the node coordinates
+    for (size_t i = 0; i < Globals::getNumPeakBands(); ++i) {
         auto normalizedFrequency = juce::mapFromLog10<float>(peakBands.at(i).peakFreqParam->get(),
                                                              Globals::getMinFrequency(),
                                                              Globals::getMaxFrequency());
@@ -86,9 +83,13 @@ void ResponseCurve::paint(juce::Graphics& g)
         auto nodeX = boundsX + static_cast<int>(std::floor(boundsWidth * normalizedFrequency));
         auto nodeY = mapFilterGainRangeToAnalyzerBounds(magnitudes.at(nodeX - boundsX));
 
-        peakNodes.at(i).setBounds(nodeX - nodeRadius, nodeY - nodeRadius, nodeDiameter, nodeDiameter);
-        peakNodes.at(i).setCoordinates(nodeX - nodeRadius, nodeY - nodeRadius);
+        peakNodes.setCoordinates(i, nodeX, static_cast<int>(std::floor(nodeY)));
     }
+}
+
+void ResponseCurve::resized()
+{
+    peakNodes.setBounds(getLocalBounds());
 }
 
 void ResponseCurve::updateMonoChain()

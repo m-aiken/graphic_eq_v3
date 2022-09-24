@@ -1,22 +1,4 @@
 #include "responsecurvenode.h"
-#include "../utils/colourpalette.h"
-
-//==============================================================================
-void ResponseCurveNode::paint(juce::Graphics& g)
-{
-    g.setColour(ColourPalette::getColour(ColourPalette::Salmon));
-    g.fillEllipse(getLocalBounds().toFloat());
-}
-
-juce::Point<int> ResponseCurveNode::getCoordinates()
-{
-    return position;
-}
-
-void ResponseCurveNode::setCoordinates(int xCoord, int yCoord)
-{
-    position.setXY(xCoord, yCoord);
-}
 
 //==============================================================================
 ResponseCurveNodes::ResponseCurveNodes()
@@ -24,23 +6,27 @@ ResponseCurveNodes::ResponseCurveNodes()
     for (auto& node : nodes) {
         addAndMakeVisible(node);
     }
+
+    for (auto& coord : nodeCoordinates) {
+        coord.setXY(0, 0);
+    }
 }
 
 void ResponseCurveNodes::resized()
 {
-    for (auto& node : nodes) {
-        auto coordinates = node.getCoordinates();
-        node.setBounds(coordinates.getX() - nodeRadius, coordinates.getY() - nodeRadius, nodeDiameter, nodeDiameter);
+    auto& coords = getCoordinates();
+    for (size_t i = 0; i < nodes.size(); ++i) {
+        nodes.at(i).setBounds(coords.at(i).getX() - nodeRadius, coords.at(i).getY() - nodeRadius, nodeDiameter, nodeDiameter);
     }
 }
 
-std::array<juce::Point<int>, Globals::getNumPeakBands()> ResponseCurveNodes::getCoordinates()
+std::array<juce::Point<int>, Globals::getNumPeakBands()>& ResponseCurveNodes::getCoordinates()
 {
     return nodeCoordinates;
 }
 
 void ResponseCurveNodes::setCoordinates(size_t nodeIndex, int xCoord, int yCoord)
 {
-    nodes.at(nodeIndex).setCoordinates(xCoord, yCoord);
+    nodeCoordinates.at(nodeIndex).setXY(xCoord, yCoord);
     resized();
 }

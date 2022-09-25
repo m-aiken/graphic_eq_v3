@@ -9,7 +9,7 @@
 #include "gui/bandcontrols/eqcontrolscontainer.h"
 
 //==============================================================================
-class GraphicEqEditor : public juce::AudioProcessorEditor
+class GraphicEqEditor : public juce::AudioProcessorEditor, juce::Timer
 {
 public:
     explicit GraphicEqEditor (GraphicEqProcessor&);
@@ -21,6 +21,8 @@ public:
 
     void drawDbLabels(juce::Graphics& g, juce::Rectangle<int>& labelBounds);
     void drawFrequencyLabels(juce::Graphics& g, juce::Rectangle<int>& labelBounds);
+
+    void timerCallback() override;
 
 private:
     // This reference is provided as a quick way for your editor to

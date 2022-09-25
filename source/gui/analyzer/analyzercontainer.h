@@ -17,6 +17,8 @@ struct AnalyzerContainer : juce::Component
     void paint(juce::Graphics& g) override;
     void resized() override;
 
+    size_t getActiveNodeIndex() { return responseCurve.getActiveNodeIndex(); }
+
 private:
     SpectrumGrid     backgroundGrid;
     SpectrumAnalyzer spectrumAnalyzer;

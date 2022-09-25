@@ -11,8 +11,11 @@ struct PeakControl : juce::Component
     void paint(juce::Graphics& g) override;
     void resized() override;
 
+    void setNodeIsActive(bool activeState);
+
 private:
-    int bandNum;
+    int  bandNum;
+    bool nodeIsActive { false };
 
     PowerButton powerButton;
 

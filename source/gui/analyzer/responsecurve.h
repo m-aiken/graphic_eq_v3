@@ -38,6 +38,8 @@ struct ResponseCurve : juce::Component, juce::AudioProcessorParameter::Listener,
 
     std::array<juce::Point<int>, Globals::getNumPeakBands()>& getNodeCoordinates() { return nodeCoordinates; }
 
+    size_t getActiveNodeIndex() { return activeNode; }
+
 private:
     double sampleRate;
     int    nodeDiameter { 12 };
@@ -58,4 +60,6 @@ private:
 
     std::array<juce::Value, Globals::getNumPeakBands()> xValues;
     std::array<juce::Value, Globals::getNumPeakBands()> yValues;
+
+    size_t activeNode;
 };

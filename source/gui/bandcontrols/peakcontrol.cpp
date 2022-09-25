@@ -45,7 +45,9 @@ PeakControl::PeakControl(juce::AudioProcessorValueTreeState& apvts, const int _b
 
 void PeakControl::paint(juce::Graphics& g)
 {
-    g.fillAll(ColourPalette::getColour(ColourPalette::Green).withAlpha(0.1f));
+    auto nodeFocusOnColour  = ColourPalette::getColour(ColourPalette::Green).withAlpha(0.1f);
+    auto nodeFocusOffColour = ColourPalette::getColour(ColourPalette::Eggshell);
+    g.fillAll(nodeIsActive ? nodeFocusOnColour : nodeFocusOffColour);
 
     auto bounds = getLocalBounds();
 
@@ -62,20 +64,40 @@ void PeakControl::paint(juce::Graphics& g)
                      1);
 
     // Values
-    auto valueRectHeight = bounds.getHeight() * 0.4;
-    auto valueRect       = juce::Rectangle<int>(0, bounds.getBottom() - valueRectHeight, bounds.getWidth(), valueRectHeight);
+    auto labelRectHeight = bounds.getHeight() * 0.4;
+    auto labelRect       = juce::Rectangle<int>(0, bounds.getBottom() - labelRectHeight, bounds.getWidth(), labelRectHeight);
 
-    auto vCX = valueRect.getCentreX();
-    auto vY  = valueRect.getY();
-    auto vW  = valueRect.getWidth() * 0.5;
-    auto vH  = valueRect.getHeight() / 3;
+    auto centreX     = labelRect.getCentreX();
+    auto labelRectY  = labelRect.getY();
+    auto labelWidth  = labelRect.getWidth() * 0.5;
+    auto labelHeight = labelRect.getHeight() / 3;
+    auto padding     = Globals::getFont().getHeight();
 
-    g.drawFittedText("Hz:", 0, vY, vW, vH, juce::Justification::centred, 1);
-    g.drawFittedText(juce::String(freqSlider->getValue()), vCX, vY, vW, vH, juce::Justification::centred, 1);
-    g.drawFittedText("dB:", 0, vY + vH , vW, vH, juce::Justification::centred, 1);
-    g.drawFittedText(juce::String(gainSlider->getValue()), vCX, vY + vH, vW, vH, juce::Justification::centred, 1);
-    g.drawFittedText("Q:" , 0, vY + (vH*2), vW, vH, juce::Justification::centred, 1);
-    g.drawFittedText(juce::String(qSlider->getValue()) , vCX, vY + (vH*2), vW, vH, juce::Justification::centred, 1);
+    std::array<std::pair<juce::String, juce::String>, 3> paramValues {
+            std::pair{ "Hz:", juce::String(freqSlider->getValue()) },
+            std::pair{ "dB:", juce::String(gainSlider->getValue()) },
+            std::pair{ "Q:",  juce::String(qSlider->getValue()) }
+    };
+
+    for (size_t i = 0; i < paramValues.size(); ++i) {
+        // label
+        g.drawFittedText(paramValues.at(i).first,
+                         0,
+                         labelRectY + (labelHeight * i),
+                         labelWidth - padding,
+                         labelHeight,
+                         juce::Justification::centredRight,
+                         1);
+
+        // value
+        g.drawFittedText(paramValues.at(i).second,
+                         centreX + padding,
+                         labelRectY + (labelHeight * i),
+                         labelWidth - padding,
+                         labelHeight,
+                         juce::Justification::centredLeft,
+                         1);
+    }
 }
 
 void PeakControl::resized()
@@ -101,4 +123,10 @@ void PeakControl::resized()
                        rotaryBounds.getCentreY(),
                        rotaryDiameter,
                        rotaryDiameter);
+}
+
+void PeakControl::setNodeIsActive(bool activeState)
+{
+    nodeIsActive = activeState;
+    repaint();
 }

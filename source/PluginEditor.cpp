@@ -19,10 +19,13 @@ GraphicEqEditor::GraphicEqEditor (GraphicEqProcessor& p)
     addAndMakeVisible(eqControls);
 
     setSize(800, 600);
+
+    startTimerHz(20);
 }
 
 GraphicEqEditor::~GraphicEqEditor()
 {
+    stopTimer();
     setLookAndFeel(nullptr);
 }
 
@@ -128,4 +131,10 @@ void GraphicEqEditor::drawFrequencyLabels(juce::Graphics& g, juce::Rectangle<int
                          juce::Justification::horizontallyCentred, // justification
                          1);                                      // max num lines
     }
+}
+
+void GraphicEqEditor::timerCallback()
+{
+    auto activeNode = analyzerContainer.getActiveNodeIndex();
+    eqControls.setBandHasNodeSelection(activeNode);
 }

@@ -38,6 +38,8 @@ ResponseCurve::ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double 
         yValues.at(i).referTo(apvts.getParameterAsValue(EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, i)));
     }
 
+    activeNode = 0;
+
     addListeners();
     updateMonoChain();
     startTimerHz(60);
@@ -125,6 +127,8 @@ void ResponseCurve::mouseDrag(const juce::MouseEvent& event)
 
         xValues.at(closestNode) = xFrequency;
         yValues.at(closestNode) = yDecibels;
+
+        activeNode = closestNode;
     }
 }
 

@@ -3,7 +3,6 @@
 #include "JuceHeader.h"
 #include "spectrumgrid.h"
 #include "responsecurve.h"
-//#include "responsecurvenodes.h"
 #include "spectrumanalyzer.h"
 #include "../../dsp/singlesamplefifo.h"
 

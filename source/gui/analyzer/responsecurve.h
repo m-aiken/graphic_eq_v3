@@ -1,10 +1,20 @@
 #pragma once
 
 #include "JuceHeader.h"
-#include "responsecurvenodes.h"
 #include "../../dsp/filterutils.h"
 #include "../../dsp/peakband.h"
 #include "../../utils/globals.h"
+#include "../../utils/colourpalette.h"
+
+//==============================================================================
+struct Node : juce::Component
+{
+    void paint(juce::Graphics& g) override
+    {
+        g.setColour(ColourPalette::getColour(ColourPalette::Salmon));
+        g.fillEllipse(getLocalBounds().toFloat());
+    }
+};
 
 //==============================================================================
 struct ResponseCurve : juce::Component, juce::AudioProcessorParameter::Listener, juce::Timer
@@ -13,7 +23,6 @@ struct ResponseCurve : juce::Component, juce::AudioProcessorParameter::Listener,
     ~ResponseCurve();
 
     void paint(juce::Graphics& g) override;
-    void resized() override;
 
     void updateMonoChain();
     std::vector<double> getMagnitudes(int boundsWidth);
@@ -27,7 +36,10 @@ struct ResponseCurve : juce::Component, juce::AudioProcessorParameter::Listener,
     void removeListeners();
 
 private:
-    double             sampleRate;
+    double sampleRate;
+    int    nodeDiameter { 12 };
+    int    nodeRadius { 6 };
+
     juce::Atomic<bool> parametersChanged { false };
 
     juce::AudioProcessorValueTreeState& apvts;
@@ -38,5 +50,6 @@ private:
     juce::AudioParameterChoice*         highCutSlopeParam { nullptr };
 
     std::array<PeakBand, Globals::getNumPeakBands()> peakBands;
-    ResponseCurveNodes                               peakNodes;
+    std::array<Node, Globals::getNumPeakBands()>     peakNodes;
+//    ResponseCurveNodes                               peakNodes;
 };

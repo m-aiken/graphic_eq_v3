@@ -93,8 +93,6 @@ target_sources(GraphicEq
         source/gui/analyzer/analyzercontainer.cpp
         source/gui/analyzer/responsecurve.h
         source/gui/analyzer/responsecurve.cpp
-        source/gui/analyzer/responsecurvenodes.h
-        source/gui/analyzer/responsecurvenodes.cpp
         source/gui/analyzer/spectrumanalyzer.h
         source/gui/analyzer/spectrumanalyzer.cpp
         source/gui/analyzer/spectrumgrid.h

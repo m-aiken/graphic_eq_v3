@@ -111,15 +111,28 @@ void ResponseCurve::mouseDrag(const juce::MouseEvent& event)
 
         DBG(juce::String("x: ") << xFrequency);
         DBG(juce::String("y: ") << yDecibels);
+
+        size_t closestNode = 0;
+        auto shortestDistance = boundsWidth;
+        for (size_t i = 0; i < nodeCoordinates.size(); ++i) {
+            auto distance = std::abs(nodeCoordinates.at(i).getX() - xCoord);
+            if (distance < shortestDistance) {
+                closestNode = i;
+                shortestDistance = distance;
+            }
+        }
+
+        DBG("Closest to node: " << closestNode);
+        /*
+        peakBands.at(closestNode).peakFreqParam->beginChangeGesture();
+        peakBands.at(closestNode).peakFreqParam->setValueNotifyingHost(xFrequency);
+        peakBands.at(closestNode).peakFreqParam->endChangeGesture();
+
+        peakBands.at(closestNode).peakGainParam->beginChangeGesture();
+        peakBands.at(closestNode).peakGainParam->setValueNotifyingHost(yDecibels);
+        peakBands.at(closestNode).peakGainParam->endChangeGesture();
+        */
     }
-    /*
-    auto nodeCoordinates = responseCurve.getNodeCoordinates();
-    juce::String coords;
-    for (size_t i = 0; i < nodeCoordinates.size(); ++i) {
-        coords << "Node " << i << " x: " << nodeCoordinates.at(i).getX() << ", y: " << nodeCoordinates.at(i).getY() << "\n";
-    }
-    DBG(coords);
-    */
 }
 
 void ResponseCurve::updateMonoChain()

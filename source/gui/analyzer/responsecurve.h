@@ -55,4 +55,7 @@ private:
     std::array<PeakBand, Globals::getNumPeakBands()>         peakBands;
     std::array<Node, Globals::getNumPeakBands()>             peakNodes;
     std::array<juce::Point<int>, Globals::getNumPeakBands()> nodeCoordinates;
+
+    std::array<juce::Value, Globals::getNumPeakBands()> xValues;
+    std::array<juce::Value, Globals::getNumPeakBands()> yValues;
 };

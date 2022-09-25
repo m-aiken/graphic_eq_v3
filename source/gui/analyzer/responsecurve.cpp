@@ -31,7 +31,11 @@ ResponseCurve::ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double 
         assignFloatParam(peakBands.at(i).peakQParam, EqProperties::getPeakControlParamName(EqProperties::PeakControl::QUALITY, i));
 
         addAndMakeVisible(peakNodes.at(i));
+
         nodeCoordinates.at(i).setXY(0, 0);
+
+        xValues.at(i).referTo(apvts.getParameterAsValue(EqProperties::getPeakControlParamName(EqProperties::PeakControl::FREQUENCY, i)));
+        yValues.at(i).referTo(apvts.getParameterAsValue(EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, i)));
     }
 
     addListeners();
@@ -99,9 +103,9 @@ void ResponseCurve::mouseDrag(const juce::MouseEvent& event)
     auto boundsHeight = bounds.getHeight();
 
     if (xCoord >= 0 && xCoord <= boundsWidth && yCoord >= 0 && yCoord <= boundsHeight) {
-        auto xFrequency = mapToLog10<double>(static_cast<double>(xCoord) / boundsWidth,
-                                             Globals::getMinFrequency(),
-                                             Globals::getMaxFrequency());
+        auto xFrequency = mapToLog10<float>(static_cast<float>(xCoord) / boundsWidth,
+                                            Globals::getMinFrequency(),
+                                            Globals::getMaxFrequency());
 
         auto yDecibels = juce::jmap<float>(yCoord,
                                            0,
@@ -109,29 +113,18 @@ void ResponseCurve::mouseDrag(const juce::MouseEvent& event)
                                            Globals::getMaxDecibels(),
                                            Globals::getNegativeInf());
 
-        DBG(juce::String("x: ") << xFrequency);
-        DBG(juce::String("y: ") << yDecibels);
-
         size_t closestNode = 0;
         auto shortestDistance = boundsWidth;
         for (size_t i = 0; i < nodeCoordinates.size(); ++i) {
-            auto distance = std::abs(nodeCoordinates.at(i).getX() - xCoord);
-            if (distance < shortestDistance) {
+            auto xDistance = std::abs(nodeCoordinates.at(i).getX() - xCoord);
+            if (xDistance < shortestDistance) {
                 closestNode = i;
-                shortestDistance = distance;
+                shortestDistance = xDistance;
             }
         }
 
-        DBG("Closest to node: " << closestNode);
-        /*
-        peakBands.at(closestNode).peakFreqParam->beginChangeGesture();
-        peakBands.at(closestNode).peakFreqParam->setValueNotifyingHost(xFrequency);
-        peakBands.at(closestNode).peakFreqParam->endChangeGesture();
-
-        peakBands.at(closestNode).peakGainParam->beginChangeGesture();
-        peakBands.at(closestNode).peakGainParam->setValueNotifyingHost(yDecibels);
-        peakBands.at(closestNode).peakGainParam->endChangeGesture();
-        */
+        xValues.at(closestNode) = xFrequency;
+        yValues.at(closestNode) = yDecibels;
     }
 }
 

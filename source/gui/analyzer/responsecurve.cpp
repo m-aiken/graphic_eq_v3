@@ -25,14 +25,13 @@ ResponseCurve::ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double 
     assignFloatParam(highCutFreqParam, eqParams.at(EqProperties::CutControls::HIGH_CUT_FREQ));
     assignChoiceParam(highCutSlopeParam, eqParams.at(EqProperties::CutControls::HIGH_CUT_SLOPE));
 
-    for (size_t i = 0; i < peakBands.size(); ++i) {
+    for (size_t i = 0; i < Globals::getNumPeakBands(); ++i) {
         assignFloatParam(peakBands.at(i).peakFreqParam, EqProperties::getPeakControlParamName(EqProperties::PeakControl::FREQUENCY, i));
         assignFloatParam(peakBands.at(i).peakGainParam, EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, i));
         assignFloatParam(peakBands.at(i).peakQParam, EqProperties::getPeakControlParamName(EqProperties::PeakControl::QUALITY, i));
-    }
-    
-    for (size_t i = 0; i < peakNodes.size(); ++i) {
+
         addAndMakeVisible(peakNodes.at(i));
+        nodeCoordinates.at(i).setXY(0, 0);
     }
 
     addListeners();
@@ -86,7 +85,41 @@ void ResponseCurve::paint(juce::Graphics& g)
         auto nodeY = mapFilterGainRangeToAnalyzerBounds(magnitudes.at(nodeX - boundsX));
 
         peakNodes.at(i).setBounds(nodeX - nodeRadius, nodeY - nodeRadius, nodeDiameter, nodeDiameter);
+        nodeCoordinates.at(i).setXY(nodeX, static_cast<int>(std::floor(nodeY)));
     }
+}
+
+void ResponseCurve::mouseDrag(const juce::MouseEvent& event)
+{
+    auto xCoord = event.position.getX();
+    auto yCoord = event.position.getY();
+
+    auto bounds       = getLocalBounds();
+    auto boundsWidth  = bounds.getWidth();
+    auto boundsHeight = bounds.getHeight();
+
+    if (xCoord >= 0 && xCoord <= boundsWidth && yCoord >= 0 && yCoord <= boundsHeight) {
+        auto xFrequency = mapToLog10<double>(static_cast<double>(xCoord) / boundsWidth,
+                                             Globals::getMinFrequency(),
+                                             Globals::getMaxFrequency());
+
+        auto yDecibels = juce::jmap<float>(yCoord,
+                                           0,
+                                           boundsHeight,
+                                           Globals::getMaxDecibels(),
+                                           Globals::getNegativeInf());
+
+        DBG(juce::String("x: ") << xFrequency);
+        DBG(juce::String("y: ") << yDecibels);
+    }
+    /*
+    auto nodeCoordinates = responseCurve.getNodeCoordinates();
+    juce::String coords;
+    for (size_t i = 0; i < nodeCoordinates.size(); ++i) {
+        coords << "Node " << i << " x: " << nodeCoordinates.at(i).getX() << ", y: " << nodeCoordinates.at(i).getY() << "\n";
+    }
+    DBG(coords);
+    */
 }
 
 void ResponseCurve::updateMonoChain()

@@ -2,8 +2,8 @@
 
 #include "JuceHeader.h"
 #include "spectrumgrid.h"
-#include "responsecurve.h"
 #include "spectrumanalyzer.h"
+#include "responsecurve.h"
 #include "../../dsp/singlesamplefifo.h"
 
 //==============================================================================
@@ -16,7 +16,6 @@ struct AnalyzerContainer : juce::Component
 
     void paint(juce::Graphics& g) override;
     void resized() override;
-    void mouseDrag(const juce::MouseEvent& event) override;
 
 private:
     SpectrumGrid     backgroundGrid;

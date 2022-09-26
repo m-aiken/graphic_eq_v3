@@ -12,21 +12,25 @@ namespace EqProperties
     {
         LOW_CUT_FREQ,
         LOW_CUT_SLOPE,
+        LOW_CUT_ENABLED,
         HIGH_CUT_FREQ,
-        HIGH_CUT_SLOPE
+        HIGH_CUT_SLOPE,
+        HIGH_CUT_ENABLED
     };
 
     enum class PeakControl
     {
         FREQUENCY,
         GAIN,
-        QUALITY
+        QUALITY,
+        ENABLED
     };
 
     static std::map<PeakControl, juce::String> peakControlMap = {
             { PeakControl::FREQUENCY, "Freq" },
-            { PeakControl::GAIN,      "Gain"},
-            { PeakControl::QUALITY,   "Q"}
+            { PeakControl::GAIN,      "Gain" },
+            { PeakControl::QUALITY,   "Q" },
+            { PeakControl::ENABLED,   "Enabled" }
     };
 
     inline const juce::String getPeakControlParamName(PeakControl peakControl, const int bandNum)
@@ -39,10 +43,12 @@ namespace EqProperties
     inline const std::map<CutControls, juce::String>& getCutParams()
     {
         static std::map<CutControls, juce::String> paramNamesMap = {
-                { LOW_CUT_FREQ,   "Low Cut Freq" },
-                { LOW_CUT_SLOPE,  "Low Cut Slope" },
-                { HIGH_CUT_FREQ,  "High Cut Freq" },
-                { HIGH_CUT_SLOPE, "High Cut Slope" }
+                { LOW_CUT_FREQ,     "Low Cut Freq" },
+                { LOW_CUT_SLOPE,    "Low Cut Slope" },
+                { LOW_CUT_ENABLED,  "Low Cut Enabled" },
+                { HIGH_CUT_FREQ,    "High Cut Freq" },
+                { HIGH_CUT_SLOPE,   "High Cut Slope" },
+                { HIGH_CUT_ENABLED, "High Cut Enabled" }
         };
 
         return paramNamesMap;
@@ -73,6 +79,10 @@ namespace EqProperties
                                                                 cutChoices,
                                                                 0));
 
+        layout.add(std::make_unique<juce::AudioParameterBool>(params.at(LOW_CUT_ENABLED),
+                                                              params.at(LOW_CUT_ENABLED),
+                                                              true));
+
         layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(HIGH_CUT_FREQ),
                                                                params.at(HIGH_CUT_FREQ),
                                                                freqNormalisableRange,
@@ -82,6 +92,10 @@ namespace EqProperties
                                                                 params.at(HIGH_CUT_SLOPE),
                                                                 cutChoices,
                                                                 0));
+
+        layout.add(std::make_unique<juce::AudioParameterBool>(params.at(HIGH_CUT_ENABLED),
+                                                              params.at(HIGH_CUT_ENABLED),
+                                                              true));
     }
 
     inline void addPeakParams(juce::AudioProcessorValueTreeState::ParameterLayout& layout)
@@ -105,6 +119,10 @@ namespace EqProperties
                                                                    getPeakControlParamName(PeakControl::QUALITY, i-1),
                                                                    juce::NormalisableRange(0.1f, 10.f, 0.05f, 1.f),
                                                                    5.f));
+
+            layout.add(std::make_unique<juce::AudioParameterBool>(getPeakControlParamName(PeakControl::ENABLED, i-1),
+                                                                  getPeakControlParamName(PeakControl::ENABLED, i-1),
+                                                                  true));
         }
         /*
         auto freqNormalisableRange = juce::NormalisableRange(Globals::getMinFrequency(), Globals::getMaxFrequency(), 1.f, 0.25f);

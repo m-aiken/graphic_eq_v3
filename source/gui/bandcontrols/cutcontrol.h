@@ -16,7 +16,8 @@ struct CutControl : juce::Component
 private:
     FilterUtils::ChainPositions chainPosition;
 
-    PowerButton powerButton;
+    std::unique_ptr<PowerButton> powerButton;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> buttonAttachment;
 
     std::unique_ptr<CustomRotaryControl> freqSlider;
     std::unique_ptr<CustomLinearSlider>  slopeSlider;

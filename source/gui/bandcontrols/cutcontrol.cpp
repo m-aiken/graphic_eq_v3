@@ -8,6 +8,10 @@ CutControl::CutControl(juce::AudioProcessorValueTreeState& apvts, const FilterUt
 {
     const auto& params = EqProperties::getCutParams();
 
+    powerButton           = std::make_unique<PowerButton>();
+    auto enabledParamName = params.at(chainPosition == FilterUtils::ChainPositions::LowCut ? EqProperties::CutControls::LOW_CUT_ENABLED : EqProperties::CutControls::HIGH_CUT_ENABLED);
+    buttonAttachment      = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(apvts, enabledParamName, *powerButton);
+
     auto freqParamName = params.at(chainPosition == FilterUtils::ChainPositions::LowCut ? EqProperties::CutControls::LOW_CUT_FREQ : EqProperties::CutControls::HIGH_CUT_FREQ);
     auto freqParam     = apvts.getParameter(freqParamName);
     jassert(freqParam != nullptr);
@@ -20,10 +24,8 @@ CutControl::CutControl(juce::AudioProcessorValueTreeState& apvts, const FilterUt
     slopeSlider     = std::make_unique<CustomLinearSlider>(*slopeParam);
     slopeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, slopeParamName, *slopeSlider);
 
-    powerButton.setToggleState(true, juce::NotificationType::dontSendNotification); // probably temporary - should be saved and loaded??
-
-    powerButton.onClick = [this]() {
-        bool toggleState = powerButton.getToggleState();
+    powerButton->onClick = [this]() {
+        bool toggleState = powerButton->getToggleState();
 
         freqSlider->setEnabled(toggleState);
         slopeSlider->setEnabled(toggleState);
@@ -33,7 +35,7 @@ CutControl::CutControl(juce::AudioProcessorValueTreeState& apvts, const FilterUt
         slopeSlider->setAlpha(toggleState ? 1.f : dim);
     };
 
-    addAndMakeVisible(powerButton);
+    addAndMakeVisible(*powerButton);
     addAndMakeVisible(*freqSlider);
     addAndMakeVisible(*slopeSlider);
 }
@@ -95,7 +97,7 @@ void CutControl::resized()
     auto diameter = (bounds.getWidth() * 0.55);
     auto padding  = Globals::getFont().getHeight();
 
-    powerButton.setBounds(6, 6, 16, 16);
+    powerButton->setBounds(6, 6, 16, 16);
 
     freqSlider->setBounds(bounds.getCentreX() - (diameter * 0.5),
                           bounds.getCentreX() - (diameter * 0.5),

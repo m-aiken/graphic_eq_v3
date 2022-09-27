@@ -6,6 +6,9 @@
 PeakControl::PeakControl(juce::AudioProcessorValueTreeState& apvts, const int _bandNum)
 : bandNum(_bandNum)
 {
+    powerButton      = std::make_unique<PowerButton>();
+    buttonAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(apvts, EqProperties::getPeakControlParamName(EqProperties::PeakControl::ENABLED, bandNum), *powerButton);
+
     auto freqParam = apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::FREQUENCY, bandNum));
     jassert(freqParam != nullptr);
     freqSlider = std::make_unique<CustomRotaryControl>(*freqParam, "Hz");
@@ -22,10 +25,8 @@ PeakControl::PeakControl(juce::AudioProcessorValueTreeState& apvts, const int _b
     gainAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, bandNum), *gainSlider);
     qAttachment    = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, EqProperties::getPeakControlParamName(EqProperties::PeakControl::QUALITY, bandNum), *qSlider);
 
-    powerButton.setToggleState(true, juce::NotificationType::dontSendNotification); // probably temporary - should be saved and loaded??
-
-    powerButton.onClick = [this]() {
-        bool toggleState = powerButton.getToggleState();
+    powerButton->onClick = [this]() {
+        bool toggleState = powerButton->getToggleState();
 
         freqSlider->setEnabled(toggleState);
         gainSlider->setEnabled(toggleState);
@@ -37,7 +38,7 @@ PeakControl::PeakControl(juce::AudioProcessorValueTreeState& apvts, const int _b
         qSlider->setAlpha(toggleState ? 1.f : dim);
     };
 
-    addAndMakeVisible(powerButton);
+    addAndMakeVisible(*powerButton);
     addAndMakeVisible(*freqSlider);
     addAndMakeVisible(*gainSlider);
     addAndMakeVisible(*qSlider);
@@ -107,7 +108,7 @@ void PeakControl::resized()
     auto padding        = 2;
     auto rotaryDiameter = (rotaryBounds.getWidth() * 0.5) - padding;
 
-    powerButton.setBounds(6, 6, 16, 16);
+    powerButton->setBounds(6, 6, 16, 16);
 
     freqSlider->setBounds(padding,
                           rotaryDiameter * 0.5,

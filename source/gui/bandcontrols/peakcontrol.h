@@ -17,7 +17,8 @@ private:
     int  bandNum;
     bool nodeIsActive { false };
 
-    PowerButton powerButton;
+    std::unique_ptr<PowerButton> powerButton;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> buttonAttachment;
 
     std::unique_ptr<CustomRotaryControl> freqSlider;
     std::unique_ptr<CustomRotaryControl> gainSlider;

@@ -3,10 +3,28 @@
 #include "../../utils/colourpalette.h"
 
 //==============================================================================
+Node::Node(juce::AudioProcessorValueTreeState& _apvts, int _bandNum)
+: apvts(_apvts)
+{
+    enabled.referTo(apvts.getParameterAsValue(EqProperties::getPeakControlParamName(EqProperties::PeakControl::ENABLED, _bandNum)));
+}
+
+void Node::paint(juce::Graphics& g)
+{
+    auto colour = enabled.getValue() ? ColourPalette::getColour(ColourPalette::Salmon) : ColourPalette::getColour(ColourPalette::Blue);
+    g.setColour(colour);
+    g.fillEllipse(getLocalBounds().toFloat());
+}
+
+//==============================================================================
 ResponseCurve::ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double _sampleRate)
 : apvts(_apvts),
   sampleRate(_sampleRate)
 {
+    for (size_t i = 0; i < Globals::getNumPeakBands(); ++i) {
+        peakNodes.at(i) = std::make_unique<Node>(_apvts, i);
+    }
+
     auto assignFloatParam = [&](auto& target, auto& paramName){
         auto param = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter(paramName));
         jassert(param != nullptr);
@@ -30,12 +48,14 @@ ResponseCurve::ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double 
         assignFloatParam(peakBands.at(i).peakGainParam, EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, i));
         assignFloatParam(peakBands.at(i).peakQParam, EqProperties::getPeakControlParamName(EqProperties::PeakControl::QUALITY, i));
 
-        addAndMakeVisible(peakNodes.at(i));
+        addAndMakeVisible(*peakNodes.at(i));
 
         nodeCoordinates.at(i).setXY(0, 0);
 
         xValues.at(i).referTo(apvts.getParameterAsValue(EqProperties::getPeakControlParamName(EqProperties::PeakControl::FREQUENCY, i)));
         yValues.at(i).referTo(apvts.getParameterAsValue(EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, i)));
+
+        peakBandEnablements.at(i).referTo(apvts.getParameterAsValue(EqProperties::getPeakControlParamName(EqProperties::PeakControl::ENABLED, i)));
     }
 
     activeNode = 0;
@@ -90,7 +110,7 @@ void ResponseCurve::paint(juce::Graphics& g)
         auto nodeX = boundsX + static_cast<int>(std::floor(boundsWidth * normalizedFrequency));
         auto nodeY = mapFilterGainRangeToAnalyzerBounds(magnitudes.at(nodeX - boundsX));
 
-        peakNodes.at(i).setBounds(nodeX - nodeRadius, nodeY - nodeRadius, nodeDiameter, nodeDiameter);
+        peakNodes.at(i)->setBounds(nodeX - nodeRadius, nodeY - nodeRadius, nodeDiameter, nodeDiameter);
         nodeCoordinates.at(i).setXY(nodeX, static_cast<int>(std::floor(nodeY)));
     }
 }

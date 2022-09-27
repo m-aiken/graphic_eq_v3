@@ -9,11 +9,12 @@
 //==============================================================================
 struct Node : juce::Component
 {
-    void paint(juce::Graphics& g) override
-    {
-        g.setColour(ColourPalette::getColour(ColourPalette::Salmon));
-        g.fillEllipse(getLocalBounds().toFloat());
-    }
+    Node(juce::AudioProcessorValueTreeState& _apvts, int _bandNum);
+    void paint(juce::Graphics& g) override;
+
+private:
+    juce::AudioProcessorValueTreeState& apvts;
+    juce::Value enabled;
 };
 
 //==============================================================================
@@ -54,12 +55,13 @@ private:
     juce::AudioParameterFloat*          highCutFreqParam  { nullptr };
     juce::AudioParameterChoice*         highCutSlopeParam { nullptr };
 
-    std::array<PeakBand, Globals::getNumPeakBands()>         peakBands;
-    std::array<Node, Globals::getNumPeakBands()>             peakNodes;
-    std::array<juce::Point<int>, Globals::getNumPeakBands()> nodeCoordinates;
+    std::array<PeakBand, Globals::getNumPeakBands()>              peakBands;
+    std::array<std::unique_ptr<Node>, Globals::getNumPeakBands()> peakNodes;
+    std::array<juce::Point<int>, Globals::getNumPeakBands()>      nodeCoordinates;
 
     std::array<juce::Value, Globals::getNumPeakBands()> xValues;
     std::array<juce::Value, Globals::getNumPeakBands()> yValues;
+    std::array<juce::Value, Globals::getNumPeakBands()> peakBandEnablements;
 
     size_t activeNode;
 };

@@ -25,6 +25,8 @@ PeakControl::PeakControl(juce::AudioProcessorValueTreeState& apvts, const int _b
     gainAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, bandNum), *gainSlider);
     qAttachment    = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, EqProperties::getPeakControlParamName(EqProperties::PeakControl::QUALITY, bandNum), *qSlider);
 
+    cachedGain = gainParam->getValue();
+
     powerButton->onClick = [this]() {
         bool toggleState = powerButton->getToggleState();
 
@@ -36,6 +38,13 @@ PeakControl::PeakControl(juce::AudioProcessorValueTreeState& apvts, const int _b
         freqSlider->setAlpha(toggleState ? 1.f : dim);
         gainSlider->setAlpha(toggleState ? 1.f : dim);
         qSlider->setAlpha(toggleState ? 1.f : dim);
+        
+        if (toggleState == false) {
+            cachedGain = gainSlider->getValue();
+            gainSlider->setValue(0.f, juce::NotificationType::sendNotification);
+        } else {
+            gainSlider->setValue(cachedGain, juce::NotificationType::sendNotification);
+        }
     };
 
     addAndMakeVisible(*powerButton);

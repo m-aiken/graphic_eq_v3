@@ -16,6 +16,11 @@ void Node::paint(juce::Graphics& g)
     g.fillEllipse(getLocalBounds().toFloat());
 }
 
+bool Node::isEnabled()
+{
+    return enabled.getValue();
+}
+
 //==============================================================================
 ResponseCurve::ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double _sampleRate)
 : apvts(_apvts),
@@ -54,8 +59,6 @@ ResponseCurve::ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double 
 
         xValues.at(i).referTo(apvts.getParameterAsValue(EqProperties::getPeakControlParamName(EqProperties::PeakControl::FREQUENCY, i)));
         yValues.at(i).referTo(apvts.getParameterAsValue(EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, i)));
-
-        peakBandEnablements.at(i).referTo(apvts.getParameterAsValue(EqProperties::getPeakControlParamName(EqProperties::PeakControl::ENABLED, i)));
     }
 
     activeNode = 0;
@@ -145,10 +148,12 @@ void ResponseCurve::mouseDrag(const juce::MouseEvent& event)
             }
         }
 
-        xValues.at(closestNode) = xFrequency;
-        yValues.at(closestNode) = yDecibels;
+        if (peakNodes.at(closestNode)->isEnabled()) {
+            xValues.at(closestNode) = xFrequency;
+            yValues.at(closestNode) = yDecibels;
 
-        activeNode = closestNode;
+            activeNode = closestNode;
+        }
     }
 }
 

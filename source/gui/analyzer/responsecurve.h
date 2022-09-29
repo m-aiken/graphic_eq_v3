@@ -11,6 +11,7 @@ struct Node : juce::Component
 {
     Node(juce::AudioProcessorValueTreeState& _apvts, int _bandNum);
     void paint(juce::Graphics& g) override;
+    bool isEnabled();
 
 private:
     juce::AudioProcessorValueTreeState& apvts;
@@ -43,8 +44,8 @@ struct ResponseCurve : juce::Component, juce::AudioProcessorParameter::Listener,
 
 private:
     double sampleRate;
-    int    nodeDiameter { 12 };
-    int    nodeRadius { 6 };
+    int    nodeDiameter { 10 };
+    int    nodeRadius { 5 };
 
     juce::Atomic<bool> parametersChanged { false };
 
@@ -61,7 +62,6 @@ private:
 
     std::array<juce::Value, Globals::getNumPeakBands()> xValues;
     std::array<juce::Value, Globals::getNumPeakBands()> yValues;
-    std::array<juce::Value, Globals::getNumPeakBands()> peakBandEnablements;
 
     size_t activeNode;
 };

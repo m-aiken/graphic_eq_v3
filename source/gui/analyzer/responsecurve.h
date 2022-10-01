@@ -7,15 +7,13 @@
 #include "../../utils/colourpalette.h"
 
 //==============================================================================
-struct Node : juce::Component
+struct Node : juce::ToggleButton
 {
     Node(juce::AudioProcessorValueTreeState& _apvts, int _bandNum);
     void paint(juce::Graphics& g) override;
-    bool isEnabled();
 
 private:
-    juce::AudioProcessorValueTreeState& apvts;
-    juce::Value enabled;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> paramAttachment;
 };
 
 //==============================================================================

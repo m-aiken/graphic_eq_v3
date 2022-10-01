@@ -2,16 +2,16 @@
 
 //==============================================================================
 EqControlsContainer::EqControlsContainer(juce::AudioProcessorValueTreeState& apvts)
-: lowCutControl(apvts, FilterUtils::ChainPositions::LowCut),
-  highCutControl(apvts, FilterUtils::ChainPositions::HighCut)
 {
+    lowCutControl = std::make_unique<CutControl>(apvts, FilterUtils::ChainPositions::LowCut);
+    highCutControl = std::make_unique<CutControl>(apvts, FilterUtils::ChainPositions::HighCut);
+    addAndMakeVisible(*lowCutControl);
+    addAndMakeVisible(*highCutControl);
+
     for (size_t i = 0; i < peakControls.size(); ++i) {
         peakControls.at(i) = std::make_unique<PeakControl>(apvts, i);
         addAndMakeVisible(*peakControls.at(i));
     }
-
-    addAndMakeVisible(lowCutControl);
-    addAndMakeVisible(highCutControl);
 }
 
 void EqControlsContainer::resized()
@@ -34,13 +34,13 @@ void EqControlsContainer::resized()
 
     grid.autoRows = Track(Fr(1));
 
-    grid.items.add(juce::GridItem(lowCutControl));
+    grid.items.add(juce::GridItem(*lowCutControl));
 
     for (size_t i = 0; i < peakControls.size(); ++i) {
         grid.items.add(juce::GridItem(*peakControls.at(i)));
     }
 
-    grid.items.add(juce::GridItem(highCutControl));
+    grid.items.add(juce::GridItem(*highCutControl));
 
     grid.setGap(juce::Grid::Px{4});
 

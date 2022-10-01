@@ -67,41 +67,39 @@ namespace EqProperties
             cutChoices.add(str);
         }
 
-        auto freqNormalisableRange = juce::NormalisableRange(Globals::getMinFrequency(), Globals::getMaxFrequency(), 1.f, 0.25f);
+        auto freqNormalisableRange = juce::NormalisableRange(Globals::getMinFrequency(), Globals::getMaxFrequency(), 1.f, 1.f);
 
         layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(LOW_CUT_FREQ),
                                                                params.at(LOW_CUT_FREQ),
                                                                freqNormalisableRange,
-                                                               20.f));
+                                                               50.f));
 
         layout.add(std::make_unique<juce::AudioParameterChoice>(params.at(LOW_CUT_SLOPE),
                                                                 params.at(LOW_CUT_SLOPE),
                                                                 cutChoices,
-                                                                0));
+                                                                3));
 
         layout.add(std::make_unique<juce::AudioParameterBool>(params.at(LOW_CUT_ENABLED),
                                                               params.at(LOW_CUT_ENABLED),
-                                                              true));
+                                                              false));
 
         layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(HIGH_CUT_FREQ),
                                                                params.at(HIGH_CUT_FREQ),
                                                                freqNormalisableRange,
-                                                               20000.f));
+                                                               15000.f));
 
         layout.add(std::make_unique<juce::AudioParameterChoice>(params.at(HIGH_CUT_SLOPE),
                                                                 params.at(HIGH_CUT_SLOPE),
                                                                 cutChoices,
-                                                                0));
+                                                                3));
 
         layout.add(std::make_unique<juce::AudioParameterBool>(params.at(HIGH_CUT_ENABLED),
                                                               params.at(HIGH_CUT_ENABLED),
-                                                              true));
+                                                              false));
     }
 
     inline void addPeakParams(juce::AudioProcessorValueTreeState::ParameterLayout& layout)
     {
-        const auto& params = getCutParams();
-
         std::vector<float> defaultFreqs { Globals::getMinFrequency(), 100.f, 200.f, 500.f, 1000.f, 2000.f, 5000.f, Globals::getMaxFrequency() - 2.f };
 
         for (int i = 1; i < defaultFreqs.size() - 1; ++i) {

@@ -13,8 +13,8 @@ struct EqControlsContainer : juce::Component
 
     void setBandHasNodeSelection(size_t activeNodeIndex);
 private:
-    CutControl lowCutControl;
-    CutControl highCutControl;
+    std::unique_ptr<CutControl> lowCutControl;
+    std::unique_ptr<CutControl> highCutControl;
 
     std::array<std::unique_ptr<PeakControl>, Globals::getNumPeakBands()> peakControls;
 };

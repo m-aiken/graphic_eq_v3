@@ -4,27 +4,22 @@
 
 //==============================================================================
 Node::Node(juce::AudioProcessorValueTreeState& _apvts, int _bandNum)
-: apvts(_apvts)
 {
-    enabled.referTo(apvts.getParameterAsValue(EqProperties::getPeakControlParamName(EqProperties::PeakControl::ENABLED, _bandNum)));
+    auto paramId = EqProperties::getPeakControlParamName(EqProperties::PeakControl::ENABLED, _bandNum);
+    paramAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(_apvts, paramId, *this);
 }
 
 void Node::paint(juce::Graphics& g)
 {
-    auto colour = enabled.getValue() ? ColourPalette::getColour(ColourPalette::Salmon) : ColourPalette::getColour(ColourPalette::Blue);
+    auto colour = getToggleState() ? ColourPalette::getColour(ColourPalette::Salmon) : ColourPalette::getColour(ColourPalette::Blue);
     g.setColour(colour);
     g.fillEllipse(getLocalBounds().toFloat());
 }
 
-bool Node::isEnabled()
-{
-    return enabled.getValue();
-}
-
 //==============================================================================
 ResponseCurve::ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double _sampleRate)
-: apvts(_apvts),
-  sampleRate(_sampleRate)
+: sampleRate(_sampleRate),
+  apvts(_apvts)
 {
     for (size_t i = 0; i < Globals::getNumPeakBands(); ++i) {
         peakNodes.at(i) = std::make_unique<Node>(_apvts, i);
@@ -148,7 +143,7 @@ void ResponseCurve::mouseDrag(const juce::MouseEvent& event)
             }
         }
 
-        if (peakNodes.at(closestNode)->isEnabled()) {
+        if (peakNodes.at(closestNode)->getToggleState()) {
             xValues.at(closestNode) = xFrequency;
             yValues.at(closestNode) = yDecibels;
 

@@ -66,12 +66,10 @@ namespace EqProperties
             str << " dB/Oct";
             cutChoices.add(str);
         }
-
-        auto freqNormalisableRange = juce::NormalisableRange(Globals::getMinFrequency(), Globals::getMaxFrequency(), 1.f, 1.f);
-
+        
         layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(LOW_CUT_FREQ),
                                                                params.at(LOW_CUT_FREQ),
-                                                               freqNormalisableRange,
+                                                               juce::NormalisableRange(Globals::getMinFrequency(), Globals::getMaxFrequency(), 1.f, 0.2f),
                                                                50.f));
 
         layout.add(std::make_unique<juce::AudioParameterChoice>(params.at(LOW_CUT_SLOPE),
@@ -85,7 +83,7 @@ namespace EqProperties
 
         layout.add(std::make_unique<juce::AudioParameterFloat>(params.at(HIGH_CUT_FREQ),
                                                                params.at(HIGH_CUT_FREQ),
-                                                               freqNormalisableRange,
+                                                               juce::NormalisableRange(Globals::getMinFrequency(), Globals::getMaxFrequency(), 1.f, 1.f),
                                                                15000.f));
 
         layout.add(std::make_unique<juce::AudioParameterChoice>(params.at(HIGH_CUT_SLOPE),
@@ -116,7 +114,7 @@ namespace EqProperties
             layout.add(std::make_unique<juce::AudioParameterFloat>(getPeakControlParamName(PeakControl::QUALITY, i-1),
                                                                    getPeakControlParamName(PeakControl::QUALITY, i-1),
                                                                    juce::NormalisableRange(0.1f, 10.f, 0.05f, 1.f),
-                                                                   5.f));
+                                                                   1.f));
 
             layout.add(std::make_unique<juce::AudioParameterBool>(getPeakControlParamName(PeakControl::ENABLED, i-1),
                                                                   getPeakControlParamName(PeakControl::ENABLED, i-1),

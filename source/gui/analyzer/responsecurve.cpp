@@ -259,38 +259,38 @@ std::array<std::vector<double>, 9> ResponseCurve::getMagnitudes(int boundsWidth)
 
         if (!monoChain.isBypassed<FilterUtils::ChainPositions::LowCut>()) {
             if (!lowCut.isBypassed<0>()) {
-                magHC *= lowCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+                magHC  *= lowCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
                 magALL *= lowCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
             }
             if (!lowCut.isBypassed<1>()) {
-                magHC *= lowCut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+                magHC  *= lowCut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
                 magALL *= lowCut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
             }
             if (!lowCut.isBypassed<2>()) {
-                magHC *= lowCut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+                magHC  *= lowCut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
                 magALL *= lowCut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
             }
             if (!lowCut.isBypassed<3>()) {
-                magHC *= lowCut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+                magHC  *= lowCut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
                 magALL *= lowCut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
             }
         }
 
         if (!monoChain.isBypassed<FilterUtils::ChainPositions::HighCut>()) {
             if (!highCut.isBypassed<0>()) {
-                magHC *= highCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+                magHC  *= highCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
                 magALL *= highCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
             }
             if (!highCut.isBypassed<1>()) {
-                magHC *= highCut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+                magHC  *= highCut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
                 magALL *= highCut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
             }
             if (!highCut.isBypassed<2>()) {
-                magHC *= highCut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+                magHC  *= highCut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
                 magALL *= highCut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
             }
             if (!highCut.isBypassed<3>()) {
-                magHC *= highCut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+                magHC  *= highCut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
                 magALL *= highCut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
             }
         }

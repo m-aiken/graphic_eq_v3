@@ -98,30 +98,7 @@ namespace EqProperties
 
     inline void addPeakParams(juce::AudioProcessorValueTreeState::ParameterLayout& layout)
     {
-        std::vector<float> defaultFreqs { Globals::getMinFrequency(), 100.f, 200.f, 500.f, 1000.f, 2000.f, 5000.f, Globals::getMaxFrequency() - 2.f };
-
-        for (int i = 1; i < defaultFreqs.size() - 1; ++i) {
-            layout.add(std::make_unique<juce::AudioParameterFloat>(getPeakControlParamName(PeakControl::FREQUENCY, i-1),
-                                                                   getPeakControlParamName(PeakControl::FREQUENCY, i-1),
-                                                                   juce::NormalisableRange(defaultFreqs.at(i-1), defaultFreqs.at(i+1), 1.f, 1.f),
-                                                                   defaultFreqs.at(i)));
-
-            layout.add(std::make_unique<juce::AudioParameterFloat>(getPeakControlParamName(PeakControl::GAIN, i-1),
-                                                                   getPeakControlParamName(PeakControl::GAIN, i-1),
-                                                                   juce::NormalisableRange(Globals::getNegativeInf(), Globals::getMaxDecibels(), 0.5f, 1.f),
-                                                                   0.f));
-
-            layout.add(std::make_unique<juce::AudioParameterFloat>(getPeakControlParamName(PeakControl::QUALITY, i-1),
-                                                                   getPeakControlParamName(PeakControl::QUALITY, i-1),
-                                                                   juce::NormalisableRange(0.1f, 10.f, 0.05f, 1.f),
-                                                                   1.f));
-
-            layout.add(std::make_unique<juce::AudioParameterBool>(getPeakControlParamName(PeakControl::ENABLED, i-1),
-                                                                  getPeakControlParamName(PeakControl::ENABLED, i-1),
-                                                                  true));
-        }
-        /*
-        auto freqNormalisableRange = juce::NormalisableRange(Globals::getMinFrequency(), Globals::getMaxFrequency(), 1.f, 0.25f);
+        auto freqNormalisableRange = juce::NormalisableRange(Globals::getMinFrequency(), Globals::getMaxFrequency(), 1.f, 1.f);
         auto gainNormalisableRange = juce::NormalisableRange(Globals::getNegativeInf(), Globals::getMaxDecibels(), 0.5f, 1.f);
 
         std::vector<float> defaultFreqs { 100.f, 200.f, 500.f, 1000.f, 2000.f, 5000.f };
@@ -140,9 +117,12 @@ namespace EqProperties
             layout.add(std::make_unique<juce::AudioParameterFloat>(getPeakControlParamName(PeakControl::QUALITY, i),
                                                                    getPeakControlParamName(PeakControl::QUALITY, i),
                                                                    juce::NormalisableRange(0.1f, 10.f, 0.05f, 1.f),
-                                                                   5.f));
+                                                                   1.f));
+
+            layout.add(std::make_unique<juce::AudioParameterBool>(getPeakControlParamName(PeakControl::ENABLED, i),
+                                                                  getPeakControlParamName(PeakControl::ENABLED, i),
+                                                                  true));
         }
-        */
     }
 
 }

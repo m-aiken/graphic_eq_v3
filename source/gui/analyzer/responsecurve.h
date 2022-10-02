@@ -26,7 +26,7 @@ struct ResponseCurve : juce::Component, juce::AudioProcessorParameter::Listener,
     void mouseDrag(const juce::MouseEvent& event) override;
 
     void updateMonoChain();
-    std::vector<double> getMagnitudes(int boundsWidth);
+    std::array<std::vector<double>, 9> getMagnitudes(int boundsWidth);
 
     void parameterValueChanged(int parameterIndex, float newValue) override;
     void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) override {}
@@ -42,8 +42,8 @@ struct ResponseCurve : juce::Component, juce::AudioProcessorParameter::Listener,
 
 private:
     double sampleRate;
-    int    nodeDiameter { 10 };
-    int    nodeRadius { 5 };
+    int    nodeDiameter { 8 };
+    int    nodeRadius { 4 };
 
     juce::Atomic<bool> parametersChanged { false };
 

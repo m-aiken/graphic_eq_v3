@@ -77,7 +77,8 @@ void ResponseCurve::paint(juce::Graphics& g)
     auto responseCurveMin = bounds.getBottom();
     auto responseCurveMax = bounds.getY();
 
-    std::vector<double> magnitudes = getMagnitudes(boundsWidth);
+    std::array<std::vector<double>, 9> magnitudes = getMagnitudes(boundsWidth);
+    std::array<juce::Path, 9> paths;
 
     auto mapFilterGainRangeToAnalyzerBounds = [&](double magnitude){
         return juce::jmap<float>(magnitude,
@@ -87,17 +88,24 @@ void ResponseCurve::paint(juce::Graphics& g)
                                  responseCurveMax);
     };
 
-    // Drawing the line
-    g.setColour(ColourPalette::getColour(ColourPalette::Blue));
-    juce::Path responseCurveLine;
+    // Plotting the paths: 1 for each band and 1 for total freq response
+    for (size_t bandIdx = 0; bandIdx < paths.size(); ++bandIdx) {
+        paths.at(bandIdx).startNewSubPath(boundsX, mapFilterGainRangeToAnalyzerBounds(magnitudes.at(bandIdx).at(0)));
 
-    responseCurveLine.startNewSubPath(boundsX, mapFilterGainRangeToAnalyzerBounds(magnitudes.at(0)));
-
-    for (size_t i = 1; i < magnitudes.size(); ++i) {
-        responseCurveLine.lineTo(boundsX + i, mapFilterGainRangeToAnalyzerBounds(magnitudes.at(i)));
+        for (int i = 1; i < boundsWidth; ++i) {
+            paths.at(bandIdx).lineTo(boundsX + i, mapFilterGainRangeToAnalyzerBounds(magnitudes.at(bandIdx).at(i)));
+        }
     }
 
-    g.strokePath(responseCurveLine, juce::PathStrokeType(2.f));
+    // Drawing the individual band lines
+    g.setColour(ColourPalette::getColour(ColourPalette::Salmon));
+    for (size_t pathIdx = 0; pathIdx < paths.size() - 1; ++pathIdx) {
+        g.strokePath(paths.at(pathIdx), juce::PathStrokeType(1.f));
+    }
+
+    // Drawing the "All" line
+    g.setColour(ColourPalette::getColour(ColourPalette::Blue));
+    g.strokePath(paths.at(paths.size() - 1), juce::PathStrokeType(2.f));
 
     // Drawing the nodes
     for (size_t i = 0; i < peakNodes.size(); ++i) {
@@ -106,7 +114,7 @@ void ResponseCurve::paint(juce::Graphics& g)
                                                              Globals::getMaxFrequency());
 
         auto nodeX = boundsX + static_cast<int>(std::floor(boundsWidth * normalizedFrequency));
-        auto nodeY = mapFilterGainRangeToAnalyzerBounds(magnitudes.at(nodeX - boundsX));
+        auto nodeY = mapFilterGainRangeToAnalyzerBounds(magnitudes.at(i).at(nodeX - boundsX));
 
         peakNodes.at(i)->setBounds(nodeX - nodeRadius, nodeY - nodeRadius, nodeDiameter, nodeDiameter);
         nodeCoordinates.at(i).setXY(nodeX, static_cast<int>(std::floor(nodeY)));
@@ -165,62 +173,118 @@ void ResponseCurve::updateMonoChain()
     }
 }
 
-std::vector<double> ResponseCurve::getMagnitudes(int boundsWidth)
+std::array<std::vector<double>, 9> ResponseCurve::getMagnitudes(int boundsWidth)
 {
-    std::vector<double> magnitudes;
-    magnitudes.resize(boundsWidth);
+    std::array<std::vector<double>, 9> magnitudes;
+    for (auto& mag : magnitudes) {
+        mag.resize(boundsWidth);
+    }
 
-    auto& lowCut  = monoChain.get<FilterUtils::ChainPositions::LowCut>();
+    enum MagIdx {
+        P0, P1, P2, P3, P4, P5, LC, HC, ALL
+    };
+
     auto& peak0   = monoChain.get<FilterUtils::ChainPositions::Peak_0>();
     auto& peak1   = monoChain.get<FilterUtils::ChainPositions::Peak_1>();
     auto& peak2   = monoChain.get<FilterUtils::ChainPositions::Peak_2>();
     auto& peak3   = monoChain.get<FilterUtils::ChainPositions::Peak_3>();
     auto& peak4   = monoChain.get<FilterUtils::ChainPositions::Peak_4>();
     auto& peak5   = monoChain.get<FilterUtils::ChainPositions::Peak_5>();
+    auto& lowCut  = monoChain.get<FilterUtils::ChainPositions::LowCut>();
     auto& highCut = monoChain.get<FilterUtils::ChainPositions::HighCut>();
 
-    for (auto i = 0; i < boundsWidth; ++i)
-    {
-        double mag = 1.0;
+    for (auto i = 0; i < boundsWidth; ++i) {
+        double magP0  = 1.0;
+        double magP1  = 1.0;
+        double magP2  = 1.0;
+        double magP3  = 1.0;
+        double magP4  = 1.0;
+        double magP5  = 1.0;
+        double magLC  = 1.0;
+        double magHC  = 1.0;
+        double magALL = 1.0;
+
         auto freq = mapToLog10<double>(static_cast<double>(i) / boundsWidth,
                                        Globals::getMinFrequency(),
                                        Globals::getMaxFrequency());
 
         if (!monoChain.isBypassed<FilterUtils::ChainPositions::Peak_0>()) {
-            mag *= peak0.coefficients->getMagnitudeForFrequency(freq, sampleRate);
+            magP0  *= peak0.coefficients->getMagnitudeForFrequency(freq, sampleRate);
+            magALL *= peak0.coefficients->getMagnitudeForFrequency(freq, sampleRate);
         }
 
         if (!monoChain.isBypassed<FilterUtils::ChainPositions::Peak_1>()) {
-            mag *= peak1.coefficients->getMagnitudeForFrequency(freq, sampleRate);
+            magP1  *= peak1.coefficients->getMagnitudeForFrequency(freq, sampleRate);
+            magALL *= peak1.coefficients->getMagnitudeForFrequency(freq, sampleRate);
         }
 
         if (!monoChain.isBypassed<FilterUtils::ChainPositions::Peak_2>()) {
-            mag *= peak2.coefficients->getMagnitudeForFrequency(freq, sampleRate);
+            magP2  *= peak2.coefficients->getMagnitudeForFrequency(freq, sampleRate);
+            magALL *= peak2.coefficients->getMagnitudeForFrequency(freq, sampleRate);
         }
 
         if (!monoChain.isBypassed<FilterUtils::ChainPositions::Peak_3>()) {
-            mag *= peak3.coefficients->getMagnitudeForFrequency(freq, sampleRate);
+            magP3  *= peak3.coefficients->getMagnitudeForFrequency(freq, sampleRate);
+            magALL *= peak3.coefficients->getMagnitudeForFrequency(freq, sampleRate);
         }
 
         if (!monoChain.isBypassed<FilterUtils::ChainPositions::Peak_4>()) {
-            mag *= peak4.coefficients->getMagnitudeForFrequency(freq, sampleRate);
+            magP4  *= peak4.coefficients->getMagnitudeForFrequency(freq, sampleRate);
+            magALL *= peak4.coefficients->getMagnitudeForFrequency(freq, sampleRate);
         }
 
         if (!monoChain.isBypassed<FilterUtils::ChainPositions::Peak_5>()) {
-            mag *= peak5.coefficients->getMagnitudeForFrequency(freq, sampleRate);
+            magP5  *= peak5.coefficients->getMagnitudeForFrequency(freq, sampleRate);
+            magALL *= peak5.coefficients->getMagnitudeForFrequency(freq, sampleRate);
         }
 
-        if (!lowCut.isBypassed<0>()) mag *= lowCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
-        if (!lowCut.isBypassed<1>()) mag *= lowCut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
-        if (!lowCut.isBypassed<2>()) mag *= lowCut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
-        if (!lowCut.isBypassed<3>()) mag *= lowCut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+        if (!monoChain.isBypassed<FilterUtils::ChainPositions::LowCut>()) {
+            if (!lowCut.isBypassed<0>()) {
+                magHC *= lowCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+                magALL *= lowCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+            }
+            if (!lowCut.isBypassed<1>()) {
+                magHC *= lowCut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+                magALL *= lowCut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+            }
+            if (!lowCut.isBypassed<2>()) {
+                magHC *= lowCut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+                magALL *= lowCut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+            }
+            if (!lowCut.isBypassed<3>()) {
+                magHC *= lowCut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+                magALL *= lowCut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+            }
+        }
 
-        if (!highCut.isBypassed<0>()) mag *= highCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
-        if (!highCut.isBypassed<1>()) mag *= highCut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
-        if (!highCut.isBypassed<2>()) mag *= highCut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
-        if (!highCut.isBypassed<3>()) mag *= highCut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+        if (!monoChain.isBypassed<FilterUtils::ChainPositions::HighCut>()) {
+            if (!highCut.isBypassed<0>()) {
+                magHC *= highCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+                magALL *= highCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+            }
+            if (!highCut.isBypassed<1>()) {
+                magHC *= highCut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+                magALL *= highCut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+            }
+            if (!highCut.isBypassed<2>()) {
+                magHC *= highCut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+                magALL *= highCut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+            }
+            if (!highCut.isBypassed<3>()) {
+                magHC *= highCut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+                magALL *= highCut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+            }
+        }
 
-        magnitudes.at(i) = juce::Decibels::gainToDecibels(mag);
+        magnitudes.at(MagIdx::P0).at(i)  = juce::Decibels::gainToDecibels(magP0);
+        magnitudes.at(MagIdx::P1).at(i)  = juce::Decibels::gainToDecibels(magP1);
+        magnitudes.at(MagIdx::P2).at(i)  = juce::Decibels::gainToDecibels(magP2);
+        magnitudes.at(MagIdx::P3).at(i)  = juce::Decibels::gainToDecibels(magP3);
+        magnitudes.at(MagIdx::P4).at(i)  = juce::Decibels::gainToDecibels(magP4);
+        magnitudes.at(MagIdx::P5).at(i)  = juce::Decibels::gainToDecibels(magP5);
+        magnitudes.at(MagIdx::LC).at(i)  = juce::Decibels::gainToDecibels(magLC);
+        magnitudes.at(MagIdx::HC).at(i)  = juce::Decibels::gainToDecibels(magHC);
+        magnitudes.at(MagIdx::ALL).at(i) = juce::Decibels::gainToDecibels(magALL);
     }
 
     return magnitudes;

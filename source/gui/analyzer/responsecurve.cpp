@@ -88,7 +88,33 @@ void ResponseCurve::paint(juce::Graphics& g)
                                  responseCurveMax);
     };
 
-    // Plotting the paths: 1 for each band and 1 for total freq response
+    // Plotting the paths for each band
+    // These need to be closed paths starting and ending at 0 for the fill effect to look correct
+    for (size_t bandIdx = 0; bandIdx < paths.size() - 1; ++bandIdx) {
+        paths.at(bandIdx).startNewSubPath(boundsX, mapFilterGainRangeToAnalyzerBounds(0.0));
+
+        for (int i = 1; i < boundsWidth - 1; ++i) {
+            paths.at(bandIdx).lineTo(boundsX + i, mapFilterGainRangeToAnalyzerBounds(magnitudes.at(bandIdx).at(i)));
+        }
+
+        paths.at(bandIdx).lineTo(boundsWidth - 1, mapFilterGainRangeToAnalyzerBounds(0.0));
+        paths.at(bandIdx).closeSubPath();
+    }
+
+    // Drawing the bolder outline
+    g.setColour(ColourPalette::getColour(ColourPalette::Salmon));
+    for (size_t pathIdx = 0; pathIdx < paths.size() - 1; ++pathIdx) {
+        g.strokePath(paths.at(pathIdx), juce::PathStrokeType(1.f));
+    }
+
+    // Drawing the faded fill
+    g.setColour(ColourPalette::getColour(ColourPalette::Salmon).withAlpha(0.2f));
+    for (size_t pathIdx = 0; pathIdx < paths.size() - 1; ++pathIdx) {
+        g.fillPath(paths.at(pathIdx));
+    }
+
+    // Plotting the path for total filter response
+    // This should NOT be closed so that it's just a single line
     for (size_t bandIdx = 0; bandIdx < paths.size(); ++bandIdx) {
         paths.at(bandIdx).startNewSubPath(boundsX, mapFilterGainRangeToAnalyzerBounds(magnitudes.at(bandIdx).at(0)));
 
@@ -97,13 +123,6 @@ void ResponseCurve::paint(juce::Graphics& g)
         }
     }
 
-    // Drawing the individual band lines
-    g.setColour(ColourPalette::getColour(ColourPalette::Salmon));
-    for (size_t pathIdx = 0; pathIdx < paths.size() - 1; ++pathIdx) {
-        g.strokePath(paths.at(pathIdx), juce::PathStrokeType(1.f));
-    }
-
-    // Drawing the "All" line
     g.setColour(ColourPalette::getColour(ColourPalette::Blue));
     g.strokePath(paths.at(paths.size() - 1), juce::PathStrokeType(2.f));
 

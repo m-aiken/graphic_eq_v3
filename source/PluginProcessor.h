@@ -49,8 +49,7 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
     void setBandEnablements();
-    void updateLowCutFilter(double sampleRate);
-    void updateHighCutFilter(double sampleRate);
+    void updateCutFilter(const FilterUtils::ChainPositions& chainPosition, juce::AudioParameterFloat* freqParam, juce::AudioParameterChoice* slopeParam, double sampleRate);
 
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     juce::AudioProcessorValueTreeState apvts { *this, nullptr, "Parameters", createParameterLayout() };
@@ -59,15 +58,6 @@ public:
     SingleChannelSampleFifo<juce::AudioBuffer<float>> rScsf { Globals::Channel::Right };
 
 private:
-    /*
-     * Mono chain
-     * currently a 3 band EQ - TODO add more bands
-     * For 3 band we need:
-     *     LowCut,    Peak,   HighCut
-     * aka
-     *     CutFilter, Filter, CutFilter
-    */
-
     FilterUtils::MonoChain leftChain;
     FilterUtils::MonoChain rightChain;
 

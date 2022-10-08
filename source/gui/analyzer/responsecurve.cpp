@@ -25,6 +25,12 @@ ResponseCurve::ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double 
         peakNodes.at(i) = std::make_unique<Node>(_apvts, i);
     }
 
+    auto assignBoolParam = [&](auto& target, auto& paramName){
+        auto param = dynamic_cast<juce::AudioParameterBool*>(apvts.getParameter(paramName));
+        jassert(param != nullptr);
+        target = param;
+    };
+
     auto assignFloatParam = [&](auto& target, auto& paramName){
         auto param = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter(paramName));
         jassert(param != nullptr);
@@ -38,8 +44,11 @@ ResponseCurve::ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double 
     };
 
     const auto& eqParams = EqProperties::getCutParams();
+    assignBoolParam(lowCutEnabledParam, eqParams.at(EqProperties::CutControls::LOW_CUT_ENABLED));
     assignFloatParam(lowCutFreqParam, eqParams.at(EqProperties::CutControls::LOW_CUT_FREQ));
     assignChoiceParam(lowCutSlopeParam, eqParams.at(EqProperties::CutControls::LOW_CUT_SLOPE));
+
+    assignBoolParam(highCutEnabledParam, eqParams.at(EqProperties::CutControls::HIGH_CUT_ENABLED));
     assignFloatParam(highCutFreqParam, eqParams.at(EqProperties::CutControls::HIGH_CUT_FREQ));
     assignChoiceParam(highCutSlopeParam, eqParams.at(EqProperties::CutControls::HIGH_CUT_SLOPE));
 
@@ -211,6 +220,9 @@ std::array<std::vector<double>, 9> ResponseCurve::getMagnitudes(int boundsWidth)
     auto& peak5   = monoChain.get<FilterUtils::ChainPositions::Peak_5>();
     auto& lowCut  = monoChain.get<FilterUtils::ChainPositions::LowCut>();
     auto& highCut = monoChain.get<FilterUtils::ChainPositions::HighCut>();
+
+    monoChain.setBypassed<FilterUtils::ChainPositions::LowCut>(!lowCutEnabledParam->get());
+    monoChain.setBypassed<FilterUtils::ChainPositions::HighCut>(!highCutEnabledParam->get());
 
     for (auto i = 0; i < boundsWidth; ++i) {
         double magP0  = 1.0;

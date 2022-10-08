@@ -14,6 +14,12 @@ GraphicEqProcessor::GraphicEqProcessor()
                      #endif
                        )
 {
+    auto assignBoolParam = [&](auto& target, auto& paramName) {
+        auto param = dynamic_cast<juce::AudioParameterBool*>(apvts.getParameter(paramName));
+        jassert(param != nullptr);
+        target = param;
+    };
+
     auto assignFloatParam = [&](auto& target, auto& paramName) {
         auto param = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter(paramName));
         jassert(param != nullptr);
@@ -27,8 +33,11 @@ GraphicEqProcessor::GraphicEqProcessor()
     };
 
     const auto& eqParams = EqProperties::getCutParams();
+    assignBoolParam(lowCutEnabledParam, eqParams.at(EqProperties::CutControls::LOW_CUT_ENABLED));
     assignFloatParam(lowCutFreqParam, eqParams.at(EqProperties::CutControls::LOW_CUT_FREQ));
     assignChoiceParam(lowCutSlopeParam, eqParams.at(EqProperties::CutControls::LOW_CUT_SLOPE));
+
+    assignBoolParam(highCutEnabledParam, eqParams.at(EqProperties::CutControls::HIGH_CUT_ENABLED));
     assignFloatParam(highCutFreqParam, eqParams.at(EqProperties::CutControls::HIGH_CUT_FREQ));
     assignChoiceParam(highCutSlopeParam, eqParams.at(EqProperties::CutControls::HIGH_CUT_SLOPE));
 
@@ -123,14 +132,15 @@ void GraphicEqProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     leftChain.prepare(spec);
     rightChain.prepare(spec);
 
-    auto lowCutCoefficients  = FilterUtils::makeHighPassFilter(lowCutFreqParam, lowCutSlopeParam, sampleRate);
-    auto highCutCoefficients = FilterUtils::makeLowPassFilter(highCutFreqParam, highCutSlopeParam, sampleRate);
+    setBandEnablements();
 
-    FilterUtils::updateCutCoefficients(leftChain, FilterUtils::ChainPositions::LowCut, lowCutCoefficients, lowCutSlopeParam);
-    FilterUtils::updateCutCoefficients(leftChain, FilterUtils::ChainPositions::HighCut, highCutCoefficients, highCutSlopeParam);
+    if (lowCutEnabledParam->get()) {
+        updateLowCutFilter(sampleRate);
+    }
 
-    FilterUtils::updateCutCoefficients(rightChain, FilterUtils::ChainPositions::LowCut, lowCutCoefficients, lowCutSlopeParam);
-    FilterUtils::updateCutCoefficients(rightChain, FilterUtils::ChainPositions::HighCut, highCutCoefficients, highCutSlopeParam);
+    if (highCutEnabledParam->get()) {
+        updateHighCutFilter(sampleRate);
+    }
 
     for (size_t i = 0; i < peakBands.size(); ++i) {
         FilterUtils::updatePeakCoefficients(leftChain, static_cast<FilterUtils::ChainPositions>(i+1), peakBands.at(i).peakFreqParam, peakBands.at(i).peakQParam, peakBands.at(i).peakGainParam, sampleRate);
@@ -189,14 +199,15 @@ void GraphicEqProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    auto lowCutCoefficients  = FilterUtils::makeHighPassFilter(lowCutFreqParam, lowCutSlopeParam, getSampleRate());
-    auto highCutCoefficients = FilterUtils::makeLowPassFilter(highCutFreqParam, highCutSlopeParam, getSampleRate());
+    setBandEnablements();
 
-    FilterUtils::updateCutCoefficients(leftChain, FilterUtils::ChainPositions::LowCut, lowCutCoefficients, lowCutSlopeParam);
-    FilterUtils::updateCutCoefficients(leftChain, FilterUtils::ChainPositions::HighCut, highCutCoefficients, highCutSlopeParam);
+    if (lowCutEnabledParam->get()) {
+        updateLowCutFilter(getSampleRate());
+    }
 
-    FilterUtils::updateCutCoefficients(rightChain, FilterUtils::ChainPositions::LowCut, lowCutCoefficients, lowCutSlopeParam);
-    FilterUtils::updateCutCoefficients(rightChain, FilterUtils::ChainPositions::HighCut, highCutCoefficients, highCutSlopeParam);
+    if (highCutEnabledParam->get()) {
+        updateHighCutFilter(getSampleRate());
+    }
 
     for (size_t i = 0; i < peakBands.size(); ++i) {
         FilterUtils::updatePeakCoefficients(leftChain, static_cast<FilterUtils::ChainPositions>(i+1), peakBands.at(i).peakFreqParam, peakBands.at(i).peakQParam, peakBands.at(i).peakGainParam, getSampleRate());
@@ -241,6 +252,36 @@ void GraphicEqProcessor::setStateInformation (const void* data, int sizeInBytes)
     if (tree.isValid()) {
         apvts.replaceState(tree);
     }
+}
+
+void GraphicEqProcessor::setBandEnablements()
+{
+    leftChain.setBypassed<FilterUtils::ChainPositions::LowCut>(!lowCutEnabledParam->get());
+    rightChain.setBypassed<FilterUtils::ChainPositions::LowCut>(!lowCutEnabledParam->get());
+    leftChain.setBypassed<FilterUtils::ChainPositions::HighCut>(!highCutEnabledParam->get());
+    rightChain.setBypassed<FilterUtils::ChainPositions::HighCut>(!highCutEnabledParam->get());
+}
+
+void GraphicEqProcessor::updateLowCutFilter(double sampleRate)
+{
+    auto lowCutCoefficients = FilterUtils::makeHighPassFilter(lowCutFreqParam, lowCutSlopeParam, sampleRate);
+
+    FilterUtils::updateCutCoefficients(leftChain, FilterUtils::ChainPositions::LowCut, lowCutCoefficients,
+                                       lowCutSlopeParam);
+
+    FilterUtils::updateCutCoefficients(rightChain, FilterUtils::ChainPositions::LowCut, lowCutCoefficients,
+                                       lowCutSlopeParam);
+}
+
+void GraphicEqProcessor::updateHighCutFilter(double sampleRate)
+{
+    auto highCutCoefficients = FilterUtils::makeLowPassFilter(highCutFreqParam, highCutSlopeParam, sampleRate);
+
+    FilterUtils::updateCutCoefficients(leftChain, FilterUtils::ChainPositions::HighCut, highCutCoefficients,
+                                       highCutSlopeParam);
+
+    FilterUtils::updateCutCoefficients(rightChain, FilterUtils::ChainPositions::HighCut, highCutCoefficients,
+                                       highCutSlopeParam);
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout GraphicEqProcessor::createParameterLayout()

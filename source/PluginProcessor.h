@@ -48,6 +48,10 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+    void setBandEnablements();
+    void updateLowCutFilter(double sampleRate);
+    void updateHighCutFilter(double sampleRate);
+
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     juce::AudioProcessorValueTreeState apvts { *this, nullptr, "Parameters", createParameterLayout() };
 
@@ -67,10 +71,12 @@ private:
     FilterUtils::MonoChain leftChain;
     FilterUtils::MonoChain rightChain;
 
-    juce::AudioParameterFloat*  lowCutFreqParam   { nullptr };
-    juce::AudioParameterChoice* lowCutSlopeParam  { nullptr };
-    juce::AudioParameterFloat*  highCutFreqParam  { nullptr };
-    juce::AudioParameterChoice* highCutSlopeParam { nullptr };
+    juce::AudioParameterBool*   lowCutEnabledParam  { nullptr };
+    juce::AudioParameterFloat*  lowCutFreqParam     { nullptr };
+    juce::AudioParameterChoice* lowCutSlopeParam    { nullptr };
+    juce::AudioParameterBool*   highCutEnabledParam { nullptr };
+    juce::AudioParameterFloat*  highCutFreqParam    { nullptr };
+    juce::AudioParameterChoice* highCutSlopeParam   { nullptr };
 
     std::array<PeakBand, Globals::getNumPeakBands()> peakBands;
 

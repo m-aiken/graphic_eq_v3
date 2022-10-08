@@ -24,20 +24,15 @@ CutControl::CutControl(juce::AudioProcessorValueTreeState& apvts, const FilterUt
     slopeSlider     = std::make_unique<CustomLinearSlider>(*slopeParam);
     slopeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, slopeParamName, *slopeSlider);
 
-    powerButton->onClick = [this]() {
-        bool toggleState = powerButton->getToggleState();
-
-        freqSlider->setEnabled(toggleState);
-        slopeSlider->setEnabled(toggleState);
-
-        float dim = 0.2f;
-        freqSlider->setAlpha(toggleState ? 1.f : dim);
-        slopeSlider->setAlpha(toggleState ? 1.f : dim);
+    powerButton->onStateChange = [this]() {
+        setEnablement();
     };
 
     addAndMakeVisible(*powerButton);
     addAndMakeVisible(*freqSlider);
     addAndMakeVisible(*slopeSlider);
+
+    setEnablement();
 }
 
 void CutControl::paint(juce::Graphics& g)
@@ -108,4 +103,16 @@ void CutControl::resized()
                            freqSlider->getBottom() + (padding * 3),
                            bounds.getWidth() - (padding * 2),
                            padding);
+}
+
+void CutControl::setEnablement()
+{
+    bool toggleState = powerButton->getToggleState();
+
+    freqSlider->setEnabled(toggleState);
+    slopeSlider->setEnabled(toggleState);
+
+    float dim = 0.2f;
+    freqSlider->setAlpha(toggleState ? 1.f : dim);
+    slopeSlider->setAlpha(toggleState ? 1.f : dim);
 }

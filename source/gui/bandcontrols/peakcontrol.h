@@ -12,6 +12,7 @@ struct PeakControl : juce::Component
     void resized() override;
 
     void setNodeIsActive(bool activeState);
+    void setEnablement();
 
 private:
     int  bandNum;

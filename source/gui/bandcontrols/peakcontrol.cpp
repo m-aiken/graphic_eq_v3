@@ -25,32 +25,18 @@ PeakControl::PeakControl(juce::AudioProcessorValueTreeState& apvts, const int _b
     gainAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, bandNum), *gainSlider);
     qAttachment    = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, EqProperties::getPeakControlParamName(EqProperties::PeakControl::QUALITY, bandNum), *qSlider);
 
-    cachedGain = gainParam->getValue();
+    cachedGain = gainParam->convertFrom0to1(gainParam->getValue());
 
-    powerButton->onClick = [this]() {
-        bool toggleState = powerButton->getToggleState();
-
-        freqSlider->setEnabled(toggleState);
-        gainSlider->setEnabled(toggleState);
-        qSlider->setEnabled(toggleState);
-
-        float dim = 0.2f;
-        freqSlider->setAlpha(toggleState ? 1.f : dim);
-        gainSlider->setAlpha(toggleState ? 1.f : dim);
-        qSlider->setAlpha(toggleState ? 1.f : dim);
-        
-        if (toggleState == false) {
-            cachedGain = gainSlider->getValue();
-            gainSlider->setValue(0.f, juce::NotificationType::sendNotification);
-        } else {
-            gainSlider->setValue(cachedGain, juce::NotificationType::sendNotification);
-        }
+    powerButton->onStateChange = [this]() {
+        setEnablement();
     };
 
     addAndMakeVisible(*powerButton);
     addAndMakeVisible(*freqSlider);
     addAndMakeVisible(*gainSlider);
     addAndMakeVisible(*qSlider);
+
+    setEnablement();
 }
 
 void PeakControl::paint(juce::Graphics& g)
@@ -139,4 +125,25 @@ void PeakControl::setNodeIsActive(bool activeState)
 {
     nodeIsActive = activeState;
     repaint();
+}
+
+void PeakControl::setEnablement()
+{
+    bool toggleState = powerButton->getToggleState();
+
+    freqSlider->setEnabled(toggleState);
+    gainSlider->setEnabled(toggleState);
+    qSlider->setEnabled(toggleState);
+
+    float dim = 0.2f;
+    freqSlider->setAlpha(toggleState ? 1.f : dim);
+    gainSlider->setAlpha(toggleState ? 1.f : dim);
+    qSlider->setAlpha(toggleState ? 1.f : dim);
+
+    if (toggleState == false) {
+        cachedGain = gainSlider->getValue();
+        gainSlider->setValue(0.f, juce::NotificationType::sendNotification);
+    } else {
+        gainSlider->setValue(cachedGain, juce::NotificationType::sendNotification);
+    }
 }

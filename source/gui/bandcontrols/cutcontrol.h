@@ -13,6 +13,8 @@ struct CutControl : juce::Component
     void paint(juce::Graphics& g) override;
     void resized() override;
 
+    void setEnablement();
+
 private:
     FilterUtils::ChainPositions chainPosition;
 

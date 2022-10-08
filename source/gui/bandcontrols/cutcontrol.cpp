@@ -24,7 +24,7 @@ CutControl::CutControl(juce::AudioProcessorValueTreeState& apvts, const FilterUt
     slopeSlider     = std::make_unique<CustomLinearSlider>(*slopeParam);
     slopeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, slopeParamName, *slopeSlider);
 
-    powerButton->onStateChange = [this]() {
+    powerButton->onClick = [this]() {
         setEnablement();
     };
 

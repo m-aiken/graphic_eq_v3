@@ -27,7 +27,7 @@ PeakControl::PeakControl(juce::AudioProcessorValueTreeState& apvts, const int _b
 
     cachedGain = gainParam->convertFrom0to1(gainParam->getValue());
 
-    powerButton->onStateChange = [this]() {
+    powerButton->onClick = [this]() {
         setEnablement();
     };
 

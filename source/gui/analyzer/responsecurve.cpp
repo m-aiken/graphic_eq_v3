@@ -223,22 +223,22 @@ std::array<std::vector<double>, 9> ResponseCurve::getMagnitudes(int boundsWidth)
         P0, P1, P2, P3, P4, P5, LC, HC, ALL
     };
 
-    auto& peak0   = monoChain.get<FilterUtils::ChainPositions::Peak_0>();
-    auto& peak1   = monoChain.get<FilterUtils::ChainPositions::Peak_1>();
-    auto& peak2   = monoChain.get<FilterUtils::ChainPositions::Peak_2>();
-    auto& peak3   = monoChain.get<FilterUtils::ChainPositions::Peak_3>();
-    auto& peak4   = monoChain.get<FilterUtils::ChainPositions::Peak_4>();
-    auto& peak5   = monoChain.get<FilterUtils::ChainPositions::Peak_5>();
+    std::array<juce::dsp::IIR::Filter<float>::CoefficientsPtr, Globals::getNumPeakBands()> peakCoefficients;
+
+    peakCoefficients[0] = monoChain.get<FilterUtils::ChainPositions::Peak_0>().coefficients;
+    peakCoefficients[1] = monoChain.get<FilterUtils::ChainPositions::Peak_1>().coefficients;
+    peakCoefficients[2] = monoChain.get<FilterUtils::ChainPositions::Peak_2>().coefficients;
+    peakCoefficients[3] = monoChain.get<FilterUtils::ChainPositions::Peak_3>().coefficients;
+    peakCoefficients[4] = monoChain.get<FilterUtils::ChainPositions::Peak_4>().coefficients;
+    peakCoefficients[5] = monoChain.get<FilterUtils::ChainPositions::Peak_5>().coefficients;
+
     auto& lowCut  = monoChain.get<FilterUtils::ChainPositions::LowCut>();
     auto& highCut = monoChain.get<FilterUtils::ChainPositions::HighCut>();
 
     for (auto i = 0; i < boundsWidth; ++i) {
-        double magP0  = 1.0;
-        double magP1  = 1.0;
-        double magP2  = 1.0;
-        double magP3  = 1.0;
-        double magP4  = 1.0;
-        double magP5  = 1.0;
+        std::array<double, Globals::getNumPeakBands()> peakMags;
+        peakMags.fill(1.0);
+
         double magLC  = 1.0;
         double magHC  = 1.0;
         double magALL = 1.0;
@@ -247,37 +247,14 @@ std::array<std::vector<double>, 9> ResponseCurve::getMagnitudes(int boundsWidth)
                                        Globals::getMinFrequency(),
                                        Globals::getMaxFrequency());
 
-        if (peakBands.at(MagIdx::P0).peakEnabledParam->get()) {
-            magP0  *= peak0.coefficients->getMagnitudeForFrequency(freq, sampleRate);
-            magALL *= peak0.coefficients->getMagnitudeForFrequency(freq, sampleRate);
+        for (size_t peakBand = 0; peakBand < Globals::getNumPeakBands(); ++peakBand) {
+            if (peakBands.at(peakBand).peakEnabledParam->get()) {
+                peakMags.at(peakBand) *= peakCoefficients.at(peakBand)->getMagnitudeForFrequency(freq, sampleRate);
+                magALL                *= peakCoefficients.at(peakBand)->getMagnitudeForFrequency(freq, sampleRate);
+            }
         }
 
-        if (peakBands.at(MagIdx::P1).peakEnabledParam->get()) {
-            magP1  *= peak1.coefficients->getMagnitudeForFrequency(freq, sampleRate);
-            magALL *= peak1.coefficients->getMagnitudeForFrequency(freq, sampleRate);
-        }
-
-        if (peakBands.at(MagIdx::P2).peakEnabledParam->get()) {
-            magP2  *= peak2.coefficients->getMagnitudeForFrequency(freq, sampleRate);
-            magALL *= peak2.coefficients->getMagnitudeForFrequency(freq, sampleRate);
-        }
-
-        if (peakBands.at(MagIdx::P3).peakEnabledParam->get()) {
-            magP3  *= peak3.coefficients->getMagnitudeForFrequency(freq, sampleRate);
-            magALL *= peak3.coefficients->getMagnitudeForFrequency(freq, sampleRate);
-        }
-
-        if (peakBands.at(MagIdx::P4).peakEnabledParam->get()) {
-            magP4  *= peak4.coefficients->getMagnitudeForFrequency(freq, sampleRate);
-            magALL *= peak4.coefficients->getMagnitudeForFrequency(freq, sampleRate);
-        }
-
-        if (peakBands.at(MagIdx::P5).peakEnabledParam->get()) {
-            magP5  *= peak5.coefficients->getMagnitudeForFrequency(freq, sampleRate);
-            magALL *= peak5.coefficients->getMagnitudeForFrequency(freq, sampleRate);
-        }
-
-        if (!monoChain.isBypassed<FilterUtils::ChainPositions::LowCut>()) {
+        if (lowCutEnabledParam->get()) {
             if (!lowCut.isBypassed<0>()) {
                 magHC  *= lowCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
                 magALL *= lowCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
@@ -296,7 +273,7 @@ std::array<std::vector<double>, 9> ResponseCurve::getMagnitudes(int boundsWidth)
             }
         }
 
-        if (!monoChain.isBypassed<FilterUtils::ChainPositions::HighCut>()) {
+        if (highCutEnabledParam->get()) {
             if (!highCut.isBypassed<0>()) {
                 magHC  *= highCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
                 magALL *= highCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
@@ -315,12 +292,10 @@ std::array<std::vector<double>, 9> ResponseCurve::getMagnitudes(int boundsWidth)
             }
         }
 
-        magnitudes.at(MagIdx::P0).at(i)  = juce::Decibels::gainToDecibels(magP0);
-        magnitudes.at(MagIdx::P1).at(i)  = juce::Decibels::gainToDecibels(magP1);
-        magnitudes.at(MagIdx::P2).at(i)  = juce::Decibels::gainToDecibels(magP2);
-        magnitudes.at(MagIdx::P3).at(i)  = juce::Decibels::gainToDecibels(magP3);
-        magnitudes.at(MagIdx::P4).at(i)  = juce::Decibels::gainToDecibels(magP4);
-        magnitudes.at(MagIdx::P5).at(i)  = juce::Decibels::gainToDecibels(magP5);
+        for (size_t peakBand = 0; peakBand < Globals::getNumPeakBands(); ++peakBand) {
+            magnitudes.at(peakBand).at(i) = juce::Decibels::gainToDecibels(peakMags.at(peakBand));
+        }
+
         magnitudes.at(MagIdx::LC).at(i)  = juce::Decibels::gainToDecibels(magLC);
         magnitudes.at(MagIdx::HC).at(i)  = juce::Decibels::gainToDecibels(magHC);
         magnitudes.at(MagIdx::ALL).at(i) = juce::Decibels::gainToDecibels(magALL);

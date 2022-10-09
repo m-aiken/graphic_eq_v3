@@ -2,6 +2,7 @@
 
 #include <JuceHeader.h>
 #include "../utils/globals.h"
+#include "peakband.h"
 
 //==============================================================================
 struct FilterUtils
@@ -51,4 +52,10 @@ struct FilterUtils
     static CoefficientsType makeLowPassFilter(juce::AudioParameterFloat* freqParam,
                                               juce::AudioParameterChoice* slopeParam,
                                               double sampleRate);
+
+    static void updateBandEnablements(MonoChain& monoChain,
+                                      juce::AudioParameterBool* lcEnabledParam,
+                                      juce::AudioParameterBool* hcEnabledParam,
+                                      std::array<PeakBand,
+                                      Globals::getNumPeakBands()>& peakBands);
 };

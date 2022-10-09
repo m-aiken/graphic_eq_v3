@@ -27,8 +27,4 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> freqAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> qAttachment;
-
-    // when the band is disabled we want to zero out the gain
-    // cache it so that it can be restored if the band is re-enabled
-    float cachedGain;
 };

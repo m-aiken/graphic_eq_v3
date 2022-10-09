@@ -89,3 +89,18 @@ FilterUtils::CoefficientsType FilterUtils::makeLowPassFilter(juce::AudioParamete
 {
     return juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(freqParam->get(), sampleRate, (slopeParam->getIndex() + 1) * 2);
 }
+
+void FilterUtils::updateBandEnablements(MonoChain& monoChain,
+                                        juce::AudioParameterBool* lcEnabledParam,
+                                        juce::AudioParameterBool* hcEnabledParam,
+                                        std::array<PeakBand, Globals::getNumPeakBands()>& peakBands)
+{
+    monoChain.setBypassed<FilterUtils::ChainPositions::LowCut>(!lcEnabledParam->get());
+    monoChain.setBypassed<FilterUtils::ChainPositions::HighCut>(!hcEnabledParam->get());
+    monoChain.setBypassed<FilterUtils::ChainPositions::Peak_0>(!peakBands.at(0).peakEnabledParam->get());
+    monoChain.setBypassed<FilterUtils::ChainPositions::Peak_1>(!peakBands.at(1).peakEnabledParam->get());
+    monoChain.setBypassed<FilterUtils::ChainPositions::Peak_2>(!peakBands.at(2).peakEnabledParam->get());
+    monoChain.setBypassed<FilterUtils::ChainPositions::Peak_3>(!peakBands.at(3).peakEnabledParam->get());
+    monoChain.setBypassed<FilterUtils::ChainPositions::Peak_4>(!peakBands.at(4).peakEnabledParam->get());
+    monoChain.setBypassed<FilterUtils::ChainPositions::Peak_5>(!peakBands.at(5).peakEnabledParam->get());
+}

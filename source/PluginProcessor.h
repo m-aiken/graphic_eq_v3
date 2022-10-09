@@ -48,7 +48,6 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
-    void setBandEnablements();
     void updateCutFilter(const FilterUtils::ChainPositions& chainPosition, juce::AudioParameterFloat* freqParam, juce::AudioParameterChoice* slopeParam, double sampleRate);
 
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();

@@ -24,9 +24,7 @@ PeakControl::PeakControl(juce::AudioProcessorValueTreeState& apvts, const int _b
     freqAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, EqProperties::getPeakControlParamName(EqProperties::PeakControl::FREQUENCY, bandNum), *freqSlider);
     gainAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, bandNum), *gainSlider);
     qAttachment    = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, EqProperties::getPeakControlParamName(EqProperties::PeakControl::QUALITY, bandNum), *qSlider);
-
-    cachedGain = gainParam->convertFrom0to1(gainParam->getValue());
-
+    
     powerButton->onClick = [this]() {
         setEnablement();
     };
@@ -139,11 +137,4 @@ void PeakControl::setEnablement()
     freqSlider->setAlpha(toggleState ? 1.f : dim);
     gainSlider->setAlpha(toggleState ? 1.f : dim);
     qSlider->setAlpha(toggleState ? 1.f : dim);
-
-    if (toggleState == false) {
-        cachedGain = gainSlider->getValue();
-        gainSlider->setValue(0.f, juce::NotificationType::sendNotification);
-    } else {
-        gainSlider->setValue(cachedGain, juce::NotificationType::sendNotification);
-    }
 }

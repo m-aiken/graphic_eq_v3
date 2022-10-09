@@ -247,32 +247,32 @@ std::array<std::vector<double>, 9> ResponseCurve::getMagnitudes(int boundsWidth)
                                        Globals::getMinFrequency(),
                                        Globals::getMaxFrequency());
 
-        if (!monoChain.isBypassed<FilterUtils::ChainPositions::Peak_0>()) {
+        if (peakBands.at(MagIdx::P0).peakEnabledParam->get()) {
             magP0  *= peak0.coefficients->getMagnitudeForFrequency(freq, sampleRate);
             magALL *= peak0.coefficients->getMagnitudeForFrequency(freq, sampleRate);
         }
 
-        if (!monoChain.isBypassed<FilterUtils::ChainPositions::Peak_1>()) {
+        if (peakBands.at(MagIdx::P1).peakEnabledParam->get()) {
             magP1  *= peak1.coefficients->getMagnitudeForFrequency(freq, sampleRate);
             magALL *= peak1.coefficients->getMagnitudeForFrequency(freq, sampleRate);
         }
 
-        if (!monoChain.isBypassed<FilterUtils::ChainPositions::Peak_2>()) {
+        if (peakBands.at(MagIdx::P2).peakEnabledParam->get()) {
             magP2  *= peak2.coefficients->getMagnitudeForFrequency(freq, sampleRate);
             magALL *= peak2.coefficients->getMagnitudeForFrequency(freq, sampleRate);
         }
 
-        if (!monoChain.isBypassed<FilterUtils::ChainPositions::Peak_3>()) {
+        if (peakBands.at(MagIdx::P3).peakEnabledParam->get()) {
             magP3  *= peak3.coefficients->getMagnitudeForFrequency(freq, sampleRate);
             magALL *= peak3.coefficients->getMagnitudeForFrequency(freq, sampleRate);
         }
 
-        if (!monoChain.isBypassed<FilterUtils::ChainPositions::Peak_4>()) {
+        if (peakBands.at(MagIdx::P4).peakEnabledParam->get()) {
             magP4  *= peak4.coefficients->getMagnitudeForFrequency(freq, sampleRate);
             magALL *= peak4.coefficients->getMagnitudeForFrequency(freq, sampleRate);
         }
 
-        if (!monoChain.isBypassed<FilterUtils::ChainPositions::Peak_5>()) {
+        if (peakBands.at(MagIdx::P5).peakEnabledParam->get()) {
             magP5  *= peak5.coefficients->getMagnitudeForFrequency(freq, sampleRate);
             magALL *= peak5.coefficients->getMagnitudeForFrequency(freq, sampleRate);
         }

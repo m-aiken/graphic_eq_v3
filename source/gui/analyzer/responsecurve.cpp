@@ -56,6 +56,7 @@ ResponseCurve::ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double 
         assignFloatParam(peakBands.at(i).peakFreqParam, EqProperties::getPeakControlParamName(EqProperties::PeakControl::FREQUENCY, i));
         assignFloatParam(peakBands.at(i).peakGainParam, EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, i));
         assignFloatParam(peakBands.at(i).peakQParam, EqProperties::getPeakControlParamName(EqProperties::PeakControl::QUALITY, i));
+        assignBoolParam(peakBands.at(i).peakEnabledParam, EqProperties::getPeakControlParamName(EqProperties::PeakControl::ENABLED, i));
 
         addAndMakeVisible(*peakNodes.at(i));
 
@@ -190,14 +191,24 @@ void ResponseCurve::mouseDrag(const juce::MouseEvent& event)
 
 void ResponseCurve::updateMonoChain()
 {
-    auto lowCutCoefficients  = FilterUtils::makeHighPassFilter(lowCutFreqParam, lowCutSlopeParam, sampleRate);
-    auto highCutCoefficients = FilterUtils::makeLowPassFilter(highCutFreqParam, highCutSlopeParam, sampleRate);
+    FilterUtils::updateBandEnablements(monoChain, lowCutEnabledParam, highCutEnabledParam, peakBands);
 
-    FilterUtils::updateCutCoefficients(monoChain, FilterUtils::ChainPositions::LowCut, lowCutCoefficients, lowCutSlopeParam);
-    FilterUtils::updateCutCoefficients(monoChain, FilterUtils::ChainPositions::HighCut, highCutCoefficients, highCutSlopeParam);
+    if (lowCutEnabledParam->get()) {
+        auto lowCutCoefficients  = FilterUtils::makeHighPassFilter(lowCutFreqParam, lowCutSlopeParam, sampleRate);
+        FilterUtils::updateCutCoefficients(monoChain, FilterUtils::ChainPositions::LowCut, lowCutCoefficients, lowCutSlopeParam);
+    }
+
+    if (highCutEnabledParam->get()) {
+        auto highCutCoefficients = FilterUtils::makeLowPassFilter(highCutFreqParam, highCutSlopeParam, sampleRate);
+        FilterUtils::updateCutCoefficients(monoChain, FilterUtils::ChainPositions::HighCut, highCutCoefficients, highCutSlopeParam);
+    }
 
     for (size_t i = 0; i < peakBands.size(); ++i) {
-        FilterUtils::updatePeakCoefficients(monoChain, static_cast<FilterUtils::ChainPositions>(i+1), peakBands.at(i).peakFreqParam, peakBands.at(i).peakQParam, peakBands.at(i).peakGainParam, sampleRate);
+        if (peakBands.at(i).peakEnabledParam->get()) {
+            FilterUtils::updatePeakCoefficients(monoChain, static_cast<FilterUtils::ChainPositions>(i + 1),
+                                                peakBands.at(i).peakFreqParam, peakBands.at(i).peakQParam,
+                                                peakBands.at(i).peakGainParam, sampleRate);
+        }
     }
 }
 
@@ -220,9 +231,6 @@ std::array<std::vector<double>, 9> ResponseCurve::getMagnitudes(int boundsWidth)
     auto& peak5   = monoChain.get<FilterUtils::ChainPositions::Peak_5>();
     auto& lowCut  = monoChain.get<FilterUtils::ChainPositions::LowCut>();
     auto& highCut = monoChain.get<FilterUtils::ChainPositions::HighCut>();
-
-    monoChain.setBypassed<FilterUtils::ChainPositions::LowCut>(!lowCutEnabledParam->get());
-    monoChain.setBypassed<FilterUtils::ChainPositions::HighCut>(!highCutEnabledParam->get());
 
     for (auto i = 0; i < boundsWidth; ++i) {
         double magP0  = 1.0;

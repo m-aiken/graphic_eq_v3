@@ -323,13 +323,17 @@ void ResponseCurve::addListeners()
 
     apvts.getParameter(eqParams.at(EqProperties::CutControls::LOW_CUT_FREQ))->addListener(this);
     apvts.getParameter(eqParams.at(EqProperties::CutControls::LOW_CUT_SLOPE))->addListener(this);
+    apvts.getParameter(eqParams.at(EqProperties::CutControls::LOW_CUT_ENABLED))->addListener(this);
+
     apvts.getParameter(eqParams.at(EqProperties::CutControls::HIGH_CUT_FREQ))->addListener(this);
     apvts.getParameter(eqParams.at(EqProperties::CutControls::HIGH_CUT_SLOPE))->addListener(this);
+    apvts.getParameter(eqParams.at(EqProperties::CutControls::HIGH_CUT_ENABLED))->addListener(this);
 
     for (size_t i = 0; i < peakBands.size(); ++i) {
         apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::FREQUENCY, i))->addListener(this);
         apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, i))->addListener(this);
         apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::QUALITY, i))->addListener(this);
+        apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::ENABLED, i))->addListener(this);
     }
 }
 
@@ -339,12 +343,16 @@ void ResponseCurve::removeListeners()
 
     apvts.getParameter(eqParams.at(EqProperties::CutControls::LOW_CUT_FREQ))->removeListener(this);
     apvts.getParameter(eqParams.at(EqProperties::CutControls::LOW_CUT_SLOPE))->removeListener(this);
+    apvts.getParameter(eqParams.at(EqProperties::CutControls::LOW_CUT_ENABLED))->removeListener(this);
+
     apvts.getParameter(eqParams.at(EqProperties::CutControls::HIGH_CUT_FREQ))->removeListener(this);
     apvts.getParameter(eqParams.at(EqProperties::CutControls::HIGH_CUT_SLOPE))->removeListener(this);
+    apvts.getParameter(eqParams.at(EqProperties::CutControls::HIGH_CUT_ENABLED))->removeListener(this);
 
     for (size_t i = 0; i < peakBands.size(); ++i) {
         apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::FREQUENCY, i))->removeListener(this);
         apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, i))->removeListener(this);
         apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::QUALITY, i))->removeListener(this);
+        apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::ENABLED, i))->removeListener(this);
     }
 }

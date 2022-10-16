@@ -134,7 +134,7 @@ void ResponseCurve::paint(juce::Graphics& g)
     }
 
     g.setColour(ColourPalette::getColour(ColourPalette::Blue));
-    g.strokePath(paths.at(paths.size() - 1), juce::PathStrokeType(2.f));
+    g.strokePath(paths.at(paths.size() - 1), juce::PathStrokeType(1.f));
 
     // Drawing the nodes
     for (size_t i = 0; i < peakNodes.size(); ++i) {

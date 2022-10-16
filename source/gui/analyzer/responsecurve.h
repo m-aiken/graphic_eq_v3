@@ -42,8 +42,8 @@ struct ResponseCurve : juce::Component, juce::AudioProcessorParameter::Listener,
 
 private:
     double sampleRate;
-    int    nodeDiameter { 8 };
-    int    nodeRadius { 4 };
+    int    nodeDiameter { 6 };
+    int    nodeRadius   { 3 };
 
     juce::Atomic<bool> parametersChanged { false };
 

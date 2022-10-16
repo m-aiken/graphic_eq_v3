@@ -67,9 +67,13 @@ void PeakControl::paint(juce::Graphics& g)
     auto labelHeight = labelRect.getHeight() / 3;
     auto padding     = Globals::getFont().getHeight();
 
-    std::array<std::pair<juce::String, juce::String>, 3> paramValues {
+    auto dbValue = gainSlider->getValue();
+    juce::String dbPrefix = dbValue > 0 ? "+" : "";
+    
+    using ParamPair = std::pair<juce::String, juce::String>;
+    std::array<ParamPair, 3> paramValues {
             std::pair{ "Hz:", juce::String(freqSlider->getValue()) },
-            std::pair{ "dB:", juce::String(gainSlider->getValue()) },
+            std::pair{ "dB:", dbPrefix + juce::String(dbValue) },
             std::pair{ "Q:",  juce::String(qSlider->getValue()) }
     };
 

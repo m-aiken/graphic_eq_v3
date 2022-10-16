@@ -25,9 +25,10 @@ PeakControl::PeakControl(juce::AudioProcessorValueTreeState& apvts, const int _b
     gainAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, bandNum), *gainSlider);
     qAttachment    = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, EqProperties::getPeakControlParamName(EqProperties::PeakControl::QUALITY, bandNum), *qSlider);
     
-    powerButton->onClick = [this]() {
-        setEnablement();
-    };
+    powerButton->onClick      = [this]() { setEnablement(); };
+    freqSlider->onValueChange = [this]() { repaint(); };
+    gainSlider->onValueChange = [this]() { repaint(); };
+    qSlider->onValueChange    = [this]() { repaint(); };
 
     addAndMakeVisible(*powerButton);
     addAndMakeVisible(*freqSlider);

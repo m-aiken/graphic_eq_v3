@@ -20,6 +20,8 @@ GraphicEqEditor::GraphicEqEditor (GraphicEqProcessor& p)
 
     setSize(800, 600);
 
+    activeNode = analyzerContainer.getActiveNodeIndex();
+
     startTimerHz(20);
 }
 
@@ -135,6 +137,8 @@ void GraphicEqEditor::drawFrequencyLabels(juce::Graphics& g, juce::Rectangle<int
 
 void GraphicEqEditor::timerCallback()
 {
-    auto activeNode = analyzerContainer.getActiveNodeIndex();
-    eqControls.setBandHasNodeSelection(activeNode);
+    if (activeNode != analyzerContainer.getActiveNodeIndex()) {
+        activeNode = analyzerContainer.getActiveNodeIndex();
+        eqControls.setBandHasNodeSelection(activeNode);
+    }
 }

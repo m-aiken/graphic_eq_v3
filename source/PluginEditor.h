@@ -34,6 +34,8 @@ private:
     EqControlsContainer eqControls;
 
     CustomLookAndFeel lnf;
+
+    size_t activeNode;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GraphicEqEditor)
 };

@@ -3,13 +3,13 @@
 #include "../../utils/colourpalette.h"
 
 //==============================================================================
-SpectrumAnalyzer::SpectrumAnalyzer(double _sampleRate,
+SpectrumAnalyzer::SpectrumAnalyzer(double                                             _sampleRate,
                                    SingleChannelSampleFifo<juce::AudioBuffer<float>>& leftScsf,
                                    SingleChannelSampleFifo<juce::AudioBuffer<float>>& rightScsf,
-                                   juce::AudioProcessorValueTreeState& apvts)
-: sampleRate(_sampleRate),
-  leftPathProducer(_sampleRate, leftScsf),
-  rightPathProducer(_sampleRate, rightScsf)
+                                   juce::AudioProcessorValueTreeState&                apvts)
+    : sampleRate(_sampleRate)
+    , leftPathProducer(_sampleRate, leftScsf)
+    , rightPathProducer(_sampleRate, rightScsf)
 {
     const auto& params = AnalyzerProperties::getAnalyzerParams();
 
@@ -21,11 +21,11 @@ SpectrumAnalyzer::SpectrumAnalyzer(double _sampleRate,
 
     initListener(analyzerOrderParamListener,
                  AnalyzerProperties::ParamNames::Analyzer_Points,
-                 [this](const auto& newOrder){ updateOrder(newOrder); });
+                 [this](const auto& newOrder) { updateOrder(newOrder); });
 
     initListener(analyzerDecayRateParamListener,
                  AnalyzerProperties::ParamNames::Analyzer_Decay_Rate,
-                 [this](const auto& decayRate){ updateDecayRate(decayRate); });
+                 [this](const auto& decayRate) { updateDecayRate(decayRate); });
 
     auto orderParam = apvts.getParameter(params.at(AnalyzerProperties::ParamNames::Analyzer_Points));
     updateOrder(orderParam->getValue());
@@ -49,11 +49,11 @@ void SpectrumAnalyzer::paint(juce::Graphics& g)
     rightAnalyzerPath.applyTransform(juce::AffineTransform().translation(bounds.getX(), bounds.getY()));
 
     g.setColour(juce::Colours::blue);
-//    g.setColour(ColourPalette::getColour(ColourPalette::Blue));
+    //    g.setColour(ColourPalette::getColour(ColourPalette::Blue));
     g.strokePath(leftAnalyzerPath, juce::PathStrokeType(1.f));
 
     g.setColour(juce::Colours::green);
-//    g.setColour(ColourPalette::getColour(ColourPalette::Green));
+    //    g.setColour(ColourPalette::getColour(ColourPalette::Green));
     g.strokePath(rightAnalyzerPath, juce::PathStrokeType(1.f));
 }
 
@@ -70,14 +70,15 @@ void SpectrumAnalyzer::timerCallback()
         leftAnalyzerPath.clear();
         rightAnalyzerPath.clear();
         stopTimer();
-    }
-    else {
-        if ( leftPathProducer.getNumAvailableForReading() > 0 ) {
-            while ( leftPathProducer.pull(leftAnalyzerPath) ) { } // get most recent
+    } else {
+        if (leftPathProducer.getNumAvailableForReading() > 0) {
+            while (leftPathProducer.pull(leftAnalyzerPath)) {
+            } // get most recent
         }
 
-        if ( rightPathProducer.getNumAvailableForReading() > 0 ) {
-            while ( rightPathProducer.pull(rightAnalyzerPath) ) { } // get most recent
+        if (rightPathProducer.getNumAvailableForReading() > 0) {
+            while (rightPathProducer.pull(rightAnalyzerPath)) {
+            } // get most recent
         }
     }
     repaint();

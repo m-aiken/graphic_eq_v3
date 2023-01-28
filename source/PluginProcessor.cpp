@@ -1,18 +1,18 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-#include "dsp/eqproperties.h"
 #include "dsp/analyzerproperties.h"
+#include "dsp/eqproperties.h"
 
 //==============================================================================
 GraphicEqProcessor::GraphicEqProcessor()
-     : AudioProcessor (BusesProperties()
-                     #if ! JucePlugin_IsMidiEffect
-                      #if ! JucePlugin_IsSynth
-                       .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
-                      #endif
-                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
-                     #endif
-                       )
+    : AudioProcessor(BusesProperties()
+#if !JucePlugin_IsMidiEffect
+#if !JucePlugin_IsSynth
+                         .withInput("Input", juce::AudioChannelSet::stereo(), true)
+#endif
+                         .withOutput("Output", juce::AudioChannelSet::stereo(), true)
+#endif
+    )
 {
     auto assignBoolParam = [&](auto& target, auto& paramName) {
         auto param = dynamic_cast<juce::AudioParameterBool*>(apvts.getParameter(paramName));
@@ -61,29 +61,29 @@ const juce::String GraphicEqProcessor::getName() const
 
 bool GraphicEqProcessor::acceptsMidi() const
 {
-   #if JucePlugin_WantsMidiInput
+#if JucePlugin_WantsMidiInput
     return true;
-   #else
+#else
     return false;
-   #endif
+#endif
 }
 
 bool GraphicEqProcessor::producesMidi() const
 {
-   #if JucePlugin_ProducesMidiOutput
+#if JucePlugin_ProducesMidiOutput
     return true;
-   #else
+#else
     return false;
-   #endif
+#endif
 }
 
 bool GraphicEqProcessor::isMidiEffect() const
 {
-   #if JucePlugin_IsMidiEffect
+#if JucePlugin_IsMidiEffect
     return true;
-   #else
+#else
     return false;
-   #endif
+#endif
 }
 
 double GraphicEqProcessor::getTailLengthSeconds() const
@@ -93,8 +93,8 @@ double GraphicEqProcessor::getTailLengthSeconds() const
 
 int GraphicEqProcessor::getNumPrograms()
 {
-    return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
-                // so this should be at least 1, even if you're not really implementing programs.
+    return 1; // NB: some hosts don't cope very well if you tell them there are 0 programs,
+              // so this should be at least 1, even if you're not really implementing programs.
 }
 
 int GraphicEqProcessor::getCurrentProgram()
@@ -102,28 +102,28 @@ int GraphicEqProcessor::getCurrentProgram()
     return 0;
 }
 
-void GraphicEqProcessor::setCurrentProgram (int index)
+void GraphicEqProcessor::setCurrentProgram(int index)
 {
-    juce::ignoreUnused (index);
+    juce::ignoreUnused(index);
 }
 
-const juce::String GraphicEqProcessor::getProgramName (int index)
+const juce::String GraphicEqProcessor::getProgramName(int index)
 {
-    juce::ignoreUnused (index);
+    juce::ignoreUnused(index);
     return {};
 }
 
-void GraphicEqProcessor::changeProgramName (int index, const juce::String& newName)
+void GraphicEqProcessor::changeProgramName(int index, const juce::String& newName)
 {
-    juce::ignoreUnused (index, newName);
+    juce::ignoreUnused(index, newName);
 }
 
 //==============================================================================
-void GraphicEqProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void GraphicEqProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need.
-    juce::ignoreUnused (sampleRate);
+    juce::ignoreUnused(sampleRate);
 
     juce::dsp::ProcessSpec spec;
     spec.sampleRate       = sampleRate;
@@ -146,13 +146,9 @@ void GraphicEqProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 
     for (size_t i = 0; i < peakBands.size(); ++i) {
         if (peakBands.at(i).peakEnabledParam->get()) {
-            FilterUtils::updatePeakCoefficients(leftChain, static_cast<FilterUtils::ChainPositions>(i + 1),
-                                                peakBands.at(i).peakFreqParam, peakBands.at(i).peakQParam,
-                                                peakBands.at(i).peakGainParam, sampleRate);
+            FilterUtils::updatePeakCoefficients(leftChain, static_cast<FilterUtils::ChainPositions>(i + 1), peakBands.at(i).peakFreqParam, peakBands.at(i).peakQParam, peakBands.at(i).peakGainParam, sampleRate);
 
-            FilterUtils::updatePeakCoefficients(rightChain, static_cast<FilterUtils::ChainPositions>(i + 1),
-                                                peakBands.at(i).peakFreqParam, peakBands.at(i).peakQParam,
-                                                peakBands.at(i).peakGainParam, sampleRate);
+            FilterUtils::updatePeakCoefficients(rightChain, static_cast<FilterUtils::ChainPositions>(i + 1), peakBands.at(i).peakFreqParam, peakBands.at(i).peakQParam, peakBands.at(i).peakGainParam, sampleRate);
         }
     }
 
@@ -166,38 +162,38 @@ void GraphicEqProcessor::releaseResources()
     // spare memory, etc.
 }
 
-bool GraphicEqProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+bool GraphicEqProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
 {
-  #if JucePlugin_IsMidiEffect
-    juce::ignoreUnused (layouts);
+#if JucePlugin_IsMidiEffect
+    juce::ignoreUnused(layouts);
     return true;
-  #else
+#else
     // This is the place where you check if the layout is supported.
     // In this template code we only support mono or stereo.
     // Some plugin hosts, such as certain GarageBand versions, will only
     // load plugins that support stereo bus layouts.
     if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
-     && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
+        && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
         return false;
 
-    // This checks if the input layout matches the output layout
-   #if ! JucePlugin_IsSynth
+        // This checks if the input layout matches the output layout
+#if !JucePlugin_IsSynth
     if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
         return false;
-   #endif
+#endif
 
     return true;
-  #endif
+#endif
 }
 
-void GraphicEqProcessor::processBlock (juce::AudioBuffer<float>& buffer,
-                                       juce::MidiBuffer& midiMessages)
+void GraphicEqProcessor::processBlock(juce::AudioBuffer<float>& buffer,
+                                      juce::MidiBuffer&         midiMessages)
 {
-    juce::ignoreUnused (midiMessages);
+    juce::ignoreUnused(midiMessages);
 
     juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
+    auto                    totalNumInputChannels  = getTotalNumInputChannels();
+    auto                    totalNumOutputChannels = getTotalNumOutputChannels();
 
     // In case we have more outputs than inputs, this code clears any output
     // channels that didn't contain input data, (because these aren't
@@ -206,7 +202,7 @@ void GraphicEqProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     // when they first compile a plugin, but obviously you don't need to keep
     // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
+        buffer.clear(i, 0, buffer.getNumSamples());
 
     FilterUtils::updateBandEnablements(leftChain, lowCutEnabledParam, highCutEnabledParam, peakBands);
     FilterUtils::updateBandEnablements(rightChain, lowCutEnabledParam, highCutEnabledParam, peakBands);
@@ -221,19 +217,15 @@ void GraphicEqProcessor::processBlock (juce::AudioBuffer<float>& buffer,
 
     for (size_t i = 0; i < peakBands.size(); ++i) {
         if (peakBands.at(i).peakEnabledParam->get()) {
-            FilterUtils::updatePeakCoefficients(leftChain, static_cast<FilterUtils::ChainPositions>(i + 1),
-                                                peakBands.at(i).peakFreqParam, peakBands.at(i).peakQParam,
-                                                peakBands.at(i).peakGainParam, getSampleRate());
+            FilterUtils::updatePeakCoefficients(leftChain, static_cast<FilterUtils::ChainPositions>(i + 1), peakBands.at(i).peakFreqParam, peakBands.at(i).peakQParam, peakBands.at(i).peakGainParam, getSampleRate());
 
-            FilterUtils::updatePeakCoefficients(rightChain, static_cast<FilterUtils::ChainPositions>(i + 1),
-                                                peakBands.at(i).peakFreqParam, peakBands.at(i).peakQParam,
-                                                peakBands.at(i).peakGainParam, getSampleRate());
+            FilterUtils::updatePeakCoefficients(rightChain, static_cast<FilterUtils::ChainPositions>(i + 1), peakBands.at(i).peakFreqParam, peakBands.at(i).peakQParam, peakBands.at(i).peakGainParam, getSampleRate());
         }
     }
 
     juce::dsp::AudioBlock<float> block(buffer);
-    auto leftBlock  = block.getSingleChannelBlock(Globals::Channel::Left);
-    auto rightBlock = block.getSingleChannelBlock(Globals::Channel::Right);
+    auto                         leftBlock  = block.getSingleChannelBlock(Globals::Channel::Left);
+    auto                         rightBlock = block.getSingleChannelBlock(Globals::Channel::Right);
 
     juce::dsp::ProcessContextReplacing<float> leftCtx(leftBlock);
     juce::dsp::ProcessContextReplacing<float> rightCtx(rightBlock);
@@ -253,17 +245,17 @@ bool GraphicEqProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* GraphicEqProcessor::createEditor()
 {
-    return new GraphicEqEditor (*this);
+    return new GraphicEqEditor(*this);
 }
 
 //==============================================================================
-void GraphicEqProcessor::getStateInformation (juce::MemoryBlock& destData)
+void GraphicEqProcessor::getStateInformation(juce::MemoryBlock& destData)
 {
-    juce::MemoryOutputStream mos (destData, true);
+    juce::MemoryOutputStream mos(destData, true);
     apvts.state.writeToStream(mos);
 }
 
-void GraphicEqProcessor::setStateInformation (const void* data, int sizeInBytes)
+void GraphicEqProcessor::setStateInformation(const void* data, int sizeInBytes)
 {
     auto tree = juce::ValueTree::readFromData(data, sizeInBytes);
     if (tree.isValid()) {
@@ -277,8 +269,7 @@ void GraphicEqProcessor::updateCutFilter(const FilterUtils::ChainPositions& chai
 
     if (chainPosition == FilterUtils::ChainPositions::LowCut) {
         coefficients = FilterUtils::makeHighPassFilter(freqParam, slopeParam, sampleRate);
-    }
-    else {
+    } else {
         coefficients = FilterUtils::makeLowPassFilter(freqParam, slopeParam, sampleRate);
     }
 

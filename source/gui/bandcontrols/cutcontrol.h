@@ -1,10 +1,10 @@
 #pragma once
 
-#include "JuceHeader.h"
-#include "../widgets/powerbutton.h"
-#include "../widgets/customrotarycontrol.h"
-#include "../widgets/customlinearslider.h"
 #include "../../dsp/filterutils.h"
+#include "../widgets/customlinearslider.h"
+#include "../widgets/customrotarycontrol.h"
+#include "../widgets/powerbutton.h"
+#include "JuceHeader.h"
 
 //==============================================================================
 struct CutControl : juce::Component
@@ -18,7 +18,7 @@ struct CutControl : juce::Component
 private:
     FilterUtils::ChainPositions chainPosition;
 
-    std::unique_ptr<PowerButton> powerButton;
+    std::unique_ptr<PowerButton>                                          powerButton;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> buttonAttachment;
 
     std::unique_ptr<CustomRotaryControl> freqSlider;

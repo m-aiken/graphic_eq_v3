@@ -14,7 +14,7 @@ void FFTDataGenerator::produceFFTDataForRendering(const juce::AudioBuffer<float>
     forwardFFT->performFrequencyOnlyForwardTransform(fftData.data(), true);
 
     auto numBins = static_cast<int>(fftSize * 0.5);
-    juce::FloatVectorOperations::multiply(fftData.data(), 1.f / static_cast<float>(numBins), numBins+1);
+    juce::FloatVectorOperations::multiply(fftData.data(), 1.f / static_cast<float>(numBins), numBins + 1);
 
     for (auto i = 0; i < numBins + 1; ++i) {
         fftData[i] = juce::Decibels::gainToDecibels(fftData[i], Globals::getNegativeInf());

@@ -4,8 +4,8 @@
 
 //==============================================================================
 CustomRotaryControl::CustomRotaryControl(juce::RangedAudioParameter& rap, const juce::String& title)
-: juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, juce::Slider::TextEntryBoxPosition::NoTextBox),
-  param(&rap)
+    : juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, juce::Slider::TextEntryBoxPosition::NoTextBox)
+    , param(&rap)
 {
     setName(title);
 }
@@ -29,14 +29,14 @@ void CustomRotaryControl::paint(juce::Graphics& g)
     auto rotaryBounds = getRotaryBounds();
 
     getLookAndFeel().drawRotarySlider(g,
-                                      rotaryBounds.getX(),      // x
-                                      rotaryBounds.getY(),      // y
-                                      rotaryBounds.getWidth(),  // width
+                                      rotaryBounds.getX(), // x
+                                      rotaryBounds.getY(), // y
+                                      rotaryBounds.getWidth(), // width
                                       rotaryBounds.getHeight(), // height
-                                      valueToDraw,              // position
-                                      startAngle,               // start angle
-                                      endAngle,                 // end angle
-                                      *this);                   // slider
+                                      valueToDraw, // position
+                                      startAngle, // start angle
+                                      endAngle, // end angle
+                                      *this); // slider
 
     auto center = rotaryBounds.toFloat().getCentre();
 

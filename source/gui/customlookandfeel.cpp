@@ -3,11 +3,14 @@
 
 //==============================================================================
 void CustomLookAndFeel::drawRotarySlider(juce::Graphics& g,
-                                         int x, int y, int width, int height,
-                                         float sliderPosProportional,
-                                         float rotaryStartAngle,
-                                         float rotaryEndAngle,
-                                         juce::Slider& slider)
+                                         int             x,
+                                         int             y,
+                                         int             width,
+                                         int             height,
+                                         float           sliderPosProportional,
+                                         float           rotaryStartAngle,
+                                         float           rotaryEndAngle,
+                                         juce::Slider&   slider)
 {
     auto bounds = juce::Rectangle<float>(x, y, width, height);
 
@@ -38,17 +41,22 @@ void CustomLookAndFeel::drawRotarySlider(juce::Graphics& g,
     g.fillPath(p);
 }
 
-void CustomLookAndFeel::drawLinearSlider(juce::Graphics& g,
-                                         int x, int y, int width, int height,
-                                         float sliderPos, float minSliderPos, float maxSliderPos,
+void CustomLookAndFeel::drawLinearSlider(juce::Graphics&                 g,
+                                         int                             x,
+                                         int                             y,
+                                         int                             width,
+                                         int                             height,
+                                         float                           sliderPos,
+                                         float                           minSliderPos,
+                                         float                           maxSliderPos,
                                          const juce::Slider::SliderStyle sliderStyle,
-                                         juce::Slider& slider)
+                                         juce::Slider&                   slider)
 {
     auto background = juce::Rectangle<float>(x, y, width, height);
     g.setColour(ColourPalette::getColour(ColourPalette::Green).withAlpha(0.1f));
     g.fillRect(background);
 
-    auto tooltipWidth = width * 0.25 <= 20 ? width * 0.25 : width * 0.15;
+    auto  tooltipWidth = width * 0.25 <= 20 ? width * 0.25 : width * 0.15;
     float tooltipX     = sliderPos - (tooltipWidth * 0.5);
 
     if (tooltipX < x) {

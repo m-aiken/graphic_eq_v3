@@ -7,7 +7,7 @@ struct CustomRotaryControl : juce::Slider
 {
     CustomRotaryControl(juce::RangedAudioParameter& rap, const juce::String& title);
 
-    void paint(juce::Graphics& g) override;
+    void                 paint(juce::Graphics& g) override;
     juce::Rectangle<int> getRotaryBounds() const;
 
 private:

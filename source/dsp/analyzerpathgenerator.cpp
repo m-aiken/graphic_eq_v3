@@ -2,11 +2,11 @@
 
 //==============================================================================
 void AnalyzerPathGenerator::generatePath(const std::vector<float>& renderData,
-                                         juce::Rectangle<float> fftBounds,
-                                         int fftSize,
-                                         float binWidth,
-                                         float negativeInfinity,
-                                         float maxDb)
+                                         juce::Rectangle<float>    fftBounds,
+                                         int                       fftSize,
+                                         float                     binWidth,
+                                         float                     negativeInfinity,
+                                         float                     maxDb)
 {
     auto numBins = static_cast<int>(fftSize * 0.5);
 

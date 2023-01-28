@@ -5,7 +5,7 @@
 //==============================================================================
 Node::Node(juce::AudioProcessorValueTreeState& _apvts, int _bandNum)
 {
-    auto paramId = EqProperties::getPeakControlParamName(EqProperties::PeakControl::ENABLED, _bandNum);
+    auto paramId    = EqProperties::getPeakControlParamName(EqProperties::PeakControl::ENABLED, _bandNum);
     paramAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(_apvts, paramId, *this);
 }
 
@@ -18,26 +18,26 @@ void Node::paint(juce::Graphics& g)
 
 //==============================================================================
 ResponseCurve::ResponseCurve(juce::AudioProcessorValueTreeState& _apvts, double _sampleRate)
-: sampleRate(_sampleRate),
-  apvts(_apvts)
+    : sampleRate(_sampleRate)
+    , apvts(_apvts)
 {
     for (size_t i = 0; i < Globals::getNumPeakBands(); ++i) {
         peakNodes.at(i) = std::make_unique<Node>(_apvts, i);
     }
 
-    auto assignBoolParam = [&](auto& target, auto& paramName){
+    auto assignBoolParam = [&](auto& target, auto& paramName) {
         auto param = dynamic_cast<juce::AudioParameterBool*>(apvts.getParameter(paramName));
         jassert(param != nullptr);
         target = param;
     };
 
-    auto assignFloatParam = [&](auto& target, auto& paramName){
+    auto assignFloatParam = [&](auto& target, auto& paramName) {
         auto param = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter(paramName));
         jassert(param != nullptr);
         target = param;
     };
 
-    auto assignChoiceParam = [&](auto& target, auto& paramName){
+    auto assignChoiceParam = [&](auto& target, auto& paramName) {
         auto param = dynamic_cast<juce::AudioParameterChoice*>(apvts.getParameter(paramName));
         jassert(param != nullptr);
         target = param;
@@ -88,9 +88,9 @@ void ResponseCurve::paint(juce::Graphics& g)
     auto responseCurveMax = bounds.getY();
 
     std::array<std::vector<double>, 9> magnitudes = getMagnitudes(boundsWidth);
-    std::array<juce::Path, 9> paths;
+    std::array<juce::Path, 9>          paths;
 
-    auto mapFilterGainRangeToAnalyzerBounds = [&](double magnitude){
+    auto mapFilterGainRangeToAnalyzerBounds = [&](double magnitude) {
         return juce::jmap<float>(magnitude,
                                  Globals::getNegativeInf(),
                                  Globals::getMaxDecibels(),
@@ -170,12 +170,12 @@ void ResponseCurve::mouseDrag(const juce::MouseEvent& event)
                                            Globals::getMaxDecibels(),
                                            Globals::getNegativeInf());
 
-        size_t closestNode = 0;
-        auto shortestDistance = boundsWidth;
+        size_t closestNode      = 0;
+        auto   shortestDistance = boundsWidth;
         for (size_t i = 0; i < nodeCoordinates.size(); ++i) {
             auto xDistance = std::abs(nodeCoordinates.at(i).getX() - xCoord);
             if (xDistance < shortestDistance) {
-                closestNode = i;
+                closestNode      = i;
                 shortestDistance = xDistance;
             }
         }
@@ -194,7 +194,7 @@ void ResponseCurve::updateMonoChain()
     FilterUtils::updateBandEnablements(monoChain, lowCutEnabledParam, highCutEnabledParam, peakBands);
 
     if (lowCutEnabledParam->get()) {
-        auto lowCutCoefficients  = FilterUtils::makeHighPassFilter(lowCutFreqParam, lowCutSlopeParam, sampleRate);
+        auto lowCutCoefficients = FilterUtils::makeHighPassFilter(lowCutFreqParam, lowCutSlopeParam, sampleRate);
         FilterUtils::updateCutCoefficients(monoChain, FilterUtils::ChainPositions::LowCut, lowCutCoefficients, lowCutSlopeParam);
     }
 
@@ -205,9 +205,7 @@ void ResponseCurve::updateMonoChain()
 
     for (size_t i = 0; i < peakBands.size(); ++i) {
         if (peakBands.at(i).peakEnabledParam->get()) {
-            FilterUtils::updatePeakCoefficients(monoChain, static_cast<FilterUtils::ChainPositions>(i + 1),
-                                                peakBands.at(i).peakFreqParam, peakBands.at(i).peakQParam,
-                                                peakBands.at(i).peakGainParam, sampleRate);
+            FilterUtils::updatePeakCoefficients(monoChain, static_cast<FilterUtils::ChainPositions>(i + 1), peakBands.at(i).peakFreqParam, peakBands.at(i).peakQParam, peakBands.at(i).peakGainParam, sampleRate);
         }
     }
 }
@@ -220,7 +218,15 @@ std::array<std::vector<double>, 9> ResponseCurve::getMagnitudes(int boundsWidth)
     }
 
     enum MagIdx {
-        P0, P1, P2, P3, P4, P5, LC, HC, ALL
+        P0,
+        P1,
+        P2,
+        P3,
+        P4,
+        P5,
+        LC,
+        HC,
+        ALL
     };
 
     std::array<juce::dsp::IIR::Filter<float>::CoefficientsPtr, Globals::getNumPeakBands()> peakCoefficients;
@@ -250,44 +256,44 @@ std::array<std::vector<double>, 9> ResponseCurve::getMagnitudes(int boundsWidth)
         for (size_t peakBand = 0; peakBand < Globals::getNumPeakBands(); ++peakBand) {
             if (peakBands.at(peakBand).peakEnabledParam->get()) {
                 peakMags.at(peakBand) *= peakCoefficients.at(peakBand)->getMagnitudeForFrequency(freq, sampleRate);
-                magALL                *= peakCoefficients.at(peakBand)->getMagnitudeForFrequency(freq, sampleRate);
+                magALL *= peakCoefficients.at(peakBand)->getMagnitudeForFrequency(freq, sampleRate);
             }
         }
 
         if (lowCutEnabledParam->get()) {
             if (!lowCut.isBypassed<0>()) {
-                magHC  *= lowCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+                magHC *= lowCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
                 magALL *= lowCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
             }
             if (!lowCut.isBypassed<1>()) {
-                magHC  *= lowCut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+                magHC *= lowCut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
                 magALL *= lowCut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
             }
             if (!lowCut.isBypassed<2>()) {
-                magHC  *= lowCut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+                magHC *= lowCut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
                 magALL *= lowCut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
             }
             if (!lowCut.isBypassed<3>()) {
-                magHC  *= lowCut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+                magHC *= lowCut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
                 magALL *= lowCut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
             }
         }
 
         if (highCutEnabledParam->get()) {
             if (!highCut.isBypassed<0>()) {
-                magHC  *= highCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+                magHC *= highCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
                 magALL *= highCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
             }
             if (!highCut.isBypassed<1>()) {
-                magHC  *= highCut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+                magHC *= highCut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
                 magALL *= highCut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
             }
             if (!highCut.isBypassed<2>()) {
-                magHC  *= highCut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+                magHC *= highCut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
                 magALL *= highCut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
             }
             if (!highCut.isBypassed<3>()) {
-                magHC  *= highCut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
+                magHC *= highCut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
                 magALL *= highCut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
             }
         }
@@ -311,7 +317,7 @@ void ResponseCurve::parameterValueChanged(int parameterIndex, float newValue)
 
 void ResponseCurve::timerCallback()
 {
-    if(parametersChanged.compareAndSetBool(false, true)) {
+    if (parametersChanged.compareAndSetBool(false, true)) {
         updateMonoChain();
         repaint();
     }

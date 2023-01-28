@@ -2,9 +2,9 @@
 
 //==============================================================================
 PathProducer::PathProducer(double _sampleRate, SingleChannelSampleFifo<juce::AudioBuffer<float>>& scsf)
-: juce::Thread("PathProducerThread"),
-  singleChannelSampleFifo(&scsf),
-  sampleRate(_sampleRate)
+    : juce::Thread("PathProducerThread")
+    , singleChannelSampleFifo(&scsf)
+    , sampleRate(_sampleRate)
 {
     // TODO - initialising these 2 might not be necessary ultimately.
     // It is necessary at the time of writing this as the associated parameters don't exist in the value tree yet.
@@ -147,7 +147,7 @@ void PathProducer::updateRenderData(std::vector<float>& renData, const std::vect
         for (auto i = 0; i < numBins; ++i) {
             auto previousValue = renData[i];
             auto candidate     = fftData[i];
-            auto finalValue     = juce::jmax(candidate, previousValue - decayRate);
+            auto finalValue    = juce::jmax(candidate, previousValue - decayRate);
             renData[i]         = juce::jlimit(negativeInfinity.load(), maxDecibels.load(), finalValue);
         }
     }

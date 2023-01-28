@@ -2,10 +2,10 @@
 
 #include <JuceHeader.h>
 
-#include "../utils/globals.h"
-#include "../dsp/singlesamplefifo.h"
-#include "../dsp/fftdatagenerator.h"
 #include "../dsp/analyzerpathgenerator.h"
+#include "../dsp/fftdatagenerator.h"
+#include "../dsp/singlesamplefifo.h"
+#include "../utils/globals.h"
 
 //==============================================================================
 struct PathProducer : juce::Thread
@@ -25,6 +25,7 @@ struct PathProducer : juce::Thread
     int  getNumAvailableForReading() const;
     void toggleProcessing(bool toggleState);
     void changePathRange(float negativeInfinityDb, float maxDb);
+
 private:
     SingleChannelSampleFifo<juce::AudioBuffer<float>>* singleChannelSampleFifo;
 
@@ -33,18 +34,18 @@ private:
 
     std::vector<float> renderData;
 
-    void updateRenderData(std::vector<float>& renData,
+    void updateRenderData(std::vector<float>&       renData,
                           const std::vector<float>& fftData,
-                          int numBins,
-                          float decayRate);
+                          int                       numBins,
+                          float                     decayRate);
 
     juce::AudioBuffer<float> bufferForGenerator;
 
-    double sampleRate;
+    double                 sampleRate;
     juce::Rectangle<float> fftBounds;
 
     std::atomic<float> decayRateInDbPerSec { 0.f };
     std::atomic<float> negativeInfinity { Globals::getNegativeInf() };
     std::atomic<float> maxDecibels { Globals::getMaxDecibels() };
-    std::atomic<bool> processingIsEnabled { false };
+    std::atomic<bool>  processingIsEnabled { false };
 };

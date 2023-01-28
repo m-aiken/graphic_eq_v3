@@ -2,19 +2,23 @@
 
 #include <JuceHeader.h>
 
-#include "fifo.h"
 #include "../utils/globals.h"
+#include "fifo.h"
 
 //==============================================================================
-template<typename BlockType>
+template <typename BlockType>
 struct SingleChannelSampleFifo
 {
     using SampleType = typename BlockType::SampleType;
-    SingleChannelSampleFifo(Globals::Channel ch) : channelToUse(ch) { prepared.set(false); }
+    SingleChannelSampleFifo(Globals::Channel ch)
+        : channelToUse(ch)
+    {
+        prepared.set(false);
+    }
 
     void update(const BlockType& buffer)
     {
-        for ( auto i = 0; i < buffer.getNumSamples(); ++i )
+        for (auto i = 0; i < buffer.getNumSamples(); ++i)
         {
             pushNextSampleIntoFifo(buffer.getSample(channelToUse, i));
         }
@@ -22,7 +26,7 @@ struct SingleChannelSampleFifo
 
     void pushNextSampleIntoFifo(SampleType sample)
     {
-        if ( fifoIndex == getSize() )
+        if (fifoIndex == getSize())
         {
             audioBufferFifo.push(bufferToFill);
             fifoIndex = 0;
@@ -42,15 +46,16 @@ struct SingleChannelSampleFifo
         prepared.set(true);
     }
 
-    int getNumCompleteBuffersAvailable() const { return audioBufferFifo.getNumAvailableForReading(); }
+    int  getNumCompleteBuffersAvailable() const { return audioBufferFifo.getNumAvailableForReading(); }
     bool getAudioBuffer(BlockType& buf) { return audioBufferFifo.pull(buf); }
     bool isPrepared() const { return prepared.get(); }
-    int getSize() const { return size.get(); }
+    int  getSize() const { return size.get(); }
+
 private:
-    Globals::Channel channelToUse;
-    int fifoIndex = 0;
+    Globals::Channel    channelToUse;
+    int                 fifoIndex = 0;
     Fifo<BlockType, 20> audioBufferFifo;
-    BlockType bufferToFill;
-    juce::Atomic<bool> prepared = false;
-    juce::Atomic<int> size = 0;
+    BlockType           bufferToFill;
+    juce::Atomic<bool>  prepared = false;
+    juce::Atomic<int>   size     = 0;
 };

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <JuceHeader.h>
 #include "widgets/customlinearslider.h"
+#include <JuceHeader.h>
 
 //==============================================================================
 struct AnalyzerControls : juce::Component
@@ -11,8 +11,8 @@ struct AnalyzerControls : juce::Component
     void resized() override;
 
 private:
-    std::unique_ptr<CustomLinearSlider> fftOrderSlider;
-    std::unique_ptr<CustomLinearSlider> decayRateSlider;
+    std::unique_ptr<CustomLinearSlider>                                   fftOrderSlider;
+    std::unique_ptr<CustomLinearSlider>                                   decayRateSlider;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> fftOrderAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> decayRateAttachment;
 };

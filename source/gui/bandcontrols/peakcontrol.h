@@ -1,8 +1,8 @@
 #pragma once
 
-#include "JuceHeader.h"
-#include "../widgets/powerbutton.h"
 #include "../widgets/customrotarycontrol.h"
+#include "../widgets/powerbutton.h"
+#include "JuceHeader.h"
 
 //==============================================================================
 struct PeakControl : juce::Component
@@ -18,12 +18,12 @@ private:
     int  bandNum;
     bool nodeIsActive { false };
 
-    std::unique_ptr<PowerButton> powerButton;
+    std::unique_ptr<PowerButton>                                          powerButton;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> buttonAttachment;
 
-    std::unique_ptr<CustomRotaryControl> freqSlider;
-    std::unique_ptr<CustomRotaryControl> gainSlider;
-    std::unique_ptr<CustomRotaryControl> qSlider;
+    std::unique_ptr<CustomRotaryControl>                                  freqSlider;
+    std::unique_ptr<CustomRotaryControl>                                  gainSlider;
+    std::unique_ptr<CustomRotaryControl>                                  qSlider;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> freqAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> qAttachment;

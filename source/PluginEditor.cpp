@@ -1,16 +1,16 @@
-#include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "PluginProcessor.h"
 
-#include "utils/globals.h"
 #include "utils/colourpalette.h"
+#include "utils/globals.h"
 
 //==============================================================================
-GraphicEqEditor::GraphicEqEditor (GraphicEqProcessor& p)
-: AudioProcessorEditor (&p),
-  processorRef(p),
-  analyzerControls(processorRef.apvts),
-  analyzerContainer(processorRef.apvts, processorRef.getSampleRate(), processorRef.lScsf, processorRef.rScsf),
-  eqControls(processorRef.apvts)
+GraphicEqEditor::GraphicEqEditor(GraphicEqProcessor& p)
+    : AudioProcessorEditor(&p)
+    , processorRef(p)
+    , analyzerControls(processorRef.apvts)
+    , analyzerContainer(processorRef.apvts, processorRef.getSampleRate(), processorRef.lScsf, processorRef.rScsf)
+    , eqControls(processorRef.apvts)
 {
     setLookAndFeel(&lnf);
 
@@ -32,7 +32,7 @@ GraphicEqEditor::~GraphicEqEditor()
 }
 
 //==============================================================================
-void GraphicEqEditor::paint (juce::Graphics& g)
+void GraphicEqEditor::paint(juce::Graphics& g)
 {
     g.fillAll(ColourPalette::getColour(ColourPalette::Eggshell));
     g.setFont(Globals::getFont());
@@ -46,7 +46,7 @@ void GraphicEqEditor::paint (juce::Graphics& g)
     drawDbLabels(g, leftDbScaleBounds);
     drawDbLabels(g, rightDbScaleBounds);
 
-    auto textHeight = g.getCurrentFont().getHeight();
+    auto                 textHeight = g.getCurrentFont().getHeight();
     juce::Rectangle<int> frequencyScaleBounds(analyzerBounds.getX(), analyzerBounds.getY() - textHeight, analyzerBounds.getWidth(), textHeight);
     drawFrequencyLabels(g, frequencyScaleBounds);
 }
@@ -96,12 +96,12 @@ void GraphicEqEditor::drawDbLabels(juce::Graphics& g, juce::Rectangle<int>& labe
         auto dbString = juce::String(db);
 
         g.drawFittedText((db > 0 ? '+' + dbString : dbString), // text
-                         dbScaleX,                             // x
-                         textY,                                // y
-                         dbScaleWidth,                         // width
-                         textHeight,                           // height
-                         juce::Justification::centred,          // justification
-                         1);                                   // max num lines
+                         dbScaleX, // x
+                         textY, // y
+                         dbScaleWidth, // width
+                         textHeight, // height
+                         juce::Justification::centred, // justification
+                         1); // max num lines
     }
 }
 
@@ -125,13 +125,13 @@ void GraphicEqEditor::drawFrequencyLabels(juce::Graphics& g, juce::Rectangle<int
 
         juce::String text = freqs[i] >= 1000.f ? juce::String(freqs[i] / 1000.f) + "kHz" : juce::String(freqs[i]) + "Hz";
 
-        g.drawFittedText(text,                                    // text
-                         labelX - (textWidth * 0.5),              // x
-                         boundsY - (textHeight * 0.5),            // y
-                         textWidth,                               // width
-                         textHeight,                              // height
+        g.drawFittedText(text, // text
+                         labelX - (textWidth * 0.5), // x
+                         boundsY - (textHeight * 0.5), // y
+                         textWidth, // width
+                         textHeight, // height
                          juce::Justification::horizontallyCentred, // justification
-                         1);                                      // max num lines
+                         1); // max num lines
     }
 }
 

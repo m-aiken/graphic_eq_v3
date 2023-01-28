@@ -3,12 +3,12 @@
 #include "../../utils/globals.h"
 
 //==============================================================================
-AnalyzerContainer::AnalyzerContainer(juce::AudioProcessorValueTreeState& apvts,
-                                     double sampleRate,
+AnalyzerContainer::AnalyzerContainer(juce::AudioProcessorValueTreeState&                apvts,
+                                     double                                             sampleRate,
                                      SingleChannelSampleFifo<juce::AudioBuffer<float>>& leftScsf,
                                      SingleChannelSampleFifo<juce::AudioBuffer<float>>& rightScsf)
-: spectrumAnalyzer(sampleRate, leftScsf, rightScsf, apvts),
-  responseCurve(apvts, sampleRate)
+    : spectrumAnalyzer(sampleRate, leftScsf, rightScsf, apvts)
+    , responseCurve(apvts, sampleRate)
 {
     addAndMakeVisible(backgroundGrid);
     addAndMakeVisible(spectrumAnalyzer);

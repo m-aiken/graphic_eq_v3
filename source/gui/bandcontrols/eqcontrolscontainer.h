@@ -1,9 +1,9 @@
 #pragma once
 
-#include "JuceHeader.h"
-#include "peakcontrol.h"
-#include "cutcontrol.h"
 #include "../../utils/globals.h"
+#include "JuceHeader.h"
+#include "cutcontrol.h"
+#include "peakcontrol.h"
 
 //==============================================================================
 struct EqControlsContainer : juce::Component
@@ -12,6 +12,7 @@ struct EqControlsContainer : juce::Component
     void resized() override;
 
     void setBandHasNodeSelection(size_t activeNodeIndex);
+
 private:
     std::unique_ptr<CutControl> lowCutControl;
     std::unique_ptr<CutControl> highCutControl;

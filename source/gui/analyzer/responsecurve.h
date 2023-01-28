@@ -1,10 +1,10 @@
 #pragma once
 
-#include "JuceHeader.h"
 #include "../../dsp/filterutils.h"
 #include "../../dsp/peakband.h"
-#include "../../utils/globals.h"
 #include "../../utils/colourpalette.h"
+#include "../../utils/globals.h"
+#include "JuceHeader.h"
 
 //==============================================================================
 struct Node : juce::ToggleButton
@@ -25,11 +25,11 @@ struct ResponseCurve : juce::Component, juce::AudioProcessorParameter::Listener,
     void paint(juce::Graphics& g) override;
     void mouseDrag(const juce::MouseEvent& event) override;
 
-    void updateMonoChain();
+    void                               updateMonoChain();
     std::array<std::vector<double>, 9> getMagnitudes(int boundsWidth);
 
     void parameterValueChanged(int parameterIndex, float newValue) override;
-    void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) override {}
+    void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) override { }
 
     void timerCallback() override;
 
@@ -43,19 +43,19 @@ struct ResponseCurve : juce::Component, juce::AudioProcessorParameter::Listener,
 private:
     double sampleRate;
     int    nodeDiameter { 6 };
-    int    nodeRadius   { 3 };
+    int    nodeRadius { 3 };
 
     juce::Atomic<bool> parametersChanged { false };
 
     juce::AudioProcessorValueTreeState& apvts;
     FilterUtils::MonoChain              monoChain;
 
-    juce::AudioParameterBool*   lowCutEnabledParam  { nullptr };
-    juce::AudioParameterFloat*  lowCutFreqParam     { nullptr };
-    juce::AudioParameterChoice* lowCutSlopeParam    { nullptr };
+    juce::AudioParameterBool*   lowCutEnabledParam { nullptr };
+    juce::AudioParameterFloat*  lowCutFreqParam { nullptr };
+    juce::AudioParameterChoice* lowCutSlopeParam { nullptr };
     juce::AudioParameterBool*   highCutEnabledParam { nullptr };
-    juce::AudioParameterFloat*  highCutFreqParam    { nullptr };
-    juce::AudioParameterChoice* highCutSlopeParam   { nullptr };
+    juce::AudioParameterFloat*  highCutFreqParam { nullptr };
+    juce::AudioParameterChoice* highCutSlopeParam { nullptr };
 
     std::array<PeakBand, Globals::getNumPeakBands()>              peakBands;
     std::array<std::unique_ptr<Node>, Globals::getNumPeakBands()> peakNodes;

@@ -2,18 +2,18 @@
 
 #include "JuceHeader.h"
 
-#include "../pathproducer.h"
-#include "../paramlistener.h"
 #include "../../dsp/singlesamplefifo.h"
 #include "../../utils/globals.h"
+#include "../paramlistener.h"
+#include "../pathproducer.h"
 
 //==============================================================================
 struct SpectrumAnalyzer : juce::Component, juce::Timer
 {
-    SpectrumAnalyzer(double _sampleRate,
+    SpectrumAnalyzer(double                                             _sampleRate,
                      SingleChannelSampleFifo<juce::AudioBuffer<float>>& leftScsf,
                      SingleChannelSampleFifo<juce::AudioBuffer<float>>& rightScsf,
-                     juce::AudioProcessorValueTreeState& apvts);
+                     juce::AudioProcessorValueTreeState&                apvts);
 
     void paint(juce::Graphics& g) override;
     void resized() override;
@@ -26,8 +26,8 @@ private:
     juce::Path   rightAnalyzerPath;
     PathProducer leftPathProducer;
     PathProducer rightPathProducer;
-//    bool         active { false };
-    bool         active { true }; // TODO for test only
+    //    bool         active { false };
+    bool active { true }; // TODO for test only
 
     void setActive(bool activeState);
     void updateDecayRate(float decayRate);

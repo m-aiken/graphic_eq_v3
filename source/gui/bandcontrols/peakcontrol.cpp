@@ -4,7 +4,7 @@
 
 //==============================================================================
 PeakControl::PeakControl(juce::AudioProcessorValueTreeState& apvts, const int _bandNum)
-: bandNum(_bandNum)
+    : bandNum(_bandNum)
 {
     powerButton      = std::make_unique<PowerButton>();
     buttonAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(apvts, EqProperties::getPeakControlParamName(EqProperties::PeakControl::ENABLED, bandNum), *powerButton);
@@ -24,7 +24,7 @@ PeakControl::PeakControl(juce::AudioProcessorValueTreeState& apvts, const int _b
     freqAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, EqProperties::getPeakControlParamName(EqProperties::PeakControl::FREQUENCY, bandNum), *freqSlider);
     gainAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, bandNum), *gainSlider);
     qAttachment    = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, EqProperties::getPeakControlParamName(EqProperties::PeakControl::QUALITY, bandNum), *qSlider);
-    
+
     powerButton->onClick      = [this]() { setEnablement(); };
     freqSlider->onValueChange = [this]() { repaint(); };
     gainSlider->onValueChange = [this]() { repaint(); };
@@ -68,14 +68,14 @@ void PeakControl::paint(juce::Graphics& g)
     auto labelHeight = labelRect.getHeight() / 3;
     auto padding     = Globals::getFont().getHeight();
 
-    auto dbValue = gainSlider->getValue();
+    auto         dbValue  = gainSlider->getValue();
     juce::String dbPrefix = dbValue > 0 ? "+" : "";
-    
+
     using ParamPair = std::pair<juce::String, juce::String>;
     std::array<ParamPair, 3> paramValues {
-            std::pair{ "Hz:", juce::String(freqSlider->getValue()) },
-            std::pair{ "dB:", dbPrefix + juce::String(dbValue) },
-            std::pair{ "Q:",  juce::String(qSlider->getValue()) }
+        std::pair { "Hz:", juce::String(freqSlider->getValue()) },
+        std::pair { "dB:", dbPrefix + juce::String(dbValue) },
+        std::pair { "Q:", juce::String(qSlider->getValue()) }
     };
 
     for (size_t i = 0; i < paramValues.size(); ++i) {

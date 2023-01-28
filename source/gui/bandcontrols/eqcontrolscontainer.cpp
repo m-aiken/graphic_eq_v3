@@ -3,7 +3,7 @@
 //==============================================================================
 EqControlsContainer::EqControlsContainer(juce::AudioProcessorValueTreeState& apvts)
 {
-    lowCutControl = std::make_unique<CutControl>(apvts, FilterUtils::ChainPositions::LowCut);
+    lowCutControl  = std::make_unique<CutControl>(apvts, FilterUtils::ChainPositions::LowCut);
     highCutControl = std::make_unique<CutControl>(apvts, FilterUtils::ChainPositions::HighCut);
     addAndMakeVisible(*lowCutControl);
     addAndMakeVisible(*highCutControl);
@@ -22,14 +22,14 @@ void EqControlsContainer::resized()
     using Fr    = juce::Grid::Fr;
 
     grid.templateColumns = {
-            Track(Fr(1)),
-            Track(Fr(1)),
-            Track(Fr(1)),
-            Track(Fr(1)),
-            Track(Fr(1)),
-            Track(Fr(1)),
-            Track(Fr(1)),
-            Track(Fr(1))
+        Track(Fr(1)),
+        Track(Fr(1)),
+        Track(Fr(1)),
+        Track(Fr(1)),
+        Track(Fr(1)),
+        Track(Fr(1)),
+        Track(Fr(1)),
+        Track(Fr(1))
     };
 
     grid.autoRows = Track(Fr(1));
@@ -42,7 +42,7 @@ void EqControlsContainer::resized()
 
     grid.items.add(juce::GridItem(*highCutControl));
 
-    grid.setGap(juce::Grid::Px{4});
+    grid.setGap(juce::Grid::Px { 4 });
 
     grid.performLayout(getLocalBounds());
 }

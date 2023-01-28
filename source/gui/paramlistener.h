@@ -3,11 +3,12 @@
 #include <JuceHeader.h>
 
 //==============================================================================
-template<typename T>
+template <typename T>
 struct ParamListener : juce::Timer
 {
     ParamListener(juce::RangedAudioParameter& rap, std::function<void(T)> valueChangedHandler)
-            : param(&rap), handleValueChanged(valueChangedHandler)
+        : param(&rap)
+        , handleValueChanged(valueChangedHandler)
     {
         jassert(param != nullptr);
         jassert(handleValueChanged != nullptr);
@@ -32,7 +33,7 @@ struct ParamListener : juce::Timer
     }
 
 private:
-    T paramValue;
+    T                           paramValue;
     juce::RangedAudioParameter* param;
-    std::function<void(T)> handleValueChanged;
+    std::function<void(T)>      handleValueChanged;
 };

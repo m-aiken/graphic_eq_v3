@@ -4,7 +4,7 @@
 
 //==============================================================================
 CutControl::CutControl(juce::AudioProcessorValueTreeState& apvts, const FilterUtils::ChainPositions& _chainPosition)
-: chainPosition(_chainPosition)
+    : chainPosition(_chainPosition)
 {
     const auto& params = EqProperties::getCutParams();
 
@@ -63,7 +63,7 @@ void CutControl::paint(juce::Graphics& g)
                      1);
 
     for (auto i = 0; i < 4; ++i) {
-        g.drawFittedText(juce::String((i+1) * 12),
+        g.drawFittedText(juce::String((i + 1) * 12),
                          sliderX + (sliderQuarter * i),
                          sliderBottom + 4,
                          sliderQuarter,
@@ -81,7 +81,7 @@ void CutControl::paint(juce::Graphics& g)
     auto vW  = valueRect.getWidth() * 0.5;
     auto vH  = valueRect.getHeight() / 3;
 
-    g.drawFittedText("Hz:", 0, vY + vH , vW, vH, juce::Justification::centred, 1);
+    g.drawFittedText("Hz:", 0, vY + vH, vW, vH, juce::Justification::centred, 1);
     g.drawFittedText(juce::String(freqSlider->getValue()), vCX, vY + vH, vW, vH, juce::Justification::centred, 1);
 }
 

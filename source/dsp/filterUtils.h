@@ -51,9 +51,8 @@ struct FilterUtils
                                               juce::AudioParameterChoice* slopeParam,
                                               double                      sampleRate);
 
-    static void updateBandEnablements(MonoChain&                              monoChain,
-                                      juce::AudioParameterBool*               lcEnabledParam,
-                                      juce::AudioParameterBool*               hcEnabledParam,
-                                      std::array<PeakBand,
-                                                 Globals::getNumPeakBands()>& peakBands);
+    static void updateBandEnablements(MonoChain&                                        monoChain,
+                                      juce::AudioParameterBool*                         lcEnabledParam,
+                                      juce::AudioParameterBool*                         hcEnabledParam,
+                                      std::array<PeakBand, Globals::getNumPeakBands()>& peakBands);
 };

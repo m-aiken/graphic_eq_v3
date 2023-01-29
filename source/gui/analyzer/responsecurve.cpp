@@ -142,7 +142,9 @@ void ResponseCurve::paint(juce::Graphics& g)
                                                              Globals::getMinFrequency(),
                                                              Globals::getMaxFrequency());
 
-        auto nodeX = boundsX + static_cast<int>(std::floor(boundsWidth * normalizedFrequency));
+        auto xRaw  = boundsX + static_cast<int>(std::floor(boundsWidth * normalizedFrequency));
+        // Clamp the upper bounds for the x coordinate so that it can't go out of the vector bounds.
+        auto nodeX = juce::jmin<int>(xRaw, boundsWidth - nodeRadius);
         auto nodeY = mapFilterGainRangeToAnalyzerBounds(magnitudes.at(i).at(nodeX - boundsX));
 
         peakNodes.at(i)->setBounds(nodeX - nodeRadius, nodeY - nodeRadius, nodeDiameter, nodeDiameter);

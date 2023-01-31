@@ -4,8 +4,8 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 
 #include "dsp/filterutils.h"
+#include "dsp/monobufferfifo.h"
 #include "dsp/peakband.h"
-#include "dsp/singlesamplefifo.h"
 #include "utils/globals.h"
 
 //==============================================================================
@@ -53,8 +53,8 @@ public:
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     juce::AudioProcessorValueTreeState                         apvts { *this, nullptr, "Parameters", createParameterLayout() };
 
-    SingleChannelSampleFifo<juce::AudioBuffer<float>> lScsf { Globals::Channel::Left };
-    SingleChannelSampleFifo<juce::AudioBuffer<float>> rScsf { Globals::Channel::Right };
+    MonoBufferFifo<juce::AudioBuffer<float>> lScsf { Globals::Channel::Left };
+    MonoBufferFifo<juce::AudioBuffer<float>> rScsf { Globals::Channel::Right };
 
 private:
     FilterUtils::MonoChain leftChain;

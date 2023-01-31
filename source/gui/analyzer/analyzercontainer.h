@@ -1,18 +1,18 @@
 #pragma once
 
+#include "../../dsp/monobufferfifo.h"
 #include "JuceHeader.h"
-#include "spectrumgrid.h"
-#include "spectrumanalyzer.h"
 #include "responsecurve.h"
-#include "../../dsp/singlesamplefifo.h"
+#include "spectrumanalyzer.h"
+#include "spectrumgrid.h"
 
 //==============================================================================
 struct AnalyzerContainer : juce::Component
 {
-    AnalyzerContainer(juce::AudioProcessorValueTreeState& apvts,
-                      double sampleRate,
-                      SingleChannelSampleFifo<juce::AudioBuffer<float>>& leftScsf,
-                      SingleChannelSampleFifo<juce::AudioBuffer<float>>& rightScsf);
+    AnalyzerContainer(juce::AudioProcessorValueTreeState&       apvts,
+                      double                                    sampleRate,
+                      MonoBufferFifo<juce::AudioBuffer<float>>& leftScsf,
+                      MonoBufferFifo<juce::AudioBuffer<float>>& rightScsf);
 
     void paint(juce::Graphics& g) override;
     void resized() override;

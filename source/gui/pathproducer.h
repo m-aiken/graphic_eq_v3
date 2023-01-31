@@ -4,13 +4,13 @@
 
 #include "../dsp/analyzerpathgenerator.h"
 #include "../dsp/fftdatagenerator.h"
-#include "../dsp/singlesamplefifo.h"
+#include "../dsp/monobufferfifo.h"
 #include "../utils/globals.h"
 
 //==============================================================================
 struct PathProducer : juce::Thread
 {
-    PathProducer(double _sampleRate, SingleChannelSampleFifo<juce::AudioBuffer<float>>& scsf);
+    PathProducer(double _sampleRate, MonoBufferFifo<juce::AudioBuffer<float>>& scsf);
     ~PathProducer() override;
 
     void   run() override;
@@ -27,7 +27,7 @@ struct PathProducer : juce::Thread
     void changePathRange(float negativeInfinityDb, float maxDb);
 
 private:
-    SingleChannelSampleFifo<juce::AudioBuffer<float>>* singleChannelSampleFifo;
+    MonoBufferFifo<juce::AudioBuffer<float>>* singleChannelSampleFifo;
 
     FFTDataGenerator      fftDataGenerator;
     AnalyzerPathGenerator pathGenerator;

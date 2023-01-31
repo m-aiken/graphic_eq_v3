@@ -86,8 +86,8 @@ target_sources(GraphicEq
         source/dsp/fifo.h
         source/dsp/filterutils.h
         source/dsp/filterutils.cpp
+        source/dsp/monobufferfifo.h
         source/dsp/peakband.h
-        source/dsp/singlesamplefifo.h
 
         source/gui/analyzer/analyzercontainer.h
         source/gui/analyzer/analyzercontainer.cpp

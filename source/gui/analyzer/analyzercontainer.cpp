@@ -3,10 +3,10 @@
 #include "../../utils/globals.h"
 
 //==============================================================================
-AnalyzerContainer::AnalyzerContainer(juce::AudioProcessorValueTreeState&                apvts,
-                                     double                                             sampleRate,
-                                     SingleChannelSampleFifo<juce::AudioBuffer<float>>& leftScsf,
-                                     SingleChannelSampleFifo<juce::AudioBuffer<float>>& rightScsf)
+AnalyzerContainer::AnalyzerContainer(juce::AudioProcessorValueTreeState&       apvts,
+                                     double                                    sampleRate,
+                                     MonoBufferFifo<juce::AudioBuffer<float>>& leftScsf,
+                                     MonoBufferFifo<juce::AudioBuffer<float>>& rightScsf)
     : spectrumAnalyzer(sampleRate, leftScsf, rightScsf, apvts)
     , responseCurve(apvts, sampleRate)
 {

@@ -7,10 +7,10 @@
 
 //==============================================================================
 template <typename BlockType>
-struct SingleChannelSampleFifo
+struct MonoBufferFifo
 {
     using SampleType = typename BlockType::SampleType;
-    SingleChannelSampleFifo(Globals::Channel ch)
+    explicit MonoBufferFifo(Globals::Channel ch)
         : channelToUse(ch)
     {
         prepared.set(false);

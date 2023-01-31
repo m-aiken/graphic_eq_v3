@@ -3,10 +3,10 @@
 #include "../../utils/colourpalette.h"
 
 //==============================================================================
-SpectrumAnalyzer::SpectrumAnalyzer(double                                             _sampleRate,
-                                   SingleChannelSampleFifo<juce::AudioBuffer<float>>& leftScsf,
-                                   SingleChannelSampleFifo<juce::AudioBuffer<float>>& rightScsf,
-                                   juce::AudioProcessorValueTreeState&                apvts)
+SpectrumAnalyzer::SpectrumAnalyzer(double                                    _sampleRate,
+                                   MonoBufferFifo<juce::AudioBuffer<float>>& leftScsf,
+                                   MonoBufferFifo<juce::AudioBuffer<float>>& rightScsf,
+                                   juce::AudioProcessorValueTreeState&       apvts)
     : sampleRate(_sampleRate)
     , leftPathProducer(_sampleRate, leftScsf)
     , rightPathProducer(_sampleRate, rightScsf)

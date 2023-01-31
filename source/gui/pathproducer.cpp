@@ -1,7 +1,7 @@
 #include "pathproducer.h"
 
 //==============================================================================
-PathProducer::PathProducer(double _sampleRate, SingleChannelSampleFifo<juce::AudioBuffer<float>>& scsf)
+PathProducer::PathProducer(double _sampleRate, MonoBufferFifo<juce::AudioBuffer<float>>& scsf)
     : juce::Thread("PathProducerThread")
     , singleChannelSampleFifo(&scsf)
     , sampleRate(_sampleRate)

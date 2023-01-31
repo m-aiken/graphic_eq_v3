@@ -2,7 +2,7 @@
 
 #include "JuceHeader.h"
 
-#include "../../dsp/singlesamplefifo.h"
+#include "../../dsp/monobufferfifo.h"
 #include "../../utils/globals.h"
 #include "../paramlistener.h"
 #include "../pathproducer.h"
@@ -10,10 +10,10 @@
 //==============================================================================
 struct SpectrumAnalyzer : juce::Component, juce::Timer
 {
-    SpectrumAnalyzer(double                                             _sampleRate,
-                     SingleChannelSampleFifo<juce::AudioBuffer<float>>& leftScsf,
-                     SingleChannelSampleFifo<juce::AudioBuffer<float>>& rightScsf,
-                     juce::AudioProcessorValueTreeState&                apvts);
+    SpectrumAnalyzer(double                                    _sampleRate,
+                     MonoBufferFifo<juce::AudioBuffer<float>>& leftScsf,
+                     MonoBufferFifo<juce::AudioBuffer<float>>& rightScsf,
+                     juce::AudioProcessorValueTreeState&       apvts);
 
     void paint(juce::Graphics& g) override;
     void resized() override;

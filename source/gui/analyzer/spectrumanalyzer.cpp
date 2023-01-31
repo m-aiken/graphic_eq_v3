@@ -48,13 +48,11 @@ void SpectrumAnalyzer::paint(juce::Graphics& g)
     leftAnalyzerPath.applyTransform(juce::AffineTransform().translation(bounds.getX(), bounds.getY()));
     rightAnalyzerPath.applyTransform(juce::AffineTransform().translation(bounds.getX(), bounds.getY()));
 
-    g.setColour(juce::Colours::blue);
-    //    g.setColour(ColourPalette::getColour(ColourPalette::Blue));
-    g.strokePath(leftAnalyzerPath, juce::PathStrokeType(1.f));
+    g.setColour(juce::Colours::blue.withAlpha(0.5f));
+    g.fillPath(leftAnalyzerPath);
 
-    g.setColour(juce::Colours::green);
-    //    g.setColour(ColourPalette::getColour(ColourPalette::Green));
-    g.strokePath(rightAnalyzerPath, juce::PathStrokeType(1.f));
+    g.setColour(juce::Colours::green.withAlpha(0.5f));
+    g.fillPath(rightAnalyzerPath);
 }
 
 void SpectrumAnalyzer::resized()

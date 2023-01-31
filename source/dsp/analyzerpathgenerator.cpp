@@ -25,7 +25,7 @@ void AnalyzerPathGenerator::generatePath(const std::vector<float>& renderData,
         yCoord = fftBoundsBottom;
     }
 
-    path.startNewSubPath(0, yCoord);
+    path.startNewSubPath(0, fftBoundsBottom);
 
     auto lastXCoord = fftBounds.getX();
 
@@ -45,6 +45,9 @@ void AnalyzerPathGenerator::generatePath(const std::vector<float>& renderData,
             }
         }
     }
+
+    path.lineTo(fftBoundsWidth, fftBoundsBottom);
+    path.closeSubPath();
 
     pathFifo.push(path);
 }

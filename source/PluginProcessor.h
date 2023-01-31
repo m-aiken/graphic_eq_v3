@@ -53,8 +53,11 @@ public:
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     juce::AudioProcessorValueTreeState                         apvts { *this, nullptr, "Parameters", createParameterLayout() };
 
-    MonoBufferFifo<juce::AudioBuffer<float>> lScsf { Globals::Channel::Left };
-    MonoBufferFifo<juce::AudioBuffer<float>> rScsf { Globals::Channel::Right };
+    MonoBufferFifo<juce::AudioBuffer<float>> preEqMonoFifoL { Globals::Channel::Left };
+    MonoBufferFifo<juce::AudioBuffer<float>> preEqMonoFifoR { Globals::Channel::Right };
+    
+    MonoBufferFifo<juce::AudioBuffer<float>> postEqMonoFifoL { Globals::Channel::Left };
+    MonoBufferFifo<juce::AudioBuffer<float>> postEqMonoFifoR { Globals::Channel::Right };
 
 private:
     FilterUtils::MonoChain leftChain;

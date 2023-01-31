@@ -152,8 +152,11 @@ void GraphicEqProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
         }
     }
 
-    lScsf.prepare(samplesPerBlock);
-    rScsf.prepare(samplesPerBlock);
+    preEqMonoFifoL.prepare(samplesPerBlock);
+    preEqMonoFifoR.prepare(samplesPerBlock);
+
+    postEqMonoFifoL.prepare(samplesPerBlock);
+    postEqMonoFifoR.prepare(samplesPerBlock);
 }
 
 void GraphicEqProcessor::releaseResources()
@@ -204,6 +207,11 @@ void GraphicEqProcessor::processBlock(juce::AudioBuffer<float>& buffer,
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear(i, 0, buffer.getNumSamples());
 
+    // Populate the pre-eq fifo with the buffer in its dry state
+    preEqMonoFifoL.update(buffer);
+    preEqMonoFifoR.update(buffer);
+
+    // Start EQ processing
     FilterUtils::updateBandEnablements(leftChain, lowCutEnabledParam, highCutEnabledParam, peakBands);
     FilterUtils::updateBandEnablements(rightChain, lowCutEnabledParam, highCutEnabledParam, peakBands);
 
@@ -233,8 +241,8 @@ void GraphicEqProcessor::processBlock(juce::AudioBuffer<float>& buffer,
     leftChain.process(leftCtx);
     rightChain.process(rightCtx);
 
-    lScsf.update(buffer);
-    rScsf.update(buffer);
+    postEqMonoFifoL.update(buffer);
+    postEqMonoFifoR.update(buffer);
 }
 
 //==============================================================================

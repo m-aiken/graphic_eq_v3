@@ -9,7 +9,7 @@ GraphicEqEditor::GraphicEqEditor(GraphicEqProcessor& p)
     : AudioProcessorEditor(&p)
     , processorRef(p)
     , analyzerControls(processorRef.apvts)
-    , analyzerContainer(processorRef.apvts, processorRef.getSampleRate(), processorRef.lScsf, processorRef.rScsf)
+    , analyzerContainer(processorRef.apvts, processorRef.getSampleRate(), processorRef.postEqMonoFifoL, processorRef.postEqMonoFifoR)
     , eqControls(processorRef.apvts)
 {
     setLookAndFeel(&lnf);

@@ -6,10 +6,12 @@
 SpectrumAnalyzer::SpectrumAnalyzer(double                                    _sampleRate,
                                    MonoBufferFifo<juce::AudioBuffer<float>>& leftScsf,
                                    MonoBufferFifo<juce::AudioBuffer<float>>& rightScsf,
-                                   juce::AudioProcessorValueTreeState&       apvts)
+                                   juce::AudioProcessorValueTreeState&       apvts,
+                                   const juce::Colour&                       fillColour)
     : sampleRate(_sampleRate)
     , leftPathProducer(_sampleRate, leftScsf)
     , rightPathProducer(_sampleRate, rightScsf)
+    , colour(fillColour)
 {
     const auto& params = AnalyzerProperties::getAnalyzerParams();
 
@@ -48,10 +50,8 @@ void SpectrumAnalyzer::paint(juce::Graphics& g)
     leftAnalyzerPath.applyTransform(juce::AffineTransform().translation(bounds.getX(), bounds.getY()));
     rightAnalyzerPath.applyTransform(juce::AffineTransform().translation(bounds.getX(), bounds.getY()));
 
-    g.setColour(juce::Colours::blue.withAlpha(0.5f));
+    g.setColour(colour);
     g.fillPath(leftAnalyzerPath);
-
-    g.setColour(juce::Colours::green.withAlpha(0.5f));
     g.fillPath(rightAnalyzerPath);
 }
 

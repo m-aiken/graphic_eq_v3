@@ -13,7 +13,8 @@ struct SpectrumAnalyzer : juce::Component, juce::Timer
     SpectrumAnalyzer(double                                    _sampleRate,
                      MonoBufferFifo<juce::AudioBuffer<float>>& leftScsf,
                      MonoBufferFifo<juce::AudioBuffer<float>>& rightScsf,
-                     juce::AudioProcessorValueTreeState&       apvts);
+                     juce::AudioProcessorValueTreeState&       apvts,
+                     const juce::Colour&                       fillColour);
 
     void paint(juce::Graphics& g) override;
     void resized() override;
@@ -36,4 +37,6 @@ private:
 
     std::unique_ptr<ParamListener<float>> analyzerOrderParamListener;
     std::unique_ptr<ParamListener<float>> analyzerDecayRateParamListener;
+
+    juce::Colour colour;
 };

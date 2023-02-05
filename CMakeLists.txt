@@ -76,6 +76,7 @@ target_sources(GraphicEq
 
         source/utils/colourpalette.h
         source/utils/globals.h
+        source/utils/tailwindcolours.h
 
         source/dsp/analyzerpathgenerator.h
         source/dsp/analyzerpathgenerator.cpp

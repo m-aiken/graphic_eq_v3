@@ -45,7 +45,8 @@ void SpectrumAnalyzer::paint(juce::Graphics& g)
 {
     auto bounds = getLocalBounds();
 
-    g.fillAll(ColourPalette::getColour(ColourPalette::Green).withAlpha(0.1f));
+    // TODO make a decision on this fill
+    //    g.fillAll(ColourPalette::getColour(ColourPalette::Green).withAlpha(0.1f));
 
     leftAnalyzerPath.applyTransform(juce::AffineTransform().translation(bounds.getX(), bounds.getY()));
     rightAnalyzerPath.applyTransform(juce::AffineTransform().translation(bounds.getX(), bounds.getY()));

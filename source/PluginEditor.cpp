@@ -15,12 +15,18 @@ GraphicEqEditor::GraphicEqEditor(GraphicEqProcessor& p)
     setLookAndFeel(&lnf);
 
     addAndMakeVisible(analyzerControls);
+    addAndMakeVisible(themeButton);
     addAndMakeVisible(analyzerContainer);
     addAndMakeVisible(eqControls);
 
     setSize(800, 600);
 
     activeNode = analyzerContainer.getActiveNodeIndex();
+
+    themeButton.onClick = [this]() {
+        ColourPalette::toggleDarkMode();
+        repaint();
+    };
 
     startTimerHz(20);
 }
@@ -34,9 +40,9 @@ GraphicEqEditor::~GraphicEqEditor()
 //==============================================================================
 void GraphicEqEditor::paint(juce::Graphics& g)
 {
-    g.fillAll(ColourPalette::getColour(ColourPalette::Eggshell));
+    g.fillAll(ColourPalette::getColourV2(ColourPalette::MainBackground));
     g.setFont(Globals::getFont());
-    g.setColour(ColourPalette::getColour(ColourPalette::Blue));
+    g.setColour(ColourPalette::getColourV2(ColourPalette::Text));
 
     auto analyzerBounds = analyzerContainer.getBounds();
 
@@ -67,8 +73,11 @@ void GraphicEqEditor::resized()
 
     analyzerControls.setBounds(bounds.getCentreX() - (analyzerwidth * 0.5),
                                padding,
-                               analyzerwidth,
+                               analyzerwidth * 0.6,
                                padding * 3);
+
+    auto themeButtonDiameter = 24;
+    themeButton.setBounds(bounds.getRight() - themeButtonDiameter - padding, padding, themeButtonDiameter, themeButtonDiameter);
 
     analyzerContainer.setBounds(analyzerBounds);
 

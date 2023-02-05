@@ -40,15 +40,16 @@ PeakControl::PeakControl(juce::AudioProcessorValueTreeState& apvts, const int _b
 
 void PeakControl::paint(juce::Graphics& g)
 {
-    auto nodeFocusOnColour  = ColourPalette::getColour(ColourPalette::Green).withAlpha(0.1f);
-    auto nodeFocusOffColour = ColourPalette::getColour(ColourPalette::Eggshell);
+    // TODO set a proper colour for nodeFocusOnColour
+    auto nodeFocusOnColour  = ColourPalette::getColourV2(ColourPalette::PeakBandFocus);
+    auto nodeFocusOffColour = ColourPalette::getColourV2(ColourPalette::MainBackground);
     g.fillAll(nodeIsActive ? nodeFocusOnColour : nodeFocusOffColour);
 
     auto bounds = getLocalBounds();
 
     g.setFont(Globals::getFont());
     auto textHeight = g.getCurrentFont().getHeight();
-    g.setColour(ColourPalette::getColour(ColourPalette::Blue));
+    g.setColour(ColourPalette::getColourV2(ColourPalette::Text));
 
     g.drawFittedText("P" + juce::String(bandNum),
                      bounds.getRight() - (textHeight * 2),

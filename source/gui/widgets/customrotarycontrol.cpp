@@ -18,7 +18,7 @@ void CustomRotaryControl::paint(juce::Graphics& g)
     auto range = param->getNormalisableRange();
 
     g.setFont(Globals::getFont());
-    g.setColour(ColourPalette::getColour(ColourPalette::Blue));
+    g.setColour(ColourPalette::getColourV2(ColourPalette::RotaryText));
 
     auto valueToDraw = juce::jmap<float>(getValue(),
                                          range.start,

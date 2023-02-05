@@ -18,7 +18,7 @@ void SpectrumGrid::paint(juce::Graphics& g)
 
     g.setFont(Globals::getFont());
 
-    g.setColour(ColourPalette::getColour(ColourPalette::Blue).withAlpha(0.2f));
+    g.setColour(ColourPalette::getColourV2(ColourPalette::Text).withAlpha(0.2f));
 
     // dB markers
     for (auto i = minDb; i <= maxDb; i += 12) {
@@ -34,7 +34,7 @@ void SpectrumGrid::paint(juce::Graphics& g)
     for (auto i = minFreq + 1; i < maxFreq - 1; ++i) {
         if (inCatchGroup(i)) {
             auto alpha = i == 50 || i == 100 || i == 200 || i == 500 || i == 1000 || i == 2000 || i == 5000 || i == 10000 ? 0.2f : 0.07f;
-            g.setColour(ColourPalette::getColour(ColourPalette::Blue).withAlpha(alpha));
+            g.setColour(ColourPalette::getColourV2(ColourPalette::Text).withAlpha(alpha));
             auto normalizedX = juce::mapFromLog10<float>(i, minFreq, maxFreq);
             auto freqLineX   = boundsX + boundsWidth * normalizedX;
             g.drawVerticalLine(freqLineX, boundsY, boundsBottom);

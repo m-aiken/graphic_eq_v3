@@ -7,6 +7,7 @@
 #include "gui/analyzercontrols.h"
 #include "gui/bandcontrols/eqcontrolscontainer.h"
 #include "gui/customlookandfeel.h"
+#include "gui/widgets/themebutton.h"
 
 //==============================================================================
 class GraphicEqEditor : public juce::AudioProcessorEditor, juce::Timer
@@ -30,6 +31,7 @@ private:
     GraphicEqProcessor& processorRef;
 
     AnalyzerControls    analyzerControls;
+    ThemeButton         themeButton;
     AnalyzerContainer   analyzerContainer;
     EqControlsContainer eqControls;
 

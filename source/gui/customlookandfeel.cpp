@@ -14,9 +14,9 @@ void CustomLookAndFeel::drawRotarySlider(juce::Graphics& g,
 {
     auto bounds = juce::Rectangle<float>(x, y, width, height);
 
-    g.setColour(ColourPalette::getColour(ColourPalette::Salmon));
+    g.setColour(ColourPalette::getColourV2(ColourPalette::RotaryFill));
     g.fillEllipse(bounds);
-    g.setColour(ColourPalette::getColour(ColourPalette::Blue));
+    g.setColour(ColourPalette::getColourV2(ColourPalette::RotaryText));
 
     juce::Path p;
 
@@ -53,7 +53,7 @@ void CustomLookAndFeel::drawLinearSlider(juce::Graphics&                 g,
                                          juce::Slider&                   slider)
 {
     auto background = juce::Rectangle<float>(x, y, width, height);
-    g.setColour(ColourPalette::getColour(ColourPalette::Green).withAlpha(0.1f));
+    g.setColour(ColourPalette::getColourV2(ColourPalette::SliderFill));
     g.fillRect(background);
 
     auto  tooltipWidth = width * 0.25 <= 20 ? width * 0.25 : width * 0.15;
@@ -68,7 +68,7 @@ void CustomLookAndFeel::drawLinearSlider(juce::Graphics&                 g,
     }
 
     auto tooltip = juce::Rectangle<float>(tooltipX, y, tooltipWidth, height);
-    g.setColour(ColourPalette::getColour(ColourPalette::Salmon));
+    g.setColour(ColourPalette::getColourV2(ColourPalette::SliderTooltip));
     g.fillRect(tooltip);
 }
 /*

@@ -9,8 +9,8 @@ AnalyzerContainer::AnalyzerContainer(juce::AudioProcessorValueTreeState&       a
                                      MonoBufferFifo<juce::AudioBuffer<float>>& preEqBufferR,
                                      MonoBufferFifo<juce::AudioBuffer<float>>& postEqBufferL,
                                      MonoBufferFifo<juce::AudioBuffer<float>>& postEqBufferR)
-    : spectrumAnalyzerPreEq(sampleRate, preEqBufferL, preEqBufferR, apvts, ColourPalette::getColour(ColourPalette::Salmon).withAlpha(0.1f))
-    , spectrumAnalyzerPostEq(sampleRate, postEqBufferL, postEqBufferR, apvts, juce::Colours::blue.withAlpha(0.25f))
+    : spectrumAnalyzerPreEq(sampleRate, preEqBufferL, preEqBufferR, apvts, ColourPalette::getColourV2(ColourPalette::AnalyzerPreEq).withAlpha(0.1f))
+    , spectrumAnalyzerPostEq(sampleRate, postEqBufferL, postEqBufferR, apvts, ColourPalette::getColourV2(ColourPalette::AnalyzerPostEq).withAlpha(0.25f))
     , responseCurve(apvts, sampleRate)
 {
     addAndMakeVisible(backgroundGrid);
@@ -21,7 +21,8 @@ AnalyzerContainer::AnalyzerContainer(juce::AudioProcessorValueTreeState&       a
 
 void AnalyzerContainer::paint(juce::Graphics& g)
 {
-    g.fillAll(ColourPalette::getColour(ColourPalette::Salmon).withAlpha(0.1f));
+    // TODO make a decision on this fill
+    //    g.fillAll(ColourPalette::getColour(ColourPalette::Salmon).withAlpha(0.1f));
 }
 
 void AnalyzerContainer::resized()

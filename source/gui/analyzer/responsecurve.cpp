@@ -11,7 +11,7 @@ Node::Node(juce::AudioProcessorValueTreeState& _apvts, int _bandNum)
 
 void Node::paint(juce::Graphics& g)
 {
-    auto colour = getToggleState() ? ColourPalette::getColour(ColourPalette::Salmon) : ColourPalette::getColour(ColourPalette::Blue);
+    auto colour = getToggleState() ? ColourPalette::getColourV2(ColourPalette::NodeOn) : ColourPalette::getColourV2(ColourPalette::NodeOff);
     g.setColour(colour);
     g.fillEllipse(getLocalBounds().toFloat());
 }
@@ -112,13 +112,13 @@ void ResponseCurve::paint(juce::Graphics& g)
     }
 
     // Drawing the bolder outline
-    g.setColour(ColourPalette::getColour(ColourPalette::Salmon));
+    g.setColour(ColourPalette::getColourV2(ColourPalette::ResponseCurve));
     for (size_t pathIdx = 0; pathIdx < paths.size() - 1; ++pathIdx) {
         g.strokePath(paths.at(pathIdx), juce::PathStrokeType(1.f));
     }
 
     // Drawing the faded fill
-    g.setColour(ColourPalette::getColour(ColourPalette::Salmon).withAlpha(0.2f));
+    g.setColour(ColourPalette::getColourV2(ColourPalette::ResponseCurve).withAlpha(0.2f));
     for (size_t pathIdx = 0; pathIdx < paths.size() - 1; ++pathIdx) {
         g.fillPath(paths.at(pathIdx));
     }
@@ -133,7 +133,7 @@ void ResponseCurve::paint(juce::Graphics& g)
         }
     }
 
-    g.setColour(ColourPalette::getColour(ColourPalette::Blue));
+    g.setColour(ColourPalette::getColourV2(ColourPalette::ResponseCurveAvg));
     g.strokePath(paths.at(paths.size() - 1), juce::PathStrokeType(1.f));
 
     // Drawing the nodes

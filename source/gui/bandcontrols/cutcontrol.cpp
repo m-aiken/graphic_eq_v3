@@ -40,7 +40,7 @@ void CutControl::paint(juce::Graphics& g)
 
     g.setFont(Globals::getFont());
     auto textHeight = g.getCurrentFont().getHeight();
-    g.setColour(ColourPalette::getColour(ColourPalette::Blue));
+    g.setColour(ColourPalette::getColourV2(ColourPalette::Text));
 
     g.drawFittedText(chainPosition == FilterUtils::ChainPositions::LowCut ? "LC" : "HC",
                      bounds.getRight() - (textHeight * 2),

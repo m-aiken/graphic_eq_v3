@@ -4,8 +4,6 @@
 //==============================================================================
 void PowerButton::paint(juce::Graphics& g)
 {
-    g.fillAll(ColourPalette::getColourV2(ColourPalette::MainBackground));
-
     auto  bounds        = getLocalBounds();
     float lineThickness = 2.f;
 

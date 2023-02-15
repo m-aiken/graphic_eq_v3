@@ -150,6 +150,22 @@ void ResponseCurve::paint(juce::Graphics& g)
         peakNodes.at(i)->setBounds(nodeX - nodeRadius, nodeY - nodeRadius, nodeDiameter, nodeDiameter);
         nodeCoordinates.at(i).setXY(nodeX, static_cast<int>(std::floor(nodeY)));
     }
+
+    // Vertical lines on both ends of the container to hide the edge of the response curve
+    g.setColour(ColourPalette::getColourV2(ColourPalette::MainBackground));
+    auto lineThickness = 3.f;
+
+    g.drawLine(0,
+               0,
+               0,
+               bounds.getBottom(),
+               lineThickness);
+
+    g.drawLine(boundsWidth - 1,
+               0,
+               boundsWidth - 1,
+               bounds.getBottom(),
+               lineThickness);
 }
 
 void ResponseCurve::mouseDrag(const juce::MouseEvent& event)

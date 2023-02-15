@@ -25,12 +25,7 @@ AnalyzerControls::AnalyzerControls(juce::AudioProcessorValueTreeState& apvts)
 
 void AnalyzerControls::paint(juce::Graphics& g)
 {
-    auto bounds = getLocalBounds();
-
-    //    g.fillAll(juce::Colours::red);
-
-    //    g.setColour(ColourPalette::getColour(ColourPalette::Green).withAlpha(0.1f));
-
+    auto bounds       = getLocalBounds();
     auto sliderWidth  = bounds.getWidth() * 0.4;
     auto sliderHeight = Globals::getFont().getHeight();
 

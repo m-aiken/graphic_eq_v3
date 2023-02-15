@@ -71,9 +71,9 @@ void GraphicEqEditor::resized()
 
     auto analyzerwidth = analyzerBounds.getWidth();
 
-    analyzerControls.setBounds(bounds.getCentreX() - (analyzerwidth * 0.5),
+    analyzerControls.setBounds(bounds.getCentreX() - (analyzerwidth * 0.25),
                                padding,
-                               analyzerwidth * 0.6,
+                               analyzerwidth * 0.5,
                                padding * 3);
 
     auto themeButtonDiameter = 24;

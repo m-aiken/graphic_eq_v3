@@ -3,10 +3,18 @@
 //==============================================================================
 ThemeButton::ThemeButton()
 {
-    icon.setImage(juce::ImageFileFormat::loadFrom(BinaryData::day_and_night_icon_png, BinaryData::day_and_night_icon_pngSize));
+    icon = std::make_unique<DrawableImage>();
+
+    if (icon != nullptr) {
+        icon->setImage(juce::ImageFileFormat::loadFrom(BinaryData::day_and_night_icon_png, BinaryData::day_and_night_icon_pngSize));
+    }
 }
 
 void ThemeButton::paint(juce::Graphics& g)
 {
-    icon.drawWithin(g, getLocalBounds().toFloat(), juce::RectanglePlacement::centred, 0.7f);
+    if (icon == nullptr) {
+        return;
+    }
+    
+    icon->drawWithin(g, getLocalBounds().toFloat(), juce::RectanglePlacement::centred, 0.7f);
 }

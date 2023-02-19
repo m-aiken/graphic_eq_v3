@@ -12,6 +12,10 @@ CustomRotaryControl::CustomRotaryControl(juce::RangedAudioParameter& rap, const 
 
 void CustomRotaryControl::paint(juce::Graphics& g)
 {
+    if (param == nullptr) {
+        return;
+    }
+
     auto startAngle = juce::degreesToRadians(180.f + 45.f);
     auto endAngle   = juce::degreesToRadians(180.f - 45.f) + juce::MathConstants<float>::twoPi;
 
@@ -29,14 +33,14 @@ void CustomRotaryControl::paint(juce::Graphics& g)
     auto rotaryBounds = getRotaryBounds();
 
     getLookAndFeel().drawRotarySlider(g,
-                                      rotaryBounds.getX(), // x
-                                      rotaryBounds.getY(), // y
-                                      rotaryBounds.getWidth(), // width
+                                      rotaryBounds.getX(),      // x
+                                      rotaryBounds.getY(),      // y
+                                      rotaryBounds.getWidth(),  // width
                                       rotaryBounds.getHeight(), // height
-                                      valueToDraw, // position
-                                      startAngle, // start angle
-                                      endAngle, // end angle
-                                      *this); // slider
+                                      valueToDraw,              // position
+                                      startAngle,               // start angle
+                                      endAngle,                 // end angle
+                                      *this);                   // slider
 
     auto center = rotaryBounds.toFloat().getCentre();
 

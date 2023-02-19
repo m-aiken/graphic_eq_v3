@@ -6,6 +6,9 @@ PathProducer::PathProducer(double _sampleRate, MonoBufferFifo<juce::AudioBuffer<
     , singleChannelSampleFifo(&scsf)
     , sampleRate(_sampleRate)
 {
+    fftDataGenerator = std::make_unique<FFTDataGenerator>();
+    pathGenerator    = std::make_unique<AnalyzerPathGenerator>();
+
     // TODO - initialising these 2 might not be necessary ultimately.
     // It is necessary at the time of writing this as the associated parameters don't exist in the value tree yet.
     bufferForGenerator.setSize(1, getFFTSize());
@@ -22,6 +25,10 @@ PathProducer::~PathProducer()
 
 void PathProducer::run()
 {
+    if (singleChannelSampleFifo == nullptr || fftDataGenerator == nullptr || pathGenerator == nullptr) {
+        return;
+    }
+
     while (!threadShouldExit()) {
         if (!processingIsEnabled.load()) {
             wait(10);
@@ -44,24 +51,24 @@ void PathProducer::run()
                                                   tempBuffer.getReadPointer(0, 0),
                                                   size);
 
-                fftDataGenerator.produceFFTDataForRendering(bufferForGenerator);
+                fftDataGenerator->produceFFTDataForRendering(bufferForGenerator);
             }
         }
 
-        while (fftDataGenerator.getNumAvailableFFTDataBlocks() > 0) {
+        while (fftDataGenerator->getNumAvailableFFTDataBlocks() > 0) {
             std::vector<float> fftData;
 
             if (threadShouldExit())
                 break;
 
-            if (fftDataGenerator.getFFTData(fftData)) {
+            if (fftDataGenerator->getFFTData(fftData)) {
                 auto fftSize   = getFFTSize();
                 auto numBins   = static_cast<int>(fftSize * 0.5);
                 auto decayRate = decayRateInDbPerSec.load() / 60.f;
 
                 updateRenderData(renderData, fftData, numBins, decayRate);
 
-                pathGenerator.generatePath(renderData, fftBounds, fftSize, static_cast<float>(getBinWidth()));
+                pathGenerator->generatePath(renderData, fftBounds, fftSize, static_cast<float>(getBinWidth()));
             }
         }
 
@@ -71,9 +78,13 @@ void PathProducer::run()
 
 void PathProducer::changeOrder(Globals::FFTOrder order)
 {
+    if (fftDataGenerator == nullptr) {
+        return;
+    }
+
     pauseThread();
 
-    fftDataGenerator.changeOrder(order);
+    fftDataGenerator->changeOrder(order);
 
     auto fftSize = getFFTSize();
     renderData.clear();
@@ -91,7 +102,8 @@ void PathProducer::changeOrder(Globals::FFTOrder order)
 
 int PathProducer::getFFTSize() const
 {
-    return fftDataGenerator.getFFTSize();
+    // TODO is 0 a good default value for this?
+    return (fftDataGenerator != nullptr) ? fftDataGenerator->getFFTSize() : 0;
 }
 
 double PathProducer::getBinWidth() const
@@ -122,12 +134,12 @@ void PathProducer::setDecayRate(float decayRate)
 
 bool PathProducer::pull(juce::Path& path)
 {
-    return pathGenerator.getPath(path);
+    return (pathGenerator != nullptr) && pathGenerator->getPath(path);
 }
 
 int PathProducer::getNumAvailableForReading() const
 {
-    return pathGenerator.getNumPathsAvailable();
+    return (pathGenerator != nullptr) ? pathGenerator->getNumPathsAvailable() : 0;
 }
 
 void PathProducer::toggleProcessing(bool toggleState)

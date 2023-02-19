@@ -29,8 +29,8 @@ struct PathProducer : juce::Thread
 private:
     MonoBufferFifo<juce::AudioBuffer<float>>* singleChannelSampleFifo;
 
-    FFTDataGenerator      fftDataGenerator;
-    AnalyzerPathGenerator pathGenerator;
+    std::unique_ptr<FFTDataGenerator>      fftDataGenerator;
+    std::unique_ptr<AnalyzerPathGenerator> pathGenerator;
 
     std::vector<float> renderData;
 

@@ -5,11 +5,7 @@
 //==============================================================================
 struct CustomLinearSlider : juce::Slider
 {
-    CustomLinearSlider(juce::RangedAudioParameter& rap)
-        : juce::Slider(juce::Slider::SliderStyle::LinearHorizontal, juce::Slider::TextEntryBoxPosition::NoTextBox)
-        , param(&rap)
-    {
-    }
+    explicit CustomLinearSlider(juce::RangedAudioParameter& rap);
 
     void paint(juce::Graphics& g) override;
 

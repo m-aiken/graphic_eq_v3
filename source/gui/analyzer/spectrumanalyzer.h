@@ -22,11 +22,12 @@ struct SpectrumAnalyzer : juce::Component, juce::Timer
     void timerCallback() override;
 
 private:
-    double       sampleRate;
-    juce::Path   leftAnalyzerPath;
-    juce::Path   rightAnalyzerPath;
-    PathProducer leftPathProducer;
-    PathProducer rightPathProducer;
+    double                        sampleRate;
+    juce::Colour                  colour;
+    std::unique_ptr<juce::Path>   leftAnalyzerPath;
+    std::unique_ptr<juce::Path>   rightAnalyzerPath;
+    std::unique_ptr<PathProducer> leftPathProducer;
+    std::unique_ptr<PathProducer> rightPathProducer;
     //    bool         active { false };
     bool active { true }; // TODO for test only
 
@@ -37,6 +38,4 @@ private:
 
     std::unique_ptr<ParamListener<float>> analyzerOrderParamListener;
     std::unique_ptr<ParamListener<float>> analyzerDecayRateParamListener;
-
-    juce::Colour colour;
 };

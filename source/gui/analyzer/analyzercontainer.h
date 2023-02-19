@@ -16,14 +16,13 @@ struct AnalyzerContainer : juce::Component
                       MonoBufferFifo<juce::AudioBuffer<float>>& postEqBufferL,
                       MonoBufferFifo<juce::AudioBuffer<float>>& postEqBufferR);
 
-    void paint(juce::Graphics& g) override;
     void resized() override;
 
-    size_t getActiveNodeIndex() { return responseCurve.getActiveNodeIndex(); }
+    size_t getActiveNodeIndex();
 
 private:
-    SpectrumGrid     backgroundGrid;
-    SpectrumAnalyzer spectrumAnalyzerPreEq;
-    SpectrumAnalyzer spectrumAnalyzerPostEq;
-    ResponseCurve    responseCurve;
+    std::unique_ptr<SpectrumGrid>     backgroundGrid;
+    std::unique_ptr<SpectrumAnalyzer> spectrumAnalyzerPreEq;
+    std::unique_ptr<SpectrumAnalyzer> spectrumAnalyzerPostEq;
+    std::unique_ptr<ResponseCurve>    responseCurve;
 };

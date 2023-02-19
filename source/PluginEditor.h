@@ -30,10 +30,10 @@ private:
     // access the processor object that created it.
     GraphicEqProcessor& processorRef;
 
-    AnalyzerControls    analyzerControls;
-    ThemeButton         themeButton;
-    AnalyzerContainer   analyzerContainer;
-    EqControlsContainer eqControls;
+    std::unique_ptr<AnalyzerControls>    analyzerControls;
+    std::unique_ptr<ThemeButton>         themeButton;
+    std::unique_ptr<AnalyzerContainer>   analyzerContainer;
+    std::unique_ptr<EqControlsContainer> eqControls;
 
     CustomLookAndFeel lnf;
 

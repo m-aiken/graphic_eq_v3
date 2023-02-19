@@ -8,22 +8,30 @@
 GraphicEqEditor::GraphicEqEditor(GraphicEqProcessor& p)
     : AudioProcessorEditor(&p)
     , processorRef(p)
-    , analyzerControls(processorRef.apvts)
-    , analyzerContainer(processorRef.apvts, processorRef.getSampleRate(), processorRef.preEqMonoFifoL, processorRef.preEqMonoFifoR, processorRef.postEqMonoFifoL, processorRef.postEqMonoFifoR)
-    , eqControls(processorRef.apvts)
 {
     setLookAndFeel(&lnf);
 
-    addAndMakeVisible(analyzerControls);
-    addAndMakeVisible(themeButton);
-    addAndMakeVisible(analyzerContainer);
-    addAndMakeVisible(eqControls);
+    analyzerControls  = std::make_unique<AnalyzerControls>(processorRef.apvts);
+    themeButton       = std::make_unique<ThemeButton>();
+    analyzerContainer = std::make_unique<AnalyzerContainer>(processorRef.apvts,
+                                                            processorRef.getSampleRate(),
+                                                            processorRef.preEqMonoFifoL,
+                                                            processorRef.preEqMonoFifoR,
+                                                            processorRef.postEqMonoFifoL,
+                                                            processorRef.postEqMonoFifoR);
+
+    eqControls = std::make_unique<EqControlsContainer>(processorRef.apvts);
+
+    addAndMakeVisible(*analyzerControls);
+    addAndMakeVisible(*themeButton);
+    addAndMakeVisible(*analyzerContainer);
+    addAndMakeVisible(*eqControls);
 
     setSize(800, 600);
 
-    activeNode = analyzerContainer.getActiveNodeIndex();
+    activeNode = analyzerContainer->getActiveNodeIndex();
 
-    themeButton.onClick = [this]() {
+    themeButton->onClick = [this]() {
         ColourPalette::toggleDarkMode();
         repaint();
     };
@@ -40,11 +48,15 @@ GraphicEqEditor::~GraphicEqEditor()
 //==============================================================================
 void GraphicEqEditor::paint(juce::Graphics& g)
 {
+    if (analyzerContainer == nullptr) {
+        return;
+    }
+
     g.fillAll(ColourPalette::getColourV2(ColourPalette::MainBackground));
     g.setFont(Globals::getFont());
     g.setColour(ColourPalette::getColourV2(ColourPalette::Text));
 
-    auto analyzerBounds = analyzerContainer.getBounds();
+    auto analyzerBounds = analyzerContainer->getBounds();
 
     juce::Rectangle<int> leftDbScaleBounds(0, analyzerBounds.getY(), analyzerBounds.getX(), analyzerBounds.getHeight());
     juce::Rectangle<int> rightDbScaleBounds(analyzerBounds.getRight(), analyzerBounds.getY(), analyzerBounds.getX(), analyzerBounds.getHeight());
@@ -59,6 +71,10 @@ void GraphicEqEditor::paint(juce::Graphics& g)
 
 void GraphicEqEditor::resized()
 {
+    if (analyzerControls == nullptr || themeButton == nullptr || analyzerContainer == nullptr || eqControls == nullptr) {
+        return;
+    }
+
     auto bounds           = getLocalBounds();
     auto mainWindowWidth  = bounds.getWidth();
     auto mainWindowHeight = bounds.getHeight();
@@ -71,20 +87,20 @@ void GraphicEqEditor::resized()
 
     auto analyzerwidth = analyzerBounds.getWidth();
 
-    analyzerControls.setBounds(bounds.getCentreX() - (analyzerwidth * 0.25),
-                               padding,
-                               analyzerwidth * 0.5,
-                               padding * 3);
+    analyzerControls->setBounds(bounds.getCentreX() - (analyzerwidth * 0.25),
+                                padding,
+                                analyzerwidth * 0.5,
+                                padding * 3);
 
     auto themeButtonDiameter = 24;
-    themeButton.setBounds(bounds.getRight() - themeButtonDiameter - padding, padding, themeButtonDiameter, themeButtonDiameter);
+    themeButton->setBounds(bounds.getRight() - themeButtonDiameter - padding, padding, themeButtonDiameter, themeButtonDiameter);
 
-    analyzerContainer.setBounds(analyzerBounds);
+    analyzerContainer->setBounds(analyzerBounds);
 
-    eqControls.setBounds(bounds.getCentreX() - (analyzerwidth * 0.5),
-                         analyzerContainer.getBottom() + padding,
-                         analyzerwidth,
-                         bounds.getBottom() - analyzerContainer.getBottom() - (padding * 2));
+    eqControls->setBounds(bounds.getCentreX() - (analyzerwidth * 0.5),
+                          analyzerContainer->getBottom() + padding,
+                          analyzerwidth,
+                          bounds.getBottom() - analyzerContainer->getBottom() - (padding * 2));
 }
 
 void GraphicEqEditor::drawDbLabels(juce::Graphics& g, juce::Rectangle<int>& labelBounds)
@@ -105,12 +121,12 @@ void GraphicEqEditor::drawDbLabels(juce::Graphics& g, juce::Rectangle<int>& labe
         auto dbString = juce::String(db);
 
         g.drawFittedText((db > 0 ? '+' + dbString : dbString), // text
-                         dbScaleX, // x
-                         textY, // y
-                         dbScaleWidth, // width
-                         textHeight, // height
-                         juce::Justification::centred, // justification
-                         1); // max num lines
+                         dbScaleX,                             // x
+                         textY,                                // y
+                         dbScaleWidth,                         // width
+                         textHeight,                           // height
+                         juce::Justification::centred,         // justification
+                         1);                                   // max num lines
     }
 }
 
@@ -134,20 +150,24 @@ void GraphicEqEditor::drawFrequencyLabels(juce::Graphics& g, juce::Rectangle<int
 
         juce::String text = freqs[i] >= 1000.f ? juce::String(freqs[i] / 1000.f) + "kHz" : juce::String(freqs[i]) + "Hz";
 
-        g.drawFittedText(text, // text
-                         labelX - (textWidth * 0.5), // x
-                         boundsY - (textHeight * 0.5), // y
-                         textWidth, // width
-                         textHeight, // height
+        g.drawFittedText(text,                                     // text
+                         labelX - (textWidth * 0.5),               // x
+                         boundsY - (textHeight * 0.5),             // y
+                         textWidth,                                // width
+                         textHeight,                               // height
                          juce::Justification::horizontallyCentred, // justification
-                         1); // max num lines
+                         1);                                       // max num lines
     }
 }
 
 void GraphicEqEditor::timerCallback()
 {
-    if (activeNode != analyzerContainer.getActiveNodeIndex()) {
-        activeNode = analyzerContainer.getActiveNodeIndex();
-        eqControls.setBandHasNodeSelection(activeNode);
+    if (analyzerContainer == nullptr || eqControls == nullptr) {
+        return;
+    }
+
+    if (activeNode != analyzerContainer->getActiveNodeIndex()) {
+        activeNode = analyzerContainer->getActiveNodeIndex();
+        eqControls->setBandHasNodeSelection(activeNode);
     }
 }

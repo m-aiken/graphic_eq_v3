@@ -136,19 +136,35 @@ void GraphicEqProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
     FilterUtils::updateBandEnablements(leftChain, lowCutEnabledParam, highCutEnabledParam, peakBands);
     FilterUtils::updateBandEnablements(rightChain, lowCutEnabledParam, highCutEnabledParam, peakBands);
 
-    if (lowCutEnabledParam->get()) {
-        updateCutFilter(FilterUtils::ChainPositions::LowCut, lowCutFreqParam, lowCutSlopeParam, sampleRate);
+    if (lowCutEnabledParam != nullptr && lowCutEnabledParam->get()) {
+        updateCutFilter(FilterUtils::ChainPositions::LowCut,
+                        lowCutFreqParam,
+                        lowCutSlopeParam,
+                        sampleRate);
     }
 
-    if (highCutEnabledParam->get()) {
-        updateCutFilter(FilterUtils::ChainPositions::HighCut, highCutFreqParam, highCutSlopeParam, sampleRate);
+    if (highCutEnabledParam != nullptr && highCutEnabledParam->get()) {
+        updateCutFilter(FilterUtils::ChainPositions::HighCut,
+                        highCutFreqParam,
+                        highCutSlopeParam,
+                        sampleRate);
     }
 
     for (size_t i = 0; i < peakBands.size(); ++i) {
-        if (peakBands.at(i).peakEnabledParam->get()) {
-            FilterUtils::updatePeakCoefficients(leftChain, static_cast<FilterUtils::ChainPositions>(i + 1), peakBands.at(i).peakFreqParam, peakBands.at(i).peakQParam, peakBands.at(i).peakGainParam, sampleRate);
+        if (peakBands.at(i).peakEnabledParam != nullptr && peakBands.at(i).peakEnabledParam->get()) {
+            FilterUtils::updatePeakCoefficients(leftChain,
+                                                static_cast<FilterUtils::ChainPositions>(i + 1),
+                                                peakBands.at(i).peakFreqParam,
+                                                peakBands.at(i).peakQParam,
+                                                peakBands.at(i).peakGainParam,
+                                                sampleRate);
 
-            FilterUtils::updatePeakCoefficients(rightChain, static_cast<FilterUtils::ChainPositions>(i + 1), peakBands.at(i).peakFreqParam, peakBands.at(i).peakQParam, peakBands.at(i).peakGainParam, sampleRate);
+            FilterUtils::updatePeakCoefficients(rightChain,
+                                                static_cast<FilterUtils::ChainPositions>(i + 1),
+                                                peakBands.at(i).peakFreqParam,
+                                                peakBands.at(i).peakQParam,
+                                                peakBands.at(i).peakGainParam,
+                                                sampleRate);
         }
     }
 
@@ -215,19 +231,35 @@ void GraphicEqProcessor::processBlock(juce::AudioBuffer<float>& buffer,
     FilterUtils::updateBandEnablements(leftChain, lowCutEnabledParam, highCutEnabledParam, peakBands);
     FilterUtils::updateBandEnablements(rightChain, lowCutEnabledParam, highCutEnabledParam, peakBands);
 
-    if (lowCutEnabledParam->get()) {
-        updateCutFilter(FilterUtils::ChainPositions::LowCut, lowCutFreqParam, lowCutSlopeParam, getSampleRate());
+    if (lowCutEnabledParam != nullptr && lowCutEnabledParam->get()) {
+        updateCutFilter(FilterUtils::ChainPositions::LowCut,
+                        lowCutFreqParam,
+                        lowCutSlopeParam,
+                        getSampleRate());
     }
 
-    if (highCutEnabledParam->get()) {
-        updateCutFilter(FilterUtils::ChainPositions::HighCut, highCutFreqParam, highCutSlopeParam, getSampleRate());
+    if (highCutEnabledParam != nullptr && highCutEnabledParam->get()) {
+        updateCutFilter(FilterUtils::ChainPositions::HighCut,
+                        highCutFreqParam,
+                        highCutSlopeParam,
+                        getSampleRate());
     }
 
     for (size_t i = 0; i < peakBands.size(); ++i) {
-        if (peakBands.at(i).peakEnabledParam->get()) {
-            FilterUtils::updatePeakCoefficients(leftChain, static_cast<FilterUtils::ChainPositions>(i + 1), peakBands.at(i).peakFreqParam, peakBands.at(i).peakQParam, peakBands.at(i).peakGainParam, getSampleRate());
+        if (peakBands.at(i).peakEnabledParam != nullptr && peakBands.at(i).peakEnabledParam->get()) {
+            FilterUtils::updatePeakCoefficients(leftChain,
+                                                static_cast<FilterUtils::ChainPositions>(i + 1),
+                                                peakBands.at(i).peakFreqParam,
+                                                peakBands.at(i).peakQParam,
+                                                peakBands.at(i).peakGainParam,
+                                                getSampleRate());
 
-            FilterUtils::updatePeakCoefficients(rightChain, static_cast<FilterUtils::ChainPositions>(i + 1), peakBands.at(i).peakFreqParam, peakBands.at(i).peakQParam, peakBands.at(i).peakGainParam, getSampleRate());
+            FilterUtils::updatePeakCoefficients(rightChain,
+                                                static_cast<FilterUtils::ChainPositions>(i + 1),
+                                                peakBands.at(i).peakFreqParam,
+                                                peakBands.at(i).peakQParam,
+                                                peakBands.at(i).peakGainParam,
+                                                getSampleRate());
         }
     }
 
@@ -273,6 +305,10 @@ void GraphicEqProcessor::setStateInformation(const void* data, int sizeInBytes)
 
 void GraphicEqProcessor::updateCutFilter(const FilterUtils::ChainPositions& chainPosition, juce::AudioParameterFloat* freqParam, juce::AudioParameterChoice* slopeParam, double sampleRate)
 {
+    if (freqParam == nullptr || slopeParam == nullptr) {
+        return;
+    }
+
     FilterUtils::CoefficientsType coefficients;
 
     if (chainPosition == FilterUtils::ChainPositions::LowCut) {

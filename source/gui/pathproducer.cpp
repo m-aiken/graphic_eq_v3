@@ -78,7 +78,7 @@ void PathProducer::run()
 
 void PathProducer::changeOrder(Globals::FFTOrder order)
 {
-    if (fftDataGenerator == nullptr) {
+    if (fftDataGenerator == nullptr || singleChannelSampleFifo == nullptr) {
         return;
     }
 

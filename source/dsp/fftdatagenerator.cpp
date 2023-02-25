@@ -10,8 +10,13 @@ void FFTDataGenerator::produceFFTDataForRendering(const juce::AudioBuffer<float>
     auto* bufferReadIdx = audioData.getReadPointer(0);
     std::copy(bufferReadIdx, bufferReadIdx + fftSize, fftData.begin());
 
-    window->multiplyWithWindowingTable(fftData.data(), static_cast<size_t>(fftSize));
-    forwardFFT->performFrequencyOnlyForwardTransform(fftData.data(), true);
+    if (window != nullptr) {
+        window->multiplyWithWindowingTable(fftData.data(), static_cast<size_t>(fftSize));
+    }
+
+    if (forwardFFT != nullptr) {
+        forwardFFT->performFrequencyOnlyForwardTransform(fftData.data(), true);
+    }
 
     auto numBins = static_cast<int>(fftSize * 0.5);
     juce::FloatVectorOperations::multiply(fftData.data(), 1.f / static_cast<float>(numBins), numBins + 1);

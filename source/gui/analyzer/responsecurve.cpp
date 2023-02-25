@@ -138,6 +138,10 @@ void ResponseCurve::paint(juce::Graphics& g)
 
     // Drawing the nodes
     for (size_t i = 0; i < peakNodes.size(); ++i) {
+        if (peakBands.at(i).peakFreqParam == nullptr || peakNodes.at(i) == nullptr) {
+            continue;
+        }
+
         auto normalizedFrequency = juce::mapFromLog10<float>(peakBands.at(i).peakFreqParam->get(),
                                                              Globals::getMinFrequency(),
                                                              Globals::getMaxFrequency());
@@ -198,7 +202,7 @@ void ResponseCurve::mouseDrag(const juce::MouseEvent& event)
             }
         }
 
-        if (peakNodes.at(closestNode)->getToggleState()) {
+        if (peakNodes.at(closestNode) != nullptr && peakNodes.at(closestNode)->getToggleState()) {
             xValues.at(closestNode) = xFrequency;
             yValues.at(closestNode) = yDecibels;
 
@@ -209,6 +213,10 @@ void ResponseCurve::mouseDrag(const juce::MouseEvent& event)
 
 void ResponseCurve::updateMonoChain()
 {
+    if (lowCutEnabledParam == nullptr || highCutEnabledParam == nullptr) {
+        return;
+    }
+
     FilterUtils::updateBandEnablements(monoChain, lowCutEnabledParam, highCutEnabledParam, peakBands);
 
     if (lowCutEnabledParam->get()) {
@@ -222,8 +230,13 @@ void ResponseCurve::updateMonoChain()
     }
 
     for (size_t i = 0; i < peakBands.size(); ++i) {
-        if (peakBands.at(i).peakEnabledParam->get()) {
-            FilterUtils::updatePeakCoefficients(monoChain, static_cast<FilterUtils::ChainPositions>(i + 1), peakBands.at(i).peakFreqParam, peakBands.at(i).peakQParam, peakBands.at(i).peakGainParam, sampleRate);
+        if (peakBands.at(i).peakEnabledParam != nullptr && peakBands.at(i).peakEnabledParam->get()) {
+            FilterUtils::updatePeakCoefficients(monoChain,
+                                                static_cast<FilterUtils::ChainPositions>(i + 1),
+                                                peakBands.at(i).peakFreqParam,
+                                                peakBands.at(i).peakQParam,
+                                                peakBands.at(i).peakGainParam,
+                                                sampleRate);
         }
     }
 }
@@ -272,45 +285,45 @@ std::array<std::vector<double>, 9> ResponseCurve::getMagnitudes(int boundsWidth)
                                        Globals::getMaxFrequency());
 
         for (size_t peakBand = 0; peakBand < Globals::getNumPeakBands(); ++peakBand) {
-            if (peakBands.at(peakBand).peakEnabledParam->get()) {
+            if (peakBands.at(peakBand).peakEnabledParam != nullptr && peakCoefficients.at(peakBand) != nullptr && peakBands.at(peakBand).peakEnabledParam->get()) {
                 peakMags.at(peakBand) *= peakCoefficients.at(peakBand)->getMagnitudeForFrequency(freq, sampleRate);
                 magALL *= peakCoefficients.at(peakBand)->getMagnitudeForFrequency(freq, sampleRate);
             }
         }
 
-        if (lowCutEnabledParam->get()) {
-            if (!lowCut.isBypassed<0>()) {
+        if (lowCutEnabledParam != nullptr && lowCutEnabledParam->get()) {
+            if (!lowCut.isBypassed<0>() && lowCut.get<0>().coefficients != nullptr) {
                 magHC *= lowCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
                 magALL *= lowCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
             }
-            if (!lowCut.isBypassed<1>()) {
+            if (!lowCut.isBypassed<1>() && lowCut.get<1>().coefficients != nullptr) {
                 magHC *= lowCut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
                 magALL *= lowCut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
             }
-            if (!lowCut.isBypassed<2>()) {
+            if (!lowCut.isBypassed<2>() && lowCut.get<2>().coefficients != nullptr) {
                 magHC *= lowCut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
                 magALL *= lowCut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
             }
-            if (!lowCut.isBypassed<3>()) {
+            if (!lowCut.isBypassed<3>() && lowCut.get<3>().coefficients != nullptr) {
                 magHC *= lowCut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
                 magALL *= lowCut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
             }
         }
 
-        if (highCutEnabledParam->get()) {
-            if (!highCut.isBypassed<0>()) {
+        if (highCutEnabledParam != nullptr && highCutEnabledParam->get()) {
+            if (!highCut.isBypassed<0>() && highCut.get<0>().coefficients != nullptr) {
                 magHC *= highCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
                 magALL *= highCut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
             }
-            if (!highCut.isBypassed<1>()) {
+            if (!highCut.isBypassed<1>() && highCut.get<1>().coefficients != nullptr) {
                 magHC *= highCut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
                 magALL *= highCut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
             }
-            if (!highCut.isBypassed<2>()) {
+            if (!highCut.isBypassed<2>() && highCut.get<2>().coefficients != nullptr) {
                 magHC *= highCut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
                 magALL *= highCut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
             }
-            if (!highCut.isBypassed<3>()) {
+            if (!highCut.isBypassed<3>() && highCut.get<3>().coefficients != nullptr) {
                 magHC *= highCut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
                 magALL *= highCut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
             }
@@ -343,6 +356,10 @@ void ResponseCurve::timerCallback()
 
 void ResponseCurve::addListeners()
 {
+    if (!allControlPtrsValid()) {
+        return;
+    }
+
     const auto& eqParams = EqProperties::getCutParams();
 
     apvts.getParameter(eqParams.at(EqProperties::CutControls::LOW_CUT_FREQ))->addListener(this);
@@ -363,6 +380,10 @@ void ResponseCurve::addListeners()
 
 void ResponseCurve::removeListeners()
 {
+    if (!allControlPtrsValid()) {
+        return;
+    }
+
     const auto& eqParams = EqProperties::getCutParams();
 
     apvts.getParameter(eqParams.at(EqProperties::CutControls::LOW_CUT_FREQ))->removeListener(this);
@@ -379,4 +400,28 @@ void ResponseCurve::removeListeners()
         apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::QUALITY, i))->removeListener(this);
         apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::ENABLED, i))->removeListener(this);
     }
+}
+
+bool ResponseCurve::allControlPtrsValid()
+{
+    bool ok = true;
+
+    const auto& eqParams = EqProperties::getCutParams();
+
+    ok &= apvts.getParameter(eqParams.at(EqProperties::CutControls::LOW_CUT_FREQ)) != nullptr;
+    ok &= apvts.getParameter(eqParams.at(EqProperties::CutControls::LOW_CUT_SLOPE)) != nullptr;
+    ok &= apvts.getParameter(eqParams.at(EqProperties::CutControls::LOW_CUT_ENABLED)) != nullptr;
+
+    ok &= apvts.getParameter(eqParams.at(EqProperties::CutControls::HIGH_CUT_FREQ)) != nullptr;
+    ok &= apvts.getParameter(eqParams.at(EqProperties::CutControls::HIGH_CUT_SLOPE)) != nullptr;
+    ok &= apvts.getParameter(eqParams.at(EqProperties::CutControls::HIGH_CUT_ENABLED)) != nullptr;
+
+    for (size_t i = 0; i < peakBands.size(); ++i) {
+        ok &= apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::FREQUENCY, i)) != nullptr;
+        ok &= apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::GAIN, i)) != nullptr;
+        ok &= apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::QUALITY, i)) != nullptr;
+        ok &= apvts.getParameter(EqProperties::getPeakControlParamName(EqProperties::PeakControl::ENABLED, i)) != nullptr;
+    }
+
+    return ok;
 }

@@ -8,6 +8,10 @@ void FilterUtils::updatePeakCoefficients(MonoChain&                 monoChain,
                                          juce::AudioParameterFloat* gainParam,
                                          double                     sampleRate)
 {
+    if (freqParam == nullptr || qParam == nullptr || gainParam == nullptr) {
+        return;
+    }
+    
     auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate,
                                                                                 freqParam->get(),
                                                                                 qParam->get(),
@@ -46,6 +50,10 @@ void FilterUtils::updateCutCoefficients(MonoChain&                  monoChain,
                                         CoefficientsType&           coefficients,
                                         juce::AudioParameterChoice* slopeParam)
 {
+    if (slopeParam == nullptr) {
+        return;
+    }
+
     auto& cutFilterChain = chainPosition == ChainPositions::LowCut ? monoChain.get<ChainPositions::LowCut>() : monoChain.get<ChainPositions::HighCut>();
     cutFilterChain.setBypassed<Slope_12>(true);
     cutFilterChain.setBypassed<Slope_24>(true);
@@ -80,6 +88,7 @@ FilterUtils::CoefficientsType FilterUtils::makeHighPassFilter(juce::AudioParamet
                                                               juce::AudioParameterChoice* slopeParam,
                                                               double                      sampleRate)
 {
+    // TODO nullptr checks (what should be returned by default for FilterUtils::CoefficientsType?)
     return juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(freqParam->get(), sampleRate, (slopeParam->getIndex() + 1) * 2);
 }
 
@@ -87,6 +96,7 @@ FilterUtils::CoefficientsType FilterUtils::makeLowPassFilter(juce::AudioParamete
                                                              juce::AudioParameterChoice* slopeParam,
                                                              double                      sampleRate)
 {
+    // TODO nullptr checks (what should be returned by default for FilterUtils::CoefficientsType?)
     return juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(freqParam->get(), sampleRate, (slopeParam->getIndex() + 1) * 2);
 }
 
@@ -95,6 +105,16 @@ void FilterUtils::updateBandEnablements(MonoChain&                              
                                         juce::AudioParameterBool*                         hcEnabledParam,
                                         std::array<PeakBand, Globals::getNumPeakBands()>& peakBands)
 {
+    if (lcEnabledParam == nullptr || hcEnabledParam == nullptr) {
+        return;
+    }
+
+    for (size_t i = 0; i < Globals::getNumPeakBands(); ++i) {
+        if (peakBands.at(i).peakEnabledParam == nullptr) {
+            return;
+        }
+    }
+
     monoChain.setBypassed<FilterUtils::ChainPositions::LowCut>(!lcEnabledParam->get());
     monoChain.setBypassed<FilterUtils::ChainPositions::HighCut>(!hcEnabledParam->get());
     monoChain.setBypassed<FilterUtils::ChainPositions::Peak_0>(!peakBands.at(0).peakEnabledParam->get());

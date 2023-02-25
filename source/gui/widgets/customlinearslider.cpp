@@ -1,5 +1,4 @@
 #include "customlinearslider.h"
-#include "../../utils/colourpalette.h"
 
 //==============================================================================
 CustomLinearSlider::CustomLinearSlider(juce::RangedAudioParameter& rap)

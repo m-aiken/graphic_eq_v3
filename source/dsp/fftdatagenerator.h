@@ -8,6 +8,7 @@
 //==============================================================================
 struct FFTDataGenerator
 {
+    // TODO should this have a constructor to initialise forwardFFT and window?
     void produceFFTDataForRendering(const juce::AudioBuffer<float>& audioData);
     void changeOrder(Globals::FFTOrder newOrder);
     int  getFFTSize() const { return 1 << order; }

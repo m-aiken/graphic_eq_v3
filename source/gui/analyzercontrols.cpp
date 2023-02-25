@@ -51,6 +51,10 @@ void AnalyzerControls::paint(juce::Graphics& g)
 
 void AnalyzerControls::resized()
 {
+    if (fftOrderSlider == nullptr || decayRateSlider == nullptr) {
+        return;
+    }
+
     auto bounds       = getLocalBounds();
     auto sliderWidth  = bounds.getWidth() * 0.4;
     auto sliderHeight = Globals::getFont().getHeight();

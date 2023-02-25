@@ -69,14 +69,14 @@ void PeakControl::paint(juce::Graphics& g)
     auto labelHeight = labelRect.getHeight() / 3;
     auto padding     = Globals::getFont().getHeight();
 
-    auto         dbValue  = gainSlider->getValue();
+    auto         dbValue  = (gainSlider != nullptr) ? gainSlider->getValue() : 0;
     juce::String dbPrefix = dbValue > 0 ? "+" : "";
 
     using ParamPair = std::pair<juce::String, juce::String>;
     std::array<ParamPair, 3> paramValues {
-        std::pair { "Hz:", juce::String(freqSlider->getValue()) },
+        std::pair { "Hz:", (freqSlider != nullptr) ? juce::String(freqSlider->getValue()) : "**" },
         std::pair { "dB:", dbPrefix + juce::String(dbValue) },
-        std::pair { "Q:", juce::String(qSlider->getValue()) }
+        std::pair { "Q:", juce::String((qSlider != nullptr) ? qSlider->getValue() : 1.0) }
     };
 
     for (size_t i = 0; i < paramValues.size(); ++i) {
@@ -102,6 +102,10 @@ void PeakControl::paint(juce::Graphics& g)
 
 void PeakControl::resized()
 {
+    if (powerButton == nullptr || freqSlider == nullptr || gainSlider == nullptr || qSlider == nullptr) {
+        return;
+    }
+
     auto bounds         = getLocalBounds();
     auto rotaryBounds   = juce::Rectangle<int>(0, 0, bounds.getWidth(), bounds.getHeight() * 0.5);
     auto padding        = 2;
@@ -133,6 +137,10 @@ void PeakControl::setNodeIsActive(bool activeState)
 
 void PeakControl::setEnablement()
 {
+    if (powerButton == nullptr || freqSlider == nullptr || gainSlider == nullptr || qSlider == nullptr) {
+        return;
+    }
+
     bool toggleState = powerButton->getToggleState();
 
     freqSlider->setEnabled(toggleState);

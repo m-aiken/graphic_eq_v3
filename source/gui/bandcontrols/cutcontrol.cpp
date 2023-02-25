@@ -36,6 +36,10 @@ CutControl::CutControl(juce::AudioProcessorValueTreeState& apvts, const FilterUt
 
 void CutControl::paint(juce::Graphics& g)
 {
+    if (freqSlider == nullptr || slopeSlider == nullptr) {
+        return;
+    }
+
     auto bounds = getLocalBounds();
 
     g.setFont(Globals::getFont());
@@ -87,6 +91,10 @@ void CutControl::paint(juce::Graphics& g)
 
 void CutControl::resized()
 {
+    if (powerButton == nullptr || freqSlider == nullptr || slopeSlider == nullptr) {
+        return;
+    }
+
     auto bounds   = getLocalBounds();
     auto diameter = (bounds.getWidth() * 0.55);
     auto padding  = Globals::getFont().getHeight();
@@ -106,6 +114,10 @@ void CutControl::resized()
 
 void CutControl::setEnablement()
 {
+    if (powerButton == nullptr || freqSlider == nullptr || slopeSlider == nullptr) {
+        return;
+    }
+
     bool toggleState = powerButton->getToggleState();
 
     freqSlider->setEnabled(toggleState);

@@ -35,6 +35,7 @@ struct ResponseCurve : juce::Component, juce::AudioProcessorParameter::Listener,
 
     void addListeners();
     void removeListeners();
+    bool allControlPtrsValid();
 
     std::array<juce::Point<int>, Globals::getNumPeakBands()>& getNodeCoordinates() { return nodeCoordinates; }
 

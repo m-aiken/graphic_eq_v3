@@ -12,9 +12,7 @@ ThemeButton::ThemeButton()
 
 void ThemeButton::paint(juce::Graphics& g)
 {
-    if (icon == nullptr) {
-        return;
+    if (icon != nullptr) {
+        icon->drawWithin(g, getLocalBounds().toFloat(), juce::RectanglePlacement::centred, 0.7f);
     }
-    
-    icon->drawWithin(g, getLocalBounds().toFloat(), juce::RectanglePlacement::centred, 0.7f);
 }

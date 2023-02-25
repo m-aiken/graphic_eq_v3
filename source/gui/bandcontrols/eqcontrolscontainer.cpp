@@ -16,6 +16,10 @@ EqControlsContainer::EqControlsContainer(juce::AudioProcessorValueTreeState& apv
 
 void EqControlsContainer::resized()
 {
+    if (lowCutControl == nullptr || highCutControl == nullptr) {
+        return;
+    }
+
     juce::Grid grid;
 
     using Track = juce::Grid::TrackInfo;
@@ -37,7 +41,9 @@ void EqControlsContainer::resized()
     grid.items.add(juce::GridItem(*lowCutControl));
 
     for (size_t i = 0; i < peakControls.size(); ++i) {
-        grid.items.add(juce::GridItem(*peakControls.at(i)));
+        if (peakControls.at(i) != nullptr) {
+            grid.items.add(juce::GridItem(*peakControls.at(i)));
+        }
     }
 
     grid.items.add(juce::GridItem(*highCutControl));
@@ -50,6 +56,8 @@ void EqControlsContainer::resized()
 void EqControlsContainer::setBandHasNodeSelection(size_t activeNodeIndex)
 {
     for (size_t i = 0; i < peakControls.size(); ++i) {
-        peakControls.at(i)->setNodeIsActive(i == activeNodeIndex);
+        if (peakControls.at(i) != nullptr) {
+            peakControls.at(i)->setNodeIsActive(i == activeNodeIndex);
+        }
     }
 }

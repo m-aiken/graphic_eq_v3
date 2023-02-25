@@ -16,3 +16,8 @@ void ThemeButton::paint(juce::Graphics& g)
         icon->drawWithin(g, getLocalBounds().toFloat(), juce::RectanglePlacement::centred, 0.7f);
     }
 }
+
+void ThemeButton::mouseEnter(const juce::MouseEvent& e)
+{
+    setMouseCursor(juce::MouseCursor::PointingHandCursor);
+}

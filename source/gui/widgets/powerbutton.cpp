@@ -16,3 +16,8 @@ void PowerButton::paint(juce::Graphics& g)
     g.setColour(getToggleState() ? ColourPalette::getColourV2(ColourPalette::PowerButtonOn) : ColourPalette::getColourV2(ColourPalette::PowerButtonOff));
     g.fillRect(bounds.getCentreX() - (lineThickness * 0.5), lineThickness * 0.5, lineThickness, bounds.getHeight() * 0.4f);
 }
+
+void PowerButton::mouseEnter(const juce::MouseEvent& e)
+{
+    setMouseCursor(juce::MouseCursor::PointingHandCursor);
+}
